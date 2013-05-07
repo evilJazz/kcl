@@ -1,0 +1,2 @@
+var workResults = [];
+var workSubjects = [];

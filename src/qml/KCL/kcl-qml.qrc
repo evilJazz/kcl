@@ -1,0 +1,36 @@
+<RCC>
+    <qresource prefix="/KCL">
+        <file>Action.qml</file>
+        <file>ActionBinding.qml</file>
+        <file>ActionCommand.qml</file>
+        <file>ActionForwarder.qml</file>
+        <file>ActionList.qml</file>
+        <file>AutoColumn.qml</file>
+        <file>AutoRow.qml</file>
+        <file>BidirectionalBinding.qml</file>
+        <file>Command.qml</file>
+        <file>CommandList.qml</file>
+        <file>ConstrainedText.qml</file>
+        <file>ExtListView.qml</file>
+        <file>Fader.qml</file>
+        <file>FlickableColumn.qml</file>
+        <file>MessageOverlay.js</file>
+        <file>MessageOverlay.qml</file>
+        <file>qmldir</file>
+        <file>QtObjectWithChildren.qml</file>
+        <file>QueueManager.js</file>
+        <file>QueueManager.qml</file>
+        <file>RangeLogic.qml</file>
+        <file>Splitter.qml</file>
+        <file>private/RangeLogic.qml</file>
+        <file>private/RowColumnAutoSizeLogic.qml</file>
+        <file>private/SplitterLogic.qml</file>
+        <file>private/SplitterMouseArea.qml</file>
+        <file>ArrayHelpers.js</file>
+        <file>DeferredExecution.js</file>
+        <file>JSONHelpers.js</file>
+        <file>NumericHelpers.js</file>
+        <file>StringHelpers.js</file>
+        <file>WebCall.js</file>
+    </qresource>
+</RCC>

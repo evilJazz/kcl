@@ -1,0 +1,164 @@
+import QtQuick 1.0
+
+QtObject {
+    id: logic
+
+    property bool debug: false
+
+    property Item target: null
+
+    property real targetWidth: target ? target.width : 0
+    onTargetWidthChanged: if (isHorizontal) fullUpdate()
+
+    property real targetHeight: target ? target.height : 0
+    onTargetHeightChanged: if (!isHorizontal) fullUpdate()
+
+    property list<Item> autoSizedChildren
+
+    property int orientation: Qt.Vertical
+    property bool isHorizontal: orientation == Qt.Horizontal
+    property real visibleNonAutoSizedChildrenSize
+    property bool blockUpdate: true
+
+    onAutoSizedChildrenChanged: fullUpdate();
+
+    function fullUpdate()
+    {
+        if (blockUpdate) return;
+
+        updateNonAutoSizedChildren();
+        updateAutoSizedChildren();
+    }
+
+    function updateNonAutoSizedChildren()
+    {
+        if (blockUpdate) return;
+
+        var newVisibleNonAutoSizedChildrenSize = 0;
+        var item;
+        var visibleCount = 0;
+        var isAutoSizedChild;
+
+        for (var i = 0; i < target.children.length; ++i)
+        {
+            item = target.children[i];
+
+            isAutoSizedChild = false;
+
+            for (var j = 0; j < autoSizedChildren.length; ++j)
+            {
+                if (autoSizedChildren[j] === item)
+                {
+                    isAutoSizedChild = true;
+                    break;
+                }
+            }
+
+            // disconnect from signals...
+
+            if (isHorizontal)
+                item.widthChanged.disconnect(this.fullUpdate);
+            else
+                item.heightChanged.disconnect(this.fullUpdate);
+
+            item.visibleChanged.disconnect(this.fullUpdate);
+
+            // Analyze and connect to signals...
+
+            var itemVisible;
+            if (!isAutoSizedChild)
+            {
+                //newNonAutoSizedChildren.push(item);
+                itemVisible = item.visible && (isHorizontal ? item.height : item.width) > 0;
+                newVisibleNonAutoSizedChildrenSize += itemVisible ? (isHorizontal ? item.width : item.height) : 0;
+
+                if (isHorizontal)
+                    item.widthChanged.connect(this.fullUpdate);
+                else
+                    item.heightChanged.connect(this.fullUpdate);
+            }
+
+            if (item.visible)
+                ++visibleCount;
+
+            item.visibleChanged.connect(this.fullUpdate);
+        }
+
+        //nonAutoSizedChildren = newNonAutoSizedChildren;
+        newVisibleNonAutoSizedChildrenSize += (visibleCount - 1) * spacing;
+        visibleNonAutoSizedChildrenSize = newVisibleNonAutoSizedChildrenSize;
+
+        if (debug)
+        {
+            console.log("autoSizedChildren.length: " + autoSizedChildren.length);
+            //console.log("nonAutoSizedChildren.length: " + nonAutoSizedChildren.length);
+            console.log("visibleNonAutoSizedChildrenSize: " + visibleNonAutoSizedChildrenSize);
+        }
+    }
+
+    function updateAutoSizedChildren(doPercentageResize)
+    {
+        if (blockUpdate) return;
+
+        if (debug) console.log("------------------------------------------------");
+
+        var item, i;
+
+        var autoSizeTotal = 0;
+        var percentSizes = {};
+        var invisiblePercentage = 0;
+        var percentage;
+
+        for (i = 0; i < autoSizedChildren.length; ++i)
+        {
+            item = autoSizedChildren[i];
+            autoSizeTotal += (isHorizontal ? item.width : item.height)
+        }
+
+        if (debug) console.log("autoSizeTotal: " + autoSizeTotal);
+        if (autoSizeTotal > 0)
+        {
+            for (i = 0; i < autoSizedChildren.length; ++i)
+            {
+                item = autoSizedChildren[i];
+
+                percentage = (isHorizontal ? item.width : item.height) / autoSizeTotal;
+                percentSizes[i] = percentage;
+                if (!item.visible) invisiblePercentage += percentage;
+
+                if (debug) console.log(item + ": " + percentSizes[i]);
+            }
+        }
+        else
+        {
+            var unifiedPercentage = 1 / autoSizedChildren.length;
+
+            for (i = 0; i < autoSizedChildren.length; ++i)
+            {
+                item = autoSizedChildren[i];
+
+                percentSizes[i] = unifiedPercentage;
+                if (!item.visible) invisiblePercentage += unifiedPercentage;
+
+                if (debug) console.log(item + ": " + percentSizes[i]);
+            }
+        }
+
+        if (invisiblePercentage < 1)
+        {
+            var remainingSize = (isHorizontal ? targetWidth : targetHeight) - visibleNonAutoSizedChildrenSize;
+            var scaleRatio = 1 / (1 - invisiblePercentage);
+
+            if (debug) console.log("remainingSize: " + remainingSize);
+
+            for (i = 0; i < autoSizedChildren.length; ++i)
+            {
+                item = autoSizedChildren[i];
+                if (isHorizontal)
+                    item.width = remainingSize * percentSizes[i] * scaleRatio;
+                else
+                    item.height = remainingSize * percentSizes[i] * scaleRatio;
+            }
+        }
+    }
+}
