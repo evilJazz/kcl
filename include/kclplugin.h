@@ -21,33 +21,19 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
-#include "KCL/keyeventfilter.h"
+#ifndef KCLPLUGIN_H
+#define KCLPLUGIN_H
 
-KeyEventFilter::KeyEventFilter(QObject *parent) :
-    QObject(parent)
+#include "KCL/kcl_global.h"
+
+#include <QDeclarativeExtensionPlugin>
+
+class KCL_EXPORT KCLPlugin : public QDeclarativeExtensionPlugin
 {
-}
+    Q_OBJECT
+public:
+    void registerTypes(const char *uri);
+    void initializeEngine(QDeclarativeEngine *engine, const char *uri);
+};
 
-KeyEventFilter::~KeyEventFilter()
-{
-}
-
-bool KeyEventFilter::eventFilter(QObject *watched, QEvent *event)
-{
-    if (event->type() == QEvent::KeyPress)
-    {
-        QDeclarativeKeyEvent qke(*static_cast<QKeyEvent *>(event));
-        emit keyPressed(&qke);
-        if (qke.isAccepted())
-            return true;
-    }
-    else if (event->type() == QEvent::KeyRelease)
-    {
-        QDeclarativeKeyEvent qke(*static_cast<QKeyEvent *>(event));
-        emit keyReleased(&qke);
-        if (qke.isAccepted())
-            return true;
-    }
-
-    return QObject::eventFilter(watched, event);
-}
+#endif // KCLPLUGIN_H

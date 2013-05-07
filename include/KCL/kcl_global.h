@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2011-2012 Andre Beckedorf                               *
+ *   Copyright (C) 2011-2013 Andre Beckedorf                               *
  * 			     <evilJazz _AT_ katastrophos _DOT_ net>                    *
  *                                                                         *
  *   This library is free software; you can redistribute it and/or modify  *
@@ -21,47 +21,15 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
-#ifndef BINARYFILEDOWNLOADER_H
-#define BINARYFILEDOWNLOADER_H
+#ifndef KCL_GLOBAL_H
+#define KCL_GLOBAL_H
 
-#include <QObject>
-#include <QByteArray>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
+#include <QtCore/QtGlobal>
 
-class BinaryFileDownloader : public QObject
-{
-    Q_OBJECT
-    Q_PROPERTY(QByteArray downloadedData READ downloadedData NOTIFY downloaded)
-    Q_PROPERTY(int errorCode READ errorCode NOTIFY error)
-    Q_PROPERTY(QString errorText READ errorText NOTIFY error)
-    Q_PROPERTY(bool autoDelete READ autoDelete WRITE setAutoDelete CONSTANT)
-public:
-    explicit BinaryFileDownloader();
-    virtual ~BinaryFileDownloader();
-    Q_INVOKABLE void download(QString url);
-    Q_INVOKABLE QByteArray downloadedData() const { return downloadedData_; }
+#if defined(KCL_LIBRARY)
+#  define KCL_EXPORT Q_DECL_EXPORT
+#else
+#  define KCL_EXPORT Q_DECL_IMPORT
+#endif
 
-    bool autoDelete() const { return autoDelete_; }
-    void setAutoDelete(bool value) { autoDelete_ = value; }
-
-    int errorCode() const { return errorCode_; }
-    QString errorText() const { return errorText_; }
-
-signals:
-    void downloaded(QByteArray data);
-    void error(int errorCode, const QString &errorText);
-
-private slots:
-    void fileDownloaded(QNetworkReply* reply);
-
-private:
-    QNetworkAccessManager manager_;
-    QByteArray downloadedData_;
-    int errorCode_;
-    QString errorText_;
-    bool autoDelete_;
-};
-
-#endif // BINARYFILEDOWNLOADER_H
+#endif // KCL_GLOBAL_H

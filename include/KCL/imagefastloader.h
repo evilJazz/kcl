@@ -1,12 +1,37 @@
+/***************************************************************************
+ *   Copyright (C) 2011-2013 Andre Beckedorf                               *
+ * 			     <evilJazz _AT_ katastrophos _DOT_ net>                    *
+ *                                                                         *
+ *   This library is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU Lesser General Public License version   *
+ *   2.1 as published by the Free Software Foundation.                     *
+ *                                                                         *
+ *   This library is distributed in the hope that it will be useful, but   *
+ *   WITHOUT ANY WARRANTY; without even the implied warranty of            *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU     *
+ *   Lesser General Public License for more details.                       *
+ *                                                                         *
+ *   You should have received a copy of the GNU Lesser General Public      *
+ *   License along with this library; if not, write to the Free Software   *
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA         *
+ *   02110-1301  USA                                                       *
+ *                                                                         *
+ *   Alternatively, this file is available under the Mozilla Public        *
+ *   License Version 1.1.  You may obtain a copy of the License at         *
+ *   http://www.mozilla.org/MPL/                                           *
+ ***************************************************************************/
+
 #ifndef IMAGEFASTLOADER_H
 #define IMAGEFASTLOADER_H
+
+#include "KCL/kcl_global.h"
 
 #include <QIODevice>
 #include <QList>
 #include <QSize>
 #include <QImage>
 
-class CachedImageSize
+class KCL_EXPORT CachedImageSize
 {
 public:
     CachedImageSize() : width(0), height(0), offset(0), count(0), maskCount(0) {}
@@ -17,7 +42,7 @@ public:
     qint32 maskCount;
 };
 
-class DiskImageCache : public QObject
+class KCL_EXPORT DiskImageCache : public QObject
 {
     Q_OBJECT
 public:
@@ -42,11 +67,13 @@ public:
 
     virtual ImageCacheResult saveImage(const QString &key, QImage *srcImage);
     virtual ImageCacheResult saveImage(const QString &key, QIODevice *srcImageStream);
+    virtual QSize getOriginalImageSizeFromImage(const QString &key);
     virtual ImageCacheResult loadImage(const QString &key, QImage *dstImage, const QSize &requestedSize, bool returnExactSize = false, QSize *originalSize = NULL);
 
 public:
     static bool saveCacheImages(QImage *srcImage, const QList<QSize> &sizes, QIODevice *dstStream);
     static QList<CachedImageSize> readCacheImageSizes(QIODevice *srcStream);
+    static QSize readCacheOriginalImageSize(QIODevice *srcStream);
     static int findBestCacheImageMatch(const QList<CachedImageSize> &cacheImageSizes, const QSize &requestedSize);
     static ImageCacheResult loadCacheImage(QIODevice *srcStream, const CachedImageSize &imageSize, QImage *dstImage);
     static ImageCacheResult loadCacheImage(QIODevice *srcStream, const QSize &requestedSize, QImage *dstImage, bool returnExactSize = false, QSize *originalSize = NULL);
@@ -59,17 +86,19 @@ private:
     QList<QSize> imageSizes_;
 };
 
-class ImageFastLoader : public DiskImageCache
+class KCL_EXPORT ImageFastLoader : public DiskImageCache
 {
     Q_OBJECT
 public:
     ImageFastLoader(QObject *parent = 0) : DiskImageCache(parent) {}
 
+    virtual QSize getOriginalImageSizeFromImage(const QString &filename);
     virtual DiskImageCache::ImageCacheResult loadImage(const QString &filename, QImage *dstImage, const QSize &requestedSize, bool returnExactSize = false, QSize *originalSize = NULL);
     virtual DiskImageCache::ImageCacheResult getImage(const QString &filename, QImage *dstImage, const QSize &requestedSize, bool returnExactSize = false, QSize *originalSize = NULL);
 
 protected:
     virtual QString getFilenameForKey(const QString &key) const;
+    DiskImageCache::ImageCacheResult createImage(const QString &filename);
 };
 
 #endif // IMAGEFASTLOADER_H

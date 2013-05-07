@@ -21,33 +21,49 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
-#include "KCL/keyeventfilter.h"
+#ifndef BINARYFILEDOWNLOADER_H
+#define BINARYFILEDOWNLOADER_H
 
-KeyEventFilter::KeyEventFilter(QObject *parent) :
-    QObject(parent)
+#include "KCL/kcl_global.h"
+
+#include <QObject>
+#include <QByteArray>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+
+class KCL_EXPORT BinaryFileDownloader : public QObject
 {
-}
+    Q_OBJECT
+    Q_PROPERTY(QByteArray downloadedData READ downloadedData NOTIFY downloaded)
+    Q_PROPERTY(int errorCode READ errorCode NOTIFY error)
+    Q_PROPERTY(QString errorText READ errorText NOTIFY error)
+    Q_PROPERTY(bool autoDelete READ autoDelete WRITE setAutoDelete CONSTANT)
+public:
+    explicit BinaryFileDownloader();
+    virtual ~BinaryFileDownloader();
+    Q_INVOKABLE void download(QString url);
+    Q_INVOKABLE QByteArray downloadedData() const { return downloadedData_; }
 
-KeyEventFilter::~KeyEventFilter()
-{
-}
+    bool autoDelete() const { return autoDelete_; }
+    void setAutoDelete(bool value) { autoDelete_ = value; }
 
-bool KeyEventFilter::eventFilter(QObject *watched, QEvent *event)
-{
-    if (event->type() == QEvent::KeyPress)
-    {
-        QDeclarativeKeyEvent qke(*static_cast<QKeyEvent *>(event));
-        emit keyPressed(&qke);
-        if (qke.isAccepted())
-            return true;
-    }
-    else if (event->type() == QEvent::KeyRelease)
-    {
-        QDeclarativeKeyEvent qke(*static_cast<QKeyEvent *>(event));
-        emit keyReleased(&qke);
-        if (qke.isAccepted())
-            return true;
-    }
+    int errorCode() const { return errorCode_; }
+    QString errorText() const { return errorText_; }
 
-    return QObject::eventFilter(watched, event);
-}
+signals:
+    void downloaded(QByteArray data);
+    void error(int errorCode, const QString &errorText);
+
+private slots:
+    void fileDownloaded(QNetworkReply* reply);
+
+private:
+    QNetworkAccessManager manager_;
+    QByteArray downloadedData_;
+    int errorCode_;
+    QString errorText_;
+    bool autoDelete_;
+};
+
+#endif // BINARYFILEDOWNLOADER_H

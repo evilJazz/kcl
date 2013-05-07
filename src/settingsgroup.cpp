@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2011-2012 Andre Beckedorf                               *
+ *   Copyright (C) 2011-2013 Andre Beckedorf                               *
  * 			     <evilJazz _AT_ katastrophos _DOT_ net>                    *
  *                                                                         *
  *   This library is free software; you can redistribute it and/or modify  *
@@ -21,7 +21,8 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
-#include "settingsgroup.h"
+#include "KCL/settingsgroup.h"
+
 #include <QVariant>
 #include <QMetaProperty>
 #include <QSettings>
@@ -70,7 +71,14 @@ void SettingsGroup::classBegin()
 
 void SettingsGroup::componentComplete()
 {
+    SettingsGroup *sg = qobject_cast<SettingsGroup *>(parent());
+    if (sg)
+        connect(sg, SIGNAL(groupNameChanged()), this, SLOT(updateFullGroupName()));
+
+    updateFullGroupName();
+
     setCurrentValuesAsDefaultValues();
+
     if (autoLoad_)
         load();
 
@@ -98,7 +106,11 @@ void SettingsGroup::handlePropertyChanged()
 
 bool SettingsGroup::shallSkipProperty(const QString &propName)
 {
-    return propName == "groupName" || propName == "autoLoad" || propName == "autoSave";
+    return propName == "groupName" ||
+           propName == "fullGroupName" ||
+           propName == "autoLoad" ||
+           propName == "autoSave" ||
+           propName == "groups";
 }
 
 void SettingsGroup::setCurrentValuesAsDefaultValues()
@@ -138,7 +150,38 @@ void SettingsGroup::resetToDefaultValues()
 void SettingsGroup::setGroupName(const QString &groupName)
 {
     if (groupName != groupName_)
+    {
         groupName_ = groupName;
+        updateFullGroupName();
+        emit groupNameChanged();
+    }
+}
+
+void SettingsGroup::setAutoLoad(bool value)
+{
+    if (value != autoLoad_)
+    {
+        autoLoad_ = value;
+        emit autoLoadChanged();
+    }
+}
+
+void SettingsGroup::setAutoSave(bool value)
+{
+    if (value != autoSave_)
+    {
+        autoSave_ = value;
+        emit autoSaveChanged();
+    }
+}
+
+void SettingsGroup::setSaveDefaults(bool value)
+{
+    if (value != saveDefaults_)
+    {
+        saveDefaults_ = value;
+        emit saveDefaultsChanged();
+    }
 }
 
 QSettings *SettingsGroup::settingsInstance()
@@ -173,12 +216,17 @@ QString SettingsGroup::globalIniFilename()
     return getGlobalIniFilenameSingleton();
 }
 
+QDeclarativeListProperty<SettingsGroup> SettingsGroup::groups()
+{
+    return QDeclarativeListProperty<SettingsGroup>(this, groups_);
+}
+
 void SettingsGroup::save()
 {
     emit aboutToSave();
 
     QSettings *settings = settingsInstance();
-    settings->beginGroup(groupName_);
+    settings->beginGroup(fullGroupName_);
 
     for (int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount(); ++i)
     {
@@ -196,6 +244,10 @@ void SettingsGroup::save()
     }
 
     settings->endGroup();
+
+    foreach (SettingsGroup *group, groups_)
+        group->save();
+
     settings->sync();
 
     emit saved();
@@ -206,7 +258,7 @@ void SettingsGroup::load()
     emit aboutToLoad();
 
     QSettings *settings = settingsInstance();
-    settings->beginGroup(groupName_);
+    settings->beginGroup(fullGroupName_);
 
     for (int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount(); ++i)
     {
@@ -217,17 +269,28 @@ void SettingsGroup::load()
 
         QVariant value;
         if (settings->contains(name))
-        {
             value = settings->value(name);
-            bool result = prop.write(this, value);
-            if (!result)
-                qWarning("Could not set property %s = %s.", (const char *)name.toUtf8(), (const char *)value.toString().toUtf8());
-        }
         else
             value = defaults_.value(name);
+
+        bool result = prop.write(this, value);
+        if (!result)
+            qWarning("Could not set property %s = %s.", (const char *)name.toUtf8(), (const char *)value.toString().toUtf8());
     }
 
     settings->endGroup();
 
+    foreach (SettingsGroup *group, groups_)
+        group->load();
+
     emit loaded();
+}
+
+void SettingsGroup::updateFullGroupName()
+{
+    SettingsGroup *sg = qobject_cast<SettingsGroup *>(parent());
+    if (sg)
+        fullGroupName_ = sg->fullGroupName() + "/" + groupName_;
+    else
+        fullGroupName_ = groupName_;
 }

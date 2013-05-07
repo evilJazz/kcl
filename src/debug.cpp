@@ -1,29 +1,40 @@
-/*
- * Copyright (C) 2006-2013 Andre Beckedorf <evilJazz _AT_ katatstrophos _DOT_ net>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+/***************************************************************************
+ *   Copyright (C) 2011-2013 Andre Beckedorf                               *
+ * 			     <evilJazz _AT_ katastrophos _DOT_ net>                    *
+ *                                                                         *
+ *   This library is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU Lesser General Public License version   *
+ *   2.1 as published by the Free Software Foundation.                     *
+ *                                                                         *
+ *   This library is distributed in the hope that it will be useful, but   *
+ *   WITHOUT ANY WARRANTY; without even the implied warranty of            *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU     *
+ *   Lesser General Public License for more details.                       *
+ *                                                                         *
+ *   You should have received a copy of the GNU Lesser General Public      *
+ *   License along with this library; if not, write to the Free Software   *
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA         *
+ *   02110-1301  USA                                                       *
+ *                                                                         *
+ *   Alternatively, this file is available under the Mozilla Public        *
+ *   License Version 1.1.  You may obtain a copy of the License at         *
+ *   http://www.mozilla.org/MPL/                                           *
+ ***************************************************************************/
 
-#include "debug.h"
-#include "compathack.h"
+#include "KCL/debug.h"
 
 #include <QHash>
 
 #include <stdio.h>
 #include <sys/types.h>
+
+#ifndef Q_OS_WIN
 #include <unistd.h>
+#endif
+
+#ifdef Q_OS_LINUX
+#include <execinfo.h>
+#endif
 
 static int indentlevel = -1;
 
@@ -112,6 +123,21 @@ void kaPrintMemStat()
     mem_size = ((unsigned long)pages) * ((unsigned long)getpagesize());
 
     kaDebug(QString().sprintf("Memory used: %d bytes / %d kbytes", mem_size, mem_size / 1024));
+#endif
+}
+
+void kaPrintBacktrace()
+{
+#ifdef Q_OS_LINUX
+    void *array[10];
+    int size = backtrace(array, 10);
+
+    char **messages = backtrace_symbols(array, size);
+
+    for (int i = 1; i < size && messages != NULL; ++i)
+        kaDebug(QString().sprintf("BT: (%d) %s", i, messages[i]));
+
+    free(messages);
 #endif
 }
 

@@ -1,27 +1,31 @@
 KCL_SRC_PATH = $${PWD}/src
+KCL_INC_PATH = $${PWD}/include
 
 INCLUDEPATH += \
-    $$KCL_SRC_PATH
+    $$KCL_INC_PATH
 
 HEADERS += \
-    $$KCL_SRC_PATH/binaryfiledownloader.h \
-    $$KCL_SRC_PATH/filescanner.h \
-    $$KCL_SRC_PATH/filesystemutils.h \
-    $$KCL_SRC_PATH/settingsgroup.h \
-    $$KCL_SRC_PATH/kclplugin.h \
-    $$KCL_SRC_PATH/progressmanager.h \
-    $$KCL_SRC_PATH/performancedatamanager.h \
-    $$KCL_SRC_PATH/logging.h \
-    $$KCL_SRC_PATH/keyeventfilter.h \
-    $$KCL_SRC_PATH/imagefastloader.h \
-    $$KCL_SRC_PATH/debug.h
+    $$KCL_INC_PATH/kclplugin.h \
+    $$KCL_INC_PATH/KCL/kcl_global.h \
+    $$KCL_INC_PATH/KCL/binaryfiledownloader.h \
+    $$KCL_INC_PATH/KCL/filescanner.h \
+    $$KCL_INC_PATH/KCL/filesystemutils.h \
+    $$KCL_INC_PATH/KCL/settingsgroup.h \
+    $$KCL_INC_PATH/KCL/history.h \
+    $$KCL_INC_PATH/KCL/progressmanager.h \
+    $$KCL_INC_PATH/KCL/performancedatamanager.h \
+    $$KCL_INC_PATH/KCL/logging.h \
+    $$KCL_INC_PATH/KCL/keyeventfilter.h \
+    $$KCL_INC_PATH/KCL/imagefastloader.h \
+    $$KCL_INC_PATH/KCL/debug.h
 
 SOURCES += \
+    $$KCL_SRC_PATH/kclplugin.cpp \
     $$KCL_SRC_PATH/binaryfiledownloader.cpp \
     $$KCL_SRC_PATH/filescanner.cpp \
     $$KCL_SRC_PATH/filesystemutils.cpp \
     $$KCL_SRC_PATH/settingsgroup.cpp \
-    $$KCL_SRC_PATH/kclplugin.cpp \
+    $$KCL_SRC_PATH/history.cpp \
     $$KCL_SRC_PATH/progressmanager.cpp \
     $$KCL_SRC_PATH/performancedatamanager.cpp \
     $$KCL_SRC_PATH/logging.cpp \

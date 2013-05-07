@@ -21,33 +21,60 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
-#include "KCL/keyeventfilter.h"
+#ifndef HISTORY_H
+#define HISTORY_H
 
-KeyEventFilter::KeyEventFilter(QObject *parent) :
-    QObject(parent)
+#include "KCL/kcl_global.h"
+
+#include <QObject>
+
+class KCL_EXPORT HistorySnapshot
 {
-}
+public:
+    virtual bool operator==(const HistorySnapshot &other) const = 0;
+    virtual void restore() = 0;
+};
 
-KeyEventFilter::~KeyEventFilter()
+class KCL_EXPORT History : public QObject
 {
-}
+    Q_OBJECT
+    Q_PROPERTY(bool canGoBack READ canGoBack NOTIFY activeIndexChanged)
+    Q_PROPERTY(bool canGoForward READ canGoForward NOTIFY activeIndexChanged)
+    Q_PROPERTY(bool isLoadingSnapshot READ isLoadingSnapshot NOTIFY isLoadingSnapshotChanged)
+public:
+    explicit History(bool undoMode = false, QObject *parent = 0);
+    virtual ~History();
 
-bool KeyEventFilter::eventFilter(QObject *watched, QEvent *event)
-{
-    if (event->type() == QEvent::KeyPress)
-    {
-        QDeclarativeKeyEvent qke(*static_cast<QKeyEvent *>(event));
-        emit keyPressed(&qke);
-        if (qke.isAccepted())
-            return true;
-    }
-    else if (event->type() == QEvent::KeyRelease)
-    {
-        QDeclarativeKeyEvent qke(*static_cast<QKeyEvent *>(event));
-        emit keyReleased(&qke);
-        if (qke.isAccepted())
-            return true;
-    }
+    void clear();
 
-    return QObject::eventFilter(watched, event);
-}
+    bool canGoBack() const;
+    bool canGoForward() const;
+
+    bool isLoadingSnapshot() const { return isLoadingSnapshot_; }
+
+    Q_INVOKABLE bool addSnapshot(HistorySnapshot *newSnapshot, bool forceEvenIfEqual = false);
+    Q_INVOKABLE bool replaceSnapshotWithNew(HistorySnapshot *newSnapshot);
+
+signals:
+    void changed();
+    void activeIndexChanged();
+    void isLoadingSnapshotChanged();
+
+    void aboutToGoBack();
+    void aboutToGoForward();
+
+public slots:
+    void goBack();
+    void goForward();
+
+private:
+    bool undoMode_;
+    int activeIndex_;
+    bool isLoadingSnapshot_;
+    QList<HistorySnapshot *> snapshots_;
+
+    void loadSnapshot(int index);
+    void dumpSnapshot(int index);
+};
+
+#endif // HISTORY_H

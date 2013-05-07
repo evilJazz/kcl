@@ -1,23 +1,30 @@
-/*
- * Copyright (C) 2006-2013 Andre Beckedorf <evilJazz _AT_ katastrophos _DOT_ net>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+/***************************************************************************
+ *   Copyright (C) 2011-2013 Andre Beckedorf                               *
+ * 			     <evilJazz _AT_ katastrophos _DOT_ net>                    *
+ *                                                                         *
+ *   This library is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU Lesser General Public License version   *
+ *   2.1 as published by the Free Software Foundation.                     *
+ *                                                                         *
+ *   This library is distributed in the hope that it will be useful, but   *
+ *   WITHOUT ANY WARRANTY; without even the implied warranty of            *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU     *
+ *   Lesser General Public License for more details.                       *
+ *                                                                         *
+ *   You should have received a copy of the GNU Lesser General Public      *
+ *   License along with this library; if not, write to the Free Software   *
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA         *
+ *   02110-1301  USA                                                       *
+ *                                                                         *
+ *   Alternatively, this file is available under the Mozilla Public        *
+ *   License Version 1.1.  You may obtain a copy of the License at         *
+ *   http://www.mozilla.org/MPL/                                           *
+ ***************************************************************************/
 
 #ifndef DEBUG_H_INCLUDED
 #define DEBUG_H_INCLUDED
+
+#include "KCL/kcl_global.h"
 
 #include <time.h>
 
@@ -29,29 +36,32 @@
 #include <qdatetime.h>
 #endif
 
+#include <QtGlobal>
+
 #ifdef Q_OS_SYMBIAN
 #define D_FUNC_INFO __PRETTY_FUNCTION__
 #else
 #define D_FUNC_INFO Q_FUNC_INFO
 #endif
 
-void setDiagnosticOutputEnabled(bool value);
-bool diagnosticOutputEnabled();
+KCL_EXPORT void setDiagnosticOutputEnabled(bool value);
+KCL_EXPORT bool diagnosticOutputEnabled();
 
-QString kaFormatFunctionSignature(const char *fileName, int line, const char *functionSignature, const QString &text = QString::null);
-void kaDebugEnterMethod(const QString &name);
-void kaDebugExitMethod(const QString &name);
-void kaDebugEnterMethod(const char *fileName, int line, const char *functionSignature, const QString &text = QString::null);
-void kaDebugExitMethod(const char *fileName, int line, const char *functionSignature, const QString &text = QString::null);
-void kaDebug(const QString &msg);
-void kaFatal(const QString &msg);
-void kaPrintMemStat();
+KCL_EXPORT QString kaFormatFunctionSignature(const char *fileName, int line, const char *functionSignature, const QString &text = QString::null);
+KCL_EXPORT void kaDebugEnterMethod(const QString &name);
+KCL_EXPORT void kaDebugExitMethod(const QString &name);
+KCL_EXPORT void kaDebugEnterMethod(const char *fileName, int line, const char *functionSignature, const QString &text = QString::null);
+KCL_EXPORT void kaDebugExitMethod(const char *fileName, int line, const char *functionSignature, const QString &text = QString::null);
+KCL_EXPORT void kaDebug(const QString &msg);
+KCL_EXPORT void kaFatal(const QString &msg);
+KCL_EXPORT void kaPrintMemStat();
+KCL_EXPORT void kaPrintBacktrace(); // requires -rdynamic gcc param for maximal effect...
 
-void kaProfileAddRecord(const QString &name, int elapsed);
-void kaProfilePrintStat();
-void kaProfileClearStat();
+KCL_EXPORT void kaProfileAddRecord(const QString &name, int elapsed);
+KCL_EXPORT void kaProfilePrintStat();
+KCL_EXPORT void kaProfileClearStat();
 
-class KaDebugGuard
+class KCL_EXPORT KaDebugGuard
 {
 public:
     KaDebugGuard(const char *fileName, int line, const char *functionSignature, const QString &text = QString::null, bool timed = false, bool silence = false, bool profile = false);
@@ -107,7 +117,8 @@ private:
 #define DTIMERSTART(timername) DOP(timername.start())
 #define DTIMERPRINT(timername, description) DOP(kaDebug(QString().sprintf("[Timing] %-30s: %5d ms", description, timername.elapsed())))
 
-#define DMEMSTAT() DOP(kaPrintMemStat())
+#define DMEMSTAT DOP(kaPrintMemStat())
+#define DBACKTRACE DOP(kaPrintBacktrace())
 
 #define DASSERT(cond, text) ((!(cond)) ? kaFatal(QString().sprintf("Assertion failed: %s, %s [in %s %s:%d]", #cond, text, D_FUNC_INFO, __FILE__, __LINE__)) : qt_noop())
 

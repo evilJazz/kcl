@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2011-2012 Andre Beckedorf                               *
+ *   Copyright (C) 2011-2013 Andre Beckedorf                               *
  * 			     <evilJazz _AT_ katastrophos _DOT_ net>                    *
  *                                                                         *
  *   This library is free software; you can redistribute it and/or modify  *
@@ -21,7 +21,7 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
-#include "binaryfiledownloader.h"
+#include "KCL/binaryfiledownloader.h"
 
 BinaryFileDownloader::BinaryFileDownloader() :
     QObject(),

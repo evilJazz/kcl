@@ -1,11 +1,36 @@
+/***************************************************************************
+ *   Copyright (C) 2011-2013 Andre Beckedorf                               *
+ * 			     <evilJazz _AT_ katastrophos _DOT_ net>                    *
+ *                                                                         *
+ *   This library is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU Lesser General Public License version   *
+ *   2.1 as published by the Free Software Foundation.                     *
+ *                                                                         *
+ *   This library is distributed in the hope that it will be useful, but   *
+ *   WITHOUT ANY WARRANTY; without even the implied warranty of            *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU     *
+ *   Lesser General Public License for more details.                       *
+ *                                                                         *
+ *   You should have received a copy of the GNU Lesser General Public      *
+ *   License along with this library; if not, write to the Free Software   *
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA         *
+ *   02110-1301  USA                                                       *
+ *                                                                         *
+ *   Alternatively, this file is available under the Mozilla Public        *
+ *   License Version 1.1.  You may obtain a copy of the License at         *
+ *   http://www.mozilla.org/MPL/                                           *
+ ***************************************************************************/
+
 #ifndef FILESYSTEMUTILS_H
 #define FILESYSTEMUTILS_H
+
+#include "KCL/kcl_global.h"
 
 #include <QObject>
 #include <QUrl>
 #include <QVariantMap>
 
-class FileSystemUtils : public QObject
+class KCL_EXPORT FileSystemUtils : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString homeLocation READ homeLocation CONSTANT)
@@ -36,27 +61,6 @@ public:
     Q_INVOKABLE static QString localPath(const QUrl &url);
 
     Q_INVOKABLE static QString pathAppend(const QString &path1, const QString &path2);
-
-    Q_INVOKABLE static QVariantMap getOpenFileName(
-        const QString &caption = QString(),
-        const QString &startWith = QString(),
-        const QString &filter = QString(),
-        bool resolveSymlinks = true
-    );
-
-    Q_INVOKABLE static QVariantMap getSaveFileName(
-        const QString &caption = QString(),
-        const QString &startWith = QString(),
-        const QString &filter = QString(),
-        bool resolveSymlinks = true
-    );
-
-    Q_INVOKABLE static QString getExistingDirectory(
-        const QString & caption,
-        const QString & dir,
-        bool dirOnly,
-        bool resolveSymlinks
-    );
 
     Q_INVOKABLE static QString formatFileSize(long long fileSize);
 

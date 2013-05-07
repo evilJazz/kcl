@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2011-2012 Andre Beckedorf                               *
+ *   Copyright (C) 2011-2013 Andre Beckedorf                               *
  * 			     <evilJazz _AT_ katastrophos _DOT_ net>                    *
  *                                                                         *
  *   This library is free software; you can redistribute it and/or modify  *
@@ -24,20 +24,29 @@
 #ifndef SETTINGSGROUP_H
 #define SETTINGSGROUP_H
 
+#include "KCL/kcl_global.h"
+
 #include <QObject>
 #include <QEvent>
 #include <QVariantMap>
 #include <QTimer>
+#include <QDeclarativeListProperty>
 #include <QDeclarativeParserStatus>
 #include <QSettings>
 
-class SettingsGroup : public QObject, public QDeclarativeParserStatus
+class KCL_EXPORT SettingsGroup : public QObject, public QDeclarativeParserStatus
 {
     Q_OBJECT
-    Q_PROPERTY(QString groupName READ groupName WRITE setGroupName)
-    Q_PROPERTY(bool autoLoad READ autoLoad WRITE setAutoLoad)
-    Q_PROPERTY(bool autoSave READ autoSave WRITE setAutoSave)
-    Q_PROPERTY(bool saveDefaults READ saveDefaults WRITE setSaveDefaults)
+    Q_INTERFACES(QDeclarativeParserStatus)
+    Q_PROPERTY(QString groupName READ groupName WRITE setGroupName NOTIFY groupNameChanged)
+    Q_PROPERTY(QString fullGroupName READ fullGroupName NOTIFY groupNameChanged)
+    Q_PROPERTY(bool autoLoad READ autoLoad WRITE setAutoLoad NOTIFY autoLoadChanged)
+    Q_PROPERTY(bool autoSave READ autoSave WRITE setAutoSave NOTIFY autoSaveChanged)
+    Q_PROPERTY(bool saveDefaults READ saveDefaults WRITE setSaveDefaults NOTIFY saveDefaultsChanged)
+
+    Q_PROPERTY(QDeclarativeListProperty<SettingsGroup> groups READ groups)
+    Q_CLASSINFO("DefaultProperty", "groups")
+
 public:
     explicit SettingsGroup(QObject *parent = 0);
     virtual ~SettingsGroup();
@@ -45,18 +54,22 @@ public:
     void setGroupName(const QString &groupName);
     QString groupName() const { return groupName_; }
 
-    void setAutoLoad(bool value) { autoLoad_ = value; }
-    bool autoLoad() { return autoLoad_; }
+    QString fullGroupName() const { return fullGroupName_; }
 
-    void setAutoSave(bool value) { autoSave_ = value; }
-    bool autoSave() { return autoSave_; }
+    void setAutoLoad(bool value);
+    bool autoLoad() const { return autoLoad_; }
 
-    void setSaveDefaults(bool value) { saveDefaults_ = value; }
-    bool saveDefaults() { return saveDefaults_; }
+    void setAutoSave(bool value);
+    bool autoSave() const { return autoSave_; }
+
+    void setSaveDefaults(bool value);
+    bool saveDefaults() const { return saveDefaults_; }
 
     static QSettings *settingsInstance();
     static void setGlobalIniFilename(const QString fileName);
     static QString globalIniFilename();
+
+    QDeclarativeListProperty<SettingsGroup> groups();
 
 public slots:
     void save();
@@ -70,22 +83,31 @@ signals:
     void aboutToSave();
     void saved();
 
+    void groupNameChanged();
+    void autoLoadChanged();
+    void autoSaveChanged();
+    void saveDefaultsChanged();
+
 protected:
     // QDeclarativeParserStatus interface
     void classBegin();
     void componentComplete();
 
 private slots:
+    void updateFullGroupName();
     void handlePropertyChanged();
 
 private:
     QString groupName_;
+    QString fullGroupName_;
     bool autoSave_;
     bool autoLoad_;
     bool saveDefaults_;
     QVariantMap defaults_;
 
     QTimer autoSaveTimer_;
+
+    QList<SettingsGroup *> groups_;
 
     void connectToNotifySignals();
     bool shallSkipProperty(const QString &propName);

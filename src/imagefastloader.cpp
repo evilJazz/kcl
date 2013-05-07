@@ -1,4 +1,27 @@
-#include "imagefastloader.h"
+/***************************************************************************
+ *   Copyright (C) 2011-2013 Andre Beckedorf                               *
+ * 			     <evilJazz _AT_ katastrophos _DOT_ net>                    *
+ *                                                                         *
+ *   This library is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU Lesser General Public License version   *
+ *   2.1 as published by the Free Software Foundation.                     *
+ *                                                                         *
+ *   This library is distributed in the hope that it will be useful, but   *
+ *   WITHOUT ANY WARRANTY; without even the implied warranty of            *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU     *
+ *   Lesser General Public License for more details.                       *
+ *                                                                         *
+ *   You should have received a copy of the GNU Lesser General Public      *
+ *   License along with this library; if not, write to the Free Software   *
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA         *
+ *   02110-1301  USA                                                       *
+ *                                                                         *
+ *   Alternatively, this file is available under the Mozilla Public        *
+ *   License Version 1.1.  You may obtain a copy of the License at         *
+ *   http://www.mozilla.org/MPL/                                           *
+ ***************************************************************************/
+
+#include "KCL/imagefastloader.h"
 
 #include <QtAlgorithms>
 #include <QImage>
@@ -10,7 +33,7 @@
 #include <QDir>
 #include <QDateTime>
 
-#include "debug.h"
+#include "KCL/debug.h"
 
 #define CBCI_MARKER "CBCIV3"
 #define CBCI_MARKER_SIZE (sizeof(CBCI_MARKER) - 1)
@@ -67,6 +90,21 @@ DiskImageCache::ImageCacheResult DiskImageCache::saveImage(const QString &key, Q
     QFile file(filename);
     file.open(QIODevice::Truncate | QIODevice::WriteOnly);
     return saveCacheImages(srcImage, imageSizes_, &file) ? NoError : SaveError;
+}
+
+QSize DiskImageCache::getOriginalImageSizeFromImage(const QString &key)
+{
+    QString filename = getFilenameForKey(key);
+    if (filename.isEmpty())
+        return QSize();
+
+    if (!isImageCached(key))
+        return QSize();
+
+    QFile file(filename);
+    file.open(QIODevice::ReadOnly);
+
+    return readCacheOriginalImageSize(&file);
 }
 
 DiskImageCache::ImageCacheResult DiskImageCache::loadImage(const QString &key, QImage *dstImage, const QSize &requestedSize, bool returnExactSize, QSize *originalSize)
@@ -195,6 +233,28 @@ QList<CachedImageSize> DiskImageCache::readCacheImageSizes(QIODevice *srcStream)
     return cacheImageSizes;
 }
 
+QSize DiskImageCache::readCacheOriginalImageSize(QIODevice *srcStream)
+{
+    srcStream->seek(srcStream->size() - CBCI_MARKER_SIZE);
+
+    QByteArray marker = srcStream->read(CBCI_MARKER_SIZE);
+
+    if (marker.indexOf(CBCI_MARKER) == 0)
+    {
+        srcStream->seek(srcStream->size() - CBCI_MARKER_SIZE - 6 * sizeof(qint32));
+
+        qint32 width;
+        qint32 height;
+
+        srcStream->read((char *)&width, sizeof(qint32));
+        srcStream->read((char *)&height, sizeof(qint32));
+
+        return QSize(width, height);
+    }
+    else
+        return QSize();
+}
+
 int DiskImageCache::findBestCacheImageMatch(const QList<CachedImageSize> &cacheImageSizes, const QSize &requestedSize)
 {
     DGUARDMETHODTIMED;
@@ -256,11 +316,12 @@ DiskImageCache::ImageCacheResult DiskImageCache::loadCacheImage(QIODevice *srcSt
     DGUARDMETHODTIMED;
 
     QList<CachedImageSize> cacheImageSizes = readCacheImageSizes(srcStream);
+    if (cacheImageSizes.count() == 0)
+        return LoadError;
+
     int bestMatchIndex = findBestCacheImageMatch(cacheImageSizes, requestedSize);
 
-    DPRINTF("bestMatchIndex: %d, cacheImageSizes.count: %d", bestMatchIndex, cacheImageSizes.count());
-
-    if (originalSize && cacheImageSizes.count() > 0)
+    if (originalSize)
     {
         CachedImageSize &imageSize = cacheImageSizes.last();
         *originalSize = QSize(imageSize.width, imageSize.height);
@@ -283,6 +344,30 @@ DiskImageCache::ImageCacheResult DiskImageCache::loadCacheImage(QIODevice *srcSt
 }
 
 /* ImageFastLoader */
+
+QSize ImageFastLoader::getOriginalImageSizeFromImage(const QString &filename)
+{
+    QFileInfo srcFileInfo(filename);
+
+    if (!srcFileInfo.exists())
+        return QSize();
+
+    QFileInfo cachedFileInfo(getFilenameForKey(filename));
+
+    QSize result;
+
+    if (cachedFileInfo.exists())
+        result = DiskImageCache::getOriginalImageSizeFromImage(filename);
+
+    if (result.isEmpty())
+    {
+        QImageReader reader;
+        reader.setFileName(filename);
+        result = reader.size();
+    }
+
+    return result;
+}
 
 DiskImageCache::ImageCacheResult ImageFastLoader::loadImage(const QString &filename, QImage *dstImage, const QSize &requestedSize, bool returnExactSize, QSize *originalSize)
 {
@@ -319,20 +404,36 @@ DiskImageCache::ImageCacheResult ImageFastLoader::getImage(const QString &filena
 
     QFileInfo cachedFileInfo(getFilenameForKey(filename));
 
+    // Cache file non-existent or too old?
     if (!cachedFileInfo.exists() ||
         srcFileInfo.lastModified() > cachedFileInfo.lastModified() ||
         srcFileInfo.created() > cachedFileInfo.created())
     {
-        QFile srcFile(filename);
-        srcFile.open(QIODevice::ReadOnly);
-        result = saveImage(filename, &srcFile);
-        srcFile.close();
-
+        result = createImage(filename);
         if (result != NoError)
             return result;
     }
 
     result = loadImage(filename, dstImage, requestedSize, returnExactSize, originalSize);
+
+    // Invalid file?
+    if (result == DiskImageCache::LoadError)
+    {
+        result = createImage(filename);
+        if (result == NoError)
+            result = loadImage(filename, dstImage, requestedSize, returnExactSize, originalSize);
+    }
+
+    return result;
+}
+
+DiskImageCache::ImageCacheResult ImageFastLoader::createImage(const QString &filename)
+{
+    DiskImageCache::ImageCacheResult result;
+    QFile srcFile(filename);
+    srcFile.open(QIODevice::ReadOnly);
+    result = saveImage(filename, &srcFile);
+    srcFile.close();
     return result;
 }
 
@@ -341,5 +442,5 @@ QString ImageFastLoader::getFilenameForKey(const QString &key) const
     if (cacheDirectory().isEmpty())
         return key + ".cbci";
     else
-        return cacheDirectory() + "/" + key + ".cbci";
+        return cacheDirectory() + "/" + QFileInfo(key).fileName() + ".cbci";
 }
