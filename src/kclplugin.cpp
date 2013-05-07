@@ -27,6 +27,8 @@
 
 #include "KCL/settingsgroup.h"
 #include "KCL/filesystemutils.h"
+#include "KCL/nativedialogs.h"
+#include "KCL/cursorarea.h"
 #include "KCL/filescanner.h"
 #include "KCL/binaryfiledownloader.h"
 #include "KCL/performancedatamanager.h"
@@ -41,6 +43,8 @@ void KCLPlugin::registerTypes(const char *uri)
     qmlRegisterType<BinaryFileDownloader>(uri, 1, 0, "BinaryFileDownloader");
     qmlRegisterType<SettingsGroup>(uri, 1, 0, "SettingsGroup");
     qmlRegisterType<FileScanner>(uri, 1, 0, "FileScanner");
+    qmlRegisterType<NativeDialogs>(uri, 1, 0, "NativeDialogs");
+    qmlRegisterType<CursorArea>(uri, 1, 0, "CursorArea");
 
     qmlRegisterUncreatableType<FileSystemUtils>(uri, 1, 0, "FileSystemUtils", "Can not instantiate FileSystemUtils, use fsUtils singleton instead.");
 
@@ -60,6 +64,9 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
     Q_UNUSED(uri);
     FileSystemUtils *fsUtils = new FileSystemUtils(engine);
     engine->rootContext()->setContextProperty("fsUtils", fsUtils);
+
+    FileSystemUtils *nativeDialogs = new NativeDialogs(engine);
+    engine->rootContext()->setContextProperty("nativeDialogs", nativeDialogs);
 
     engine->rootContext()->setContextProperty("performanceDataManager", &qPerformanceDataManager);
     engine->rootContext()->setContextProperty("progressManager", &globalProgressManager);

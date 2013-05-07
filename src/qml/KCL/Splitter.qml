@@ -4,8 +4,10 @@ import "private"
 Rectangle {
     id: splitter
 
-    width: isHorizontal ? parent.width : 10
-    height: isHorizontal ? 10 : parent.height
+    property int splitterSize: 2
+
+    width: isHorizontal ? parent.width : splitterSize
+    height: isHorizontal ? splitterSize : parent.height
 
     property alias autoAttachToSiblings: logic.autoAttachToSiblings
     property alias itemBefore: logic.before
@@ -17,16 +19,7 @@ Rectangle {
     Component.onCompleted: logic.initFromTargetParent()
     onParentChanged: logic.initFromTargetParent()
 
-    gradient: Gradient {
-        GradientStop {
-            position: 0.00;
-            color: "#626262";
-        }
-        GradientStop {
-            position: 1.00;
-            color: "#2d2d2d";
-        }
-    }
+    color: "#AAAAAA"
 
     SplitterLogic {
         id: logic

@@ -62,14 +62,15 @@ QtObject {
                 item.heightChanged.disconnect(this.fullUpdate);
 
             item.visibleChanged.disconnect(this.fullUpdate);
+            item.opacityChanged.disconnect(this.fullUpdate);
 
             // Analyze and connect to signals...
 
-            var itemVisible;
+            var itemVisible = item.visible && item.opacity > 0 && (isHorizontal ? item.height : item.width) > 0;
+
             if (!isAutoSizedChild)
             {
                 //newNonAutoSizedChildren.push(item);
-                itemVisible = item.visible && (isHorizontal ? item.height : item.width) > 0;
                 newVisibleNonAutoSizedChildrenSize += itemVisible ? (isHorizontal ? item.width : item.height) : 0;
 
                 if (isHorizontal)
@@ -78,10 +79,11 @@ QtObject {
                     item.heightChanged.connect(this.fullUpdate);
             }
 
-            if (item.visible)
+            if (itemVisible)
                 ++visibleCount;
 
             item.visibleChanged.connect(this.fullUpdate);
+            item.opacityChanged.connect(this.fullUpdate);
         }
 
         //nonAutoSizedChildren = newNonAutoSizedChildren;

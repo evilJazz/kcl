@@ -17,6 +17,8 @@ HEADERS += \
     $$KCL_INC_PATH/KCL/logging.h \
     $$KCL_INC_PATH/KCL/keyeventfilter.h \
     $$KCL_INC_PATH/KCL/imagefastloader.h \
+    $$KCL_INC_PATH/KCL/nativedialogs.h \
+    $$KCL_INC_PATH/KCL/cursorarea.h \
     $$KCL_INC_PATH/KCL/debug.h
 
 SOURCES += \
@@ -31,6 +33,8 @@ SOURCES += \
     $$KCL_SRC_PATH/logging.cpp \
     $$KCL_SRC_PATH/keyeventfilter.cpp \
     $$KCL_SRC_PATH/imagefastloader.cpp \
+    $$KCL_SRC_PATH/nativedialogs.cpp \
+    $$KCL_SRC_PATH/cursorarea.cpp \
     $$KCL_SRC_PATH/debug.cpp
 
 OTHER_FILES += \
@@ -67,7 +71,11 @@ OTHER_FILES += \
     $$KCL_SRC_PATH/qml/KCL/private/SplitterMouseArea.qml \
     $$KCL_SRC_PATH/qml/KCL/private/SplitterLogic.qml \
     $$KCL_SRC_PATH/qml/KCL/private/RowColumnAutoSizeLogic.qml \
-    $$KCL_SRC_PATH/qml/KCL/private/RangeLogic.qml
+    $$KCL_SRC_PATH/qml/KCL/private/RangeLogic.qml \
+    $$KCL_SRC_PATH/qml/KCL/qmldir \
+    $$KCL_SRC_PATH/qml/KCL/MessageBox.js \
+    $$KCL_SRC_PATH/qml/KCL/MessageBox.qml \
+    $$KCL_SRC_PATH/qml/KCL/FileDialog.qml
 
 RESOURCES += \
     $$KCL_SRC_PATH/qml/KCL/kcl-qml.qrc
