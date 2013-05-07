@@ -62,10 +62,13 @@ void KCLPlugin::registerTypes(const char *uri)
 void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 {
     Q_UNUSED(uri);
+
+    engine->addImportPath(":/"); // to allow "import KCL 1.0"
+
     FileSystemUtils *fsUtils = new FileSystemUtils(engine);
     engine->rootContext()->setContextProperty("fsUtils", fsUtils);
 
-    FileSystemUtils *nativeDialogs = new NativeDialogs(engine);
+    NativeDialogs *nativeDialogs = new NativeDialogs(engine);
     engine->rootContext()->setContextProperty("nativeDialogs", nativeDialogs);
 
     engine->rootContext()->setContextProperty("performanceDataManager", &qPerformanceDataManager);
