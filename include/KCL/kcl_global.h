@@ -26,10 +26,14 @@
 
 #include <QtCore/QtGlobal>
 
-#if defined(KCL_LIBRARY)
-#  define KCL_EXPORT Q_DECL_EXPORT
+#ifdef KCL_STATIC
+    #define KCL_EXPORT
 #else
-#  define KCL_EXPORT Q_DECL_IMPORT
+    #if defined(KCL_LIBRARY)
+        #define KCL_EXPORT Q_DECL_EXPORT
+    #else
+        #define KCL_EXPORT Q_DECL_IMPORT
+    #endif
 #endif
 
 #endif // KCL_GLOBAL_H
