@@ -33,6 +33,7 @@
 #endif
 
 #ifdef Q_OS_LINUX
+#include <stdlib.h>
 #include <execinfo.h>
 #endif
 
