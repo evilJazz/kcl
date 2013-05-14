@@ -149,6 +149,39 @@ QByteArray FileSystemUtils::getContents(const QString &fileName)
     return QByteArray();
 }
 
+bool FileSystemUtils::forceDirectory(const QString &dirName)
+{
+    if (QFileInfo(dirName).exists())
+        return true;
+
+    QDir dir;
+    return dir.mkpath(dirName);
+}
+
+bool FileSystemUtils::removeDirectoryRecursively(const QString &dirName)
+{
+    bool result = true;
+    QDir dir(dirName);
+
+    if (dir.exists(dirName))
+    {
+        foreach (QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
+        {
+            if (info.isDir())
+                result = removeDirectoryRecursively(info.absoluteFilePath());
+            else
+                result = QFile::remove(info.absoluteFilePath());
+
+            if (!result)
+                return result;
+        }
+
+        result = dir.rmdir(dirName);
+    }
+
+    return result;
+}
+
 QString FileSystemUtils::homeLocation()
 {
     return QDesktopServices::storageLocation(QDesktopServices::HomeLocation) + "/";

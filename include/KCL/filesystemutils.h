@@ -68,6 +68,9 @@ public:
     Q_INVOKABLE static QByteArray getContents(const QString &fileName);
     Q_INVOKABLE static bool putContents(const QString &fileName, const QByteArray &contents, bool append = false);
 
+    Q_INVOKABLE static bool forceDirectory(const QString &dirName);
+    Q_INVOKABLE static bool removeDirectoryRecursively(const QString &dirName);
+
     static QString homeLocation();
     static QString documentsLocation();
     static QString desktopLocation();
