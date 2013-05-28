@@ -31,6 +31,7 @@
 class KCL_EXPORT HistorySnapshot
 {
 public:
+    virtual ~HistorySnapshot() {}
     virtual bool operator==(const HistorySnapshot &other) const = 0;
     virtual void restore() = 0;
 };
