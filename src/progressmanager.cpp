@@ -32,8 +32,8 @@ static ProgressManager *progressMan = NULL;
 
 ProgressContext::ProgressContext(ProgressContext *parent, const QString &activityName, int countSubSteps) :
     QObject(parent),
-    parent_(parent),
     activityName_(activityName),
+    parent_(parent),
     expectedSubSteps_(countSubSteps),
     progressText_(""),
     progressValue_(0),

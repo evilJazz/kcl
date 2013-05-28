@@ -38,22 +38,23 @@ class KCL_EXPORT BinaryFileDownloader : public QObject
     Q_PROPERTY(QByteArray downloadedData READ downloadedData NOTIFY downloaded)
     Q_PROPERTY(int errorCode READ errorCode NOTIFY error)
     Q_PROPERTY(QString errorText READ errorText NOTIFY error)
-    Q_PROPERTY(bool autoDelete READ autoDelete WRITE setAutoDelete CONSTANT)
+    Q_PROPERTY(bool autoDelete READ autoDelete WRITE setAutoDelete NOTIFY autoDeleteChanged)
 public:
     explicit BinaryFileDownloader();
     virtual ~BinaryFileDownloader();
     Q_INVOKABLE void download(QString url);
     Q_INVOKABLE QByteArray downloadedData() const { return downloadedData_; }
 
-    bool autoDelete() const { return autoDelete_; }
-    void setAutoDelete(bool value) { autoDelete_ = value; }
-
     int errorCode() const { return errorCode_; }
     QString errorText() const { return errorText_; }
+
+    bool autoDelete() const;
+    void setAutoDelete(bool value);
 
 signals:
     void downloaded(QByteArray data);
     void error(int errorCode, const QString &errorText);
+    void autoDeleteChanged();
 
 private slots:
     void fileDownloaded(QNetworkReply* reply);

@@ -122,12 +122,12 @@ void FileScannerRunnable::run()
 
 FileScanner::FileScanner(QObject *parent) :
     QObject(parent),
-    runnable_(NULL),
     returnExtendedResults_(false),
     returnHashSums_(false),
     maxFileSizeForHashSums_(30 * 1024 * 1024),
     useWorkerThread_(true),
-    stop_(false)
+    stop_(false),
+    runnable_(NULL)
 {
 }
 

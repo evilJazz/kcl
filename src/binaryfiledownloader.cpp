@@ -62,3 +62,17 @@ void BinaryFileDownloader::fileDownloaded(QNetworkReply* reply)
     if (autoDelete_)
         deleteLater();
 }
+
+bool BinaryFileDownloader::autoDelete() const
+{
+    return autoDelete_;
+}
+
+void BinaryFileDownloader::setAutoDelete(bool value)
+{
+    if(autoDelete_ != value)
+    {
+        autoDelete_ = value;
+        emit autoDeleteChanged();
+    }
+}
