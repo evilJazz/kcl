@@ -7,6 +7,12 @@ MouseArea {
 
     property variant splitterLogic: logic
 
+    Component.onCompleted:
+    {
+        if (mouseArea.hasOwnProperty("preventStealing"))
+            mouseArea.preventStealing = true;
+    }
+
     CursorArea {
         anchors.fill: parent
         cursor: splitterLogic.isHorizontal ? CursorArea.SplitVCursor : CursorArea.SplitHCursor

@@ -248,6 +248,13 @@ PerformanceData *PerformanceDataManager::data(const QString &name)
         return i.value();
 }
 
+void PerformanceDataManager::remove(PerformanceData *data)
+{
+    int index = perfDataList_.indexOf(data);
+    if (index > -1)
+        removeAt(index);
+}
+
 void PerformanceDataManager::removeAt(int index)
 {
     PerformanceData *perfData = perfDataList_.takeAt(index);

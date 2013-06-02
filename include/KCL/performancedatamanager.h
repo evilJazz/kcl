@@ -78,6 +78,7 @@ public:
     Q_INVOKABLE PerformanceDataAspect *aspect(const QString &identifier);
     Q_INVOKABLE void deleteAspect(const QString &identifier);
 
+    Q_INVOKABLE int count() const { return aspects_.count(); }
     Q_INVOKABLE void finish();
 
     Q_INVOKABLE QVariantMap asVariant();
@@ -106,6 +107,7 @@ public:
 
     Q_INVOKABLE PerformanceData *data(const QString &name);
     Q_INVOKABLE PerformanceData *at(int index) { return perfDataList_[index]; }
+    Q_INVOKABLE void remove(PerformanceData *data);
     Q_INVOKABLE void removeAt(int index);
     Q_INVOKABLE int count() const { return perfDataList_.count(); }
     Q_INVOKABLE void clear();
