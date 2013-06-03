@@ -7,6 +7,7 @@ Flickable {
     default property alias data: column.data
 
     property int decoratorWidth: 0
+    property alias column: column
 
     Column {
         id: column
