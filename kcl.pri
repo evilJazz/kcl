@@ -19,7 +19,8 @@ HEADERS += \
     $$KCL_INC_PATH/KCL/imagefastloader.h \
     $$KCL_INC_PATH/KCL/nativedialogs.h \
     $$KCL_INC_PATH/KCL/cursorarea.h \
-    $$KCL_INC_PATH/KCL/debug.h
+    $$KCL_INC_PATH/KCL/debug.h \
+    $$KCL_INC_PATH/KCL/declarativedebug.h
 
 SOURCES += \
     $$KCL_SRC_PATH/kclplugin.cpp \
@@ -35,7 +36,8 @@ SOURCES += \
     $$KCL_SRC_PATH/imagefastloader.cpp \
     $$KCL_SRC_PATH/nativedialogs.cpp \
     $$KCL_SRC_PATH/cursorarea.cpp \
-    $$KCL_SRC_PATH/debug.cpp
+    $$KCL_SRC_PATH/debug.cpp \
+    $$KCL_SRC_PATH/declarativedebug.cpp
 
 OTHER_FILES += \
     $$KCL_SRC_PATH/qml/Tests/SplitterTest/SplitterTest.qml \

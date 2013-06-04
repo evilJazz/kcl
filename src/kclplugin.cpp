@@ -36,6 +36,7 @@
 #include "KCL/keyeventfilter.h"
 #include "KCL/settingsgroup.h"
 #include "KCL/logging.h"
+#include "KCL/declarativedebug.h"
 
 void KCLPlugin::registerTypes(const char *uri)
 {
@@ -57,6 +58,8 @@ void KCLPlugin::registerTypes(const char *uri)
 
     qmlRegisterType<QDeclarativeKeyEvent>();
     qmlRegisterType<KeyEventFilter>();
+
+    qmlRegisterType<DeclarativeDebug>();
 }
 
 void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
@@ -70,6 +73,9 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 
     NativeDialogs *nativeDialogs = new NativeDialogs(engine);
     engine->rootContext()->setContextProperty("nativeDialogs", nativeDialogs);
+
+    DeclarativeDebug *declarativeDebug = new DeclarativeDebug(engine);
+    engine->rootContext()->setContextProperty("debug", declarativeDebug);
 
     engine->rootContext()->setContextProperty("performanceDataManager", &qPerformanceDataManager);
     engine->rootContext()->setContextProperty("progressManager", &globalProgressManager);
