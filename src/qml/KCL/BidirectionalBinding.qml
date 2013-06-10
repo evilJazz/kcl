@@ -1,55 +1,69 @@
 import QtQuick 1.0
 
-QtObject {
-    id: bidiBinding
+QtObjectWithChildren {
+    id: entangler
 
-    property QtObject leftTarget: null
-    property QtObject rightTarget: null
+    property alias leftTarget: left.target
+    property alias rightTarget: right.target
 
-    property string leftPropertyName
-    property string rightPropertyName
+    property alias leftPropertyName: left.propertyName
+    property alias rightPropertyName: right.propertyName
 
-    property bool leftValid: leftTarget !== null ? leftTarget.hasOwnProperty(leftPropertyName) : false
-    property bool rightValid: rightTarget !== null ? rightTarget.hasOwnProperty(rightPropertyName) : false
+    ValueChangeWatcher {
+        id: left
+        onValueChanged: entangler.copyLeftToRight()
+    }
+
+    ValueChangeWatcher {
+        id: right
+        onValueChanged: entangler.copyRightToLeft()
+    }
+
+    property alias leftValid: left.valid
+    property alias rightValid: right.valid
+
     property bool valid: leftValid && rightValid
 
     property bool transferring: true
-    property variant leftValue: valid ? leftTarget[leftPropertyName] : undefined
-    property variant rightValue: valid ? rightTarget[rightPropertyName] : undefined
 
     Component.onCompleted: transferring = false
 
-    onLeftValueChanged: copyLeftToRight()
-    onRightValueChanged: copyRightToLeft()
-
     function copyLeftToRight()
     {
-        if (bidiBinding.transferring) return;
-        if (bidiBinding.valid)
+        if (entangler.transferring) return;
+        if (entangler.valid)
         {
             var value = convertLeftToRight(leftTarget[leftPropertyName]);
             if (rightTarget[rightPropertyName] !== value)
             {
-                bidiBinding.transferring = true;
-                //console.log(rightTarget + "." + rightPropertyName + " = " + leftTarget + "." + leftPropertyName + " : " + JSON.stringify(value));
+                entangler.transferring = true;
+                //console.log("COPIED! " + rightTarget + "." + rightPropertyName + " = " + leftTarget + "." + leftPropertyName + " : " + JSON.stringify(value));
                 rightTarget[rightPropertyName] = value;
-                bidiBinding.transferring = false;
+                entangler.transferring = false;
+            }
+            else
+            {
+                //console.log("VALUES EQUAL! " + rightTarget + "." + rightPropertyName + " == " + leftTarget + "." + leftPropertyName + " : " + JSON.stringify(value));
             }
         }
     }
 
     function copyRightToLeft()
     {
-        if (bidiBinding.transferring) return;
-        if (bidiBinding.valid)
+        if (entangler.transferring) return;
+        if (entangler.valid)
         {
             var value = convertRightToLeft(rightTarget[rightPropertyName]);
             if (leftTarget[leftPropertyName] !== value)
             {
-                bidiBinding.transferring = true;
-                //console.log(leftTarget + "." + leftPropertyName + " = " + rightTarget + "." + rightPropertyName + " : " + JSON.stringify(value));
+                entangler.transferring = true;
+                //console.log("COPIED! " + leftTarget + "." + leftPropertyName + " = " + rightTarget + "." + rightPropertyName + " : " + JSON.stringify(value));
                 leftTarget[leftPropertyName] = value;
-                bidiBinding.transferring = false;
+                entangler.transferring = false;
+            }
+            else
+            {
+                //console.log("VALUES EQUAL! " + leftTarget + "." + leftPropertyName + " == " + rightTarget + "." + rightPropertyName + " : " + JSON.stringify(value));
             }
         }
     }

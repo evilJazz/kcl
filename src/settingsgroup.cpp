@@ -143,6 +143,9 @@ void SettingsGroup::resetToDefaultValues()
         {
             value = defaults_.value(name);
             prop.write(this, value);
+        
+            if (prop.hasNotifySignal())
+                prop.notifySignal().invoke(this);
         }
     }
 }
@@ -274,6 +277,10 @@ void SettingsGroup::load()
             value = defaults_.value(name);
 
         bool result = prop.write(this, value);
+        
+        if (prop.hasNotifySignal())
+            prop.notifySignal().invoke(this);
+
         if (!result)
             qWarning("Could not set property %s = %s.", (const char *)name.toUtf8(), (const char *)value.toString().toUtf8());
     }

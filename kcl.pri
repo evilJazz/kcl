@@ -1,3 +1,5 @@
+QT += script
+
 KCL_SRC_PATH = $${PWD}/src
 KCL_INC_PATH = $${PWD}/include
 
