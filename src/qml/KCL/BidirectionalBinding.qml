@@ -9,37 +9,23 @@ QtObjectWithChildren {
     property alias leftPropertyName: left.propertyName
     property alias rightPropertyName: right.propertyName
 
-    ValueChangeWatcher {
-        id: left
-        onValueChanged: entangler.copyLeftToRight()
-    }
-
-    ValueChangeWatcher {
-        id: right
-        onValueChanged: entangler.copyRightToLeft()
-    }
-
     property alias leftValid: left.valid
     property alias rightValid: right.valid
 
     property bool valid: leftValid && rightValid
 
-    property bool transferring: true
-
-    Component.onCompleted: transferring = false
-
     function copyLeftToRight()
     {
-        if (entangler.transferring) return;
+        if (entangler._settingValue) return;
         if (entangler.valid)
         {
             var value = convertLeftToRight(leftTarget[leftPropertyName]);
             if (rightTarget[rightPropertyName] !== value)
             {
-                entangler.transferring = true;
+                entangler._settingValue = true;
                 //console.log("COPIED! " + rightTarget + "." + rightPropertyName + " = " + leftTarget + "." + leftPropertyName + " : " + JSON.stringify(value));
                 rightTarget[rightPropertyName] = value;
-                entangler.transferring = false;
+                entangler._settingValue = false;
             }
             else
             {
@@ -50,16 +36,16 @@ QtObjectWithChildren {
 
     function copyRightToLeft()
     {
-        if (entangler.transferring) return;
+        if (entangler._settingValue) return;
         if (entangler.valid)
         {
             var value = convertRightToLeft(rightTarget[rightPropertyName]);
             if (leftTarget[leftPropertyName] !== value)
             {
-                entangler.transferring = true;
+                entangler._settingValue = true;
                 //console.log("COPIED! " + leftTarget + "." + leftPropertyName + " = " + rightTarget + "." + rightPropertyName + " : " + JSON.stringify(value));
                 leftTarget[leftPropertyName] = value;
-                entangler.transferring = false;
+                entangler._settingValue = false;
             }
             else
             {
@@ -67,6 +53,8 @@ QtObjectWithChildren {
             }
         }
     }
+
+    /* Override these methods if you want to customize conversion, e.g. change units or do other calculations. */
 
     function convertRightToLeft(right)
     {
@@ -77,4 +65,19 @@ QtObjectWithChildren {
     {
         return left;
     }
+
+    /* Private section */
+
+    ValueChangeWatcher {
+        id: left
+        onValueChanged: entangler.copyLeftToRight()
+    }
+
+    ValueChangeWatcher {
+        id: right
+        onValueChanged: entangler.copyRightToLeft()
+    }
+
+    property bool _settingValue: true
+    Component.onCompleted: _settingValue = false
 }

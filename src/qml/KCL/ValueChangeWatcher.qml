@@ -6,11 +6,11 @@ QtObject {
     property QtObject target
     property string propertyName
 
-    property bool valid: evaluateValid(target, propertyName)
+    property bool valid: _evaluateValid(target, propertyName)
 
     signal valueChanged(variant oldValue, variant newValue);
 
-    /* Private stuff */
+    /* Private section */
 
     onTargetChanged: _updateBinding()
     onPropertyNameChanged: _updateBinding()
@@ -23,14 +23,14 @@ QtObject {
 
     function _updateBinding()
     {
-        if (evaluateValid(_boundTarget, _boundPropertyName))
+        if (_evaluateValid(_boundTarget, _boundPropertyName))
             _boundTarget[_boundPropertyName + "Changed"].disconnect(watcher._boundValueChanged);
 
         _boundTarget = target;
         _boundPropertyName = propertyName;
         _oldValue = null;
 
-        if (evaluateValid(_boundTarget, _boundPropertyName))
+        if (_evaluateValid(_boundTarget, _boundPropertyName))
         {
             var bindSignal = _boundPropertyName + "Changed";
 
@@ -44,7 +44,7 @@ QtObject {
         }
     }
 
-    function evaluateValid(target, propertyName)
+    function _evaluateValid(target, propertyName)
     {
         var targetValid = target !== null && typeof(target) !== "undefined";
         var propertyValid = targetValid && target.hasOwnProperty(propertyName);
@@ -59,27 +59,25 @@ QtObject {
     {
         if (_settingValue) return;
 
-        try
+        var newValue = _boundTarget[_boundPropertyName];
+        if (newValue !== _oldValue)
         {
-            _settingValue = true;
-
-            var newValue = _boundTarget[_boundPropertyName];
-            if (newValue !== _oldValue)
+            try
             {
+                _settingValue = true;
                 //console.log("VALUE CHANGED! target: " + target + " property: " + propertyName + " newValue: " + newValue + " oldValue: " + _oldValue);
-
                 var oldValue = _oldValue;
                 _oldValue = newValue; // set oldValue before descending into signal slots...
                 valueChanged(oldValue, newValue);
             }
-            else
+            finally
             {
-                //console.log("VALUE UNCHANGED! target: " + target + " property: " + propertyName + " newValue: " + newValue + " oldValue: " + _oldValue);
+                _settingValue = false;
             }
         }
-        finally
+        else
         {
-            _settingValue = false;
+            //console.log("VALUE UNCHANGED! target: " + target + " property: " + propertyName + " newValue: " + newValue + " oldValue: " + _oldValue);
         }
     }
 }
