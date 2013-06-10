@@ -77,7 +77,9 @@ OTHER_FILES += \
     $$KCL_SRC_PATH/qml/KCL/qmldir \
     $$KCL_SRC_PATH/qml/KCL/MessageBox.js \
     $$KCL_SRC_PATH/qml/KCL/MessageBox.qml \
-    $$KCL_SRC_PATH/qml/KCL/FileDialog.qml
+    $$KCL_SRC_PATH/qml/KCL/FileDialog.qml \
+    libs/kcl/src/qml/Tests/ConstrainedText/ConstrainedTextTest.qml \
+    libs/kcl/src/qml/KCL/ValueChangeWatcher.qml
 
 RESOURCES += \
     $$KCL_SRC_PATH/qml/KCL/kcl-qml.qrc

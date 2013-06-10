@@ -35,5 +35,6 @@
         <file>FileDialog.qml</file>
         <file>MessageBox.js</file>
         <file>MessageBox.qml</file>
+        <file>ValueChangeWatcher.qml</file>
     </qresource>
 </RCC>
