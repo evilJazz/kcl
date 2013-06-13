@@ -22,7 +22,8 @@ HEADERS += \
     $$KCL_INC_PATH/KCL/nativedialogs.h \
     $$KCL_INC_PATH/KCL/cursorarea.h \
     $$KCL_INC_PATH/KCL/debug.h \
-    $$KCL_INC_PATH/KCL/declarativedebug.h
+    $$KCL_INC_PATH/KCL/declarativedebug.h \
+    $$KCL_INC_PATH/KCL/qobjectlistmodel.h
 
 SOURCES += \
     $$KCL_SRC_PATH/kclplugin.cpp \
