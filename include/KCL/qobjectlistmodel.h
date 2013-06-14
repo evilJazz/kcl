@@ -23,13 +23,17 @@ public:
         setRoleNames(names);
     }
 
-    virtual ~QObjectListModel() {}
+    virtual ~QObjectListModel()
+    {
+        clear();
+    }
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const { return items_.count(); }
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const
     {
-        if (index.row() < 0 || index.row() >= items_.size() || role != ItemRole)
+        const int row = index.row();
+        if (row < 0 || row >= items_.size() || role != ItemRole)
             return QVariant();
 
         return qVariantFromValue(static_cast<QObject *>(items_.at(index.row())));
@@ -37,7 +41,7 @@ public:
 
     Q_INVOKABLE QObject *get(int index) const { return index < 0 || index >= items_.count() ? NULL : items_.at(index); }
 
-    QModelIndex indexFromItem(QObject * item) const
+    QModelIndex indexOfItem(QObject * item) const
     {
         int itemIndex = items_.indexOf(item);
         if (itemIndex > -1)
@@ -46,14 +50,23 @@ public:
             return QModelIndex();
     }
 
-    QList<QObject *> *items() { return &items_; }
+    const QList<QObject *> &items() const { return items_; }
     void forceFullUpdate() { reset(); emit changed(); }
+
+    void setItems(const QList<QObject *> &items)
+    {
+        beginInsertRows(QModelIndex(), 0, items.size() - 1);
+        items_ = items;
+        endInsertRows();
+        emit changed();
+    }
 
     void clear()
     {
-        qDeleteAll(items_);
+        beginRemoveRows(QModelIndex(), 0, items_.size() - 1);
         items_.clear();
-        forceFullUpdate();
+        endRemoveRows();
+        emit changed();
     }
 
 signals:
@@ -62,5 +75,18 @@ signals:
 private:
     QList<QObject *> items_;
 };
+
+// Providing these conversion methods as kludges because C++ templates of QObject
+// derived classes that consist Q_OBJECT macro are not possible.
+
+template <typename T> const QList<QObject *> &castToObjectList(const QList<T> &list)
+{
+    return reinterpret_cast<const QList<QObject *> &>(list);
+}
+
+template <typename T> QList<QObject *> &castToObjectList(QList<T> &list)
+{
+    return reinterpret_cast<QList<QObject *> &>(list);
+}
 
 #endif // QOBJECTLISTMODEL_H
