@@ -36,5 +36,6 @@
         <file>MessageBox.js</file>
         <file>MessageBox.qml</file>
         <file>ValueChangeWatcher.qml</file>
+        <file>GroupedItemGrid.qml</file>
     </qresource>
 </RCC>

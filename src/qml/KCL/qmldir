@@ -30,3 +30,5 @@ MessageOverlay 1.0 MessageOverlay.qml
 
 MessageBox 1.0 MessageBox.qml
 FileDialog 1.0 FileDialog.qml
+
+GroupedItemGrid 1.0 GroupedItemGrid.qml

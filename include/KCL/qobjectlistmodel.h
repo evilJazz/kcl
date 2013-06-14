@@ -72,7 +72,7 @@ public:
 signals:
     void changed();
 
-private:
+protected:
     QList<QObject *> items_;
 };
 
