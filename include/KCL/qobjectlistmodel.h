@@ -77,7 +77,7 @@ protected:
 };
 
 // Providing these conversion methods as kludges because C++ templates of QObject
-// derived classes that consist Q_OBJECT macro are not possible.
+// derived classes that contain Q_OBJECT macro are not possible.
 
 template <typename T> const QList<QObject *> &castToObjectList(const QList<T> &list)
 {
