@@ -80,10 +80,10 @@ QString FileSystemUtils::extractCompleteSuffix(const QString &filename)
     return QFileInfo(filename).completeSuffix();
 }
 
-QString FileSystemUtils::canonicalizePath(const QString &path, bool asURL)
+QVariant FileSystemUtils::canonicalizePath(const QString &path, bool asURL)
 {
     QString newName = QFileInfo(QUrl(path).toLocalFile()).canonicalFilePath();
-    return asURL ? QUrl::fromLocalFile(newName).toString() : newName;
+    return asURL ? QUrl::fromLocalFile(newName) : newName;
 }
 
 QString FileSystemUtils::localPath(const QUrl &url)
