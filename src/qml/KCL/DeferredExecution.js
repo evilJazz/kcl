@@ -1,15 +1,25 @@
 var scheduledTimers = {};
 
-var debug = false;
+var debug = true;
 
-if (debug)
-    var timerQml = "import QtQuick 1.0; Timer { Component.onDestruction: console.log('NUCULAR!!!'); }";
-else
-    var timerQml = "import QtQuick 1.0; Timer {}";
+// QtTimers will trigger everytime a Qt event loop is running.
+// QML Timers are strictly serialized and scheduled by the declarative engine.
+// Another Timer can't trigger as long as the execution of another Timer has not finished.
+// You will run into trouble when there is a separate event loop (modal window, drag & drop etc.) started from within a Timer. Use QtTimers in this case.
+var useQtTimers = true;
 
 function isScheduled(name)
 {
     return scheduledTimers.hasOwnProperty(name);
+}
+
+function createNewTimer(parent)
+{
+    var timerQml = "import QtQuick 1.0; " + useQtTimers ? "import KCL 1.0; QtTimer {" : "Timer {";
+
+    timerQml += !useQtTimers && debug ? "Component.onDestruction: console.log('NUCULAR!!!'); }" : "}";
+
+    return Qt.createQmlObject(timerQml, parent, "dynamicTimer");
 }
 
 function stop(name)
@@ -26,25 +36,48 @@ function stop(name)
     }
 }
 
+function invoke(func, name)
+{
+    executeIn(1, func, name);
+}
+
 function executeIn(ms, func, name)
 {
     if (debug) console.log("Starting timer " + name + " in " + ms + " ms.");
 
-    var timer = Qt.createQmlObject(timerQml, app, "dynamicTimer");
-    timer.repeat = false;
-    timer.interval = ms;
-    timer.triggered.connect(function()
+    var timer = createNewTimer(app);
+
+    var triggerFunc = function()
     {
         if (debug) console.log("Firing timer " + name);
-        func();
 
-        if (typeof(name) != "undefined")
-            stop(name);
-        else
-            timer.destroy();
+        try
+        {
+            func();
+        }
+        finally
+        {
+            if (typeof(name) != "undefined")
+                stop(name);
+            else
+                timer.destroy();
 
-        if (debug) console.log("Done firing.");
-    });
+            if (debug) console.log("Done firing.");
+        }
+    };
+
+    timer.interval = ms;
+
+    if (useQtTimers)
+    {
+        timer.singleShot = true;
+        timer.timeout.connect(triggerFunc);
+    }
+    else
+    {
+        timer.repeat = false;
+        timer.triggered.connect(triggerFunc);
+    }
 
     if (typeof(name) != "undefined")
     {

@@ -47,6 +47,8 @@ void KCLPlugin::registerTypes(const char *uri)
     qmlRegisterType<NativeDialogs>(uri, 1, 0, "NativeDialogs");
     qmlRegisterType<CursorArea>(uri, 1, 0, "CursorArea");
 
+    qmlRegisterType<QTimer>(uri, 1, 0, "QtTimer");
+
     qmlRegisterUncreatableType<FileSystemUtils>(uri, 1, 0, "FileSystemUtils", "Can not instantiate FileSystemUtils, use fsUtils singleton instead.");
 
     qmlRegisterUncreatableType<PerformanceDataManager>(uri, 1, 0, "PerformanceDataManager", "Can not instantiate PerformanceDataManager, use performanceDataManager singleton instead.");
