@@ -21,6 +21,7 @@ AutoColumn 1.0 AutoColumn.qml
 Splitter 1.0 Splitter.qml
 
 RangeLogic 1.0 RangeLogic.qml
+MouseEater 1.0 MouseEater.qml
 
 ValueChangeWatcher 1.0 ValueChangeWatcher.qml
 BidirectionalBinding 1.0 BidirectionalBinding.qml

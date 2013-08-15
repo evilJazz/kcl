@@ -82,7 +82,8 @@ OTHER_FILES += \
     $$KCL_SRC_PATH/qml/KCL/MessageBox.qml \
     $$KCL_SRC_PATH/qml/KCL/FileDialog.qml \
     libs/kcl/src/qml/Tests/ConstrainedText/ConstrainedTextTest.qml \
-    libs/kcl/src/qml/KCL/ValueChangeWatcher.qml
+    libs/kcl/src/qml/KCL/ValueChangeWatcher.qml \
+    ../3rdparty/kcl/src/qml/KCL/MouseEater.qml
 
 RESOURCES += \
     $$KCL_SRC_PATH/qml/KCL/kcl-qml.qrc

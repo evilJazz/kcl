@@ -97,12 +97,8 @@ Fader {
             close();
     }
 
-    MouseArea {
+    MouseEater {
         anchors.fill: parent
-        hoverEnabled: true
-        onPressed:
-        {
-        }
     }
 
     Item {
