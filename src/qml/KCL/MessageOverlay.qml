@@ -99,6 +99,7 @@ Fader {
 
     MouseArea {
         anchors.fill: parent
+        hoverEnabled: true
         onPressed:
         {
         }
