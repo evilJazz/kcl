@@ -20,6 +20,7 @@ Fader {
     property bool done: false
 
     property alias frame: frame
+    property alias item: loader.item
 
     onOpenedChanged: updateState()
     onSourceChanged: updateState()
