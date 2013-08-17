@@ -24,6 +24,8 @@
 #include "KCL/progressmanager.h"
 #include <QCoreApplication>
 
+#include <QEventLoop>
+
 #include "KCL/debug.h"
 
 static ProgressManager *progressMan = NULL;
@@ -163,7 +165,8 @@ ProgressContext *ProgressContext::endActivity(ProgressContext *activity)
 {
     DASSERT(subSteps_.contains(activity), "Can not end an activity that is not in this group. Unpaired beginActivity <-> endActivity !!!");
 
-    activity->setProgressValue(activity->progressTotal());
+    if (!isGroup())
+        activity->setProgressValue(activity->progressTotal());
 
     //if (subSteps_.count() == expectedSubSteps_)
     //    return parent_;
