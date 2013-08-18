@@ -61,10 +61,13 @@ private:
 class KCL_EXPORT KeyEventFilter : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(int inputInterval READ inputInterval CONSTANT)
 public:
     explicit KeyEventFilter(QObject *parent = 0);
     virtual ~KeyEventFilter();
     
+    int inputInterval() const;
+
 signals:
     void keyPressed(QDeclarativeKeyEvent *event);
     void keyReleased(QDeclarativeKeyEvent *event);

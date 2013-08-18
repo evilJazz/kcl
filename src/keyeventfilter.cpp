@@ -23,6 +23,8 @@
 
 #include "KCL/keyeventfilter.h"
 
+#include <QApplication>
+
 KeyEventFilter::KeyEventFilter(QObject *parent) :
     QObject(parent)
 {
@@ -30,6 +32,11 @@ KeyEventFilter::KeyEventFilter(QObject *parent) :
 
 KeyEventFilter::~KeyEventFilter()
 {
+}
+
+int KeyEventFilter::inputInterval() const
+{
+    return qApp->keyboardInputInterval();
 }
 
 bool KeyEventFilter::eventFilter(QObject *watched, QEvent *event)
