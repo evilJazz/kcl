@@ -18,9 +18,10 @@ public:
 
     explicit QObjectListModel(const QString roleName = QString("item"), QObject *parent = NULL) : QAbstractListModel(parent)
     {
-        QHash<int, QByteArray> names;
-        names[ItemRole] = roleName.toLatin1();
-        setRoleNames(names);
+        roleNames_[ItemRole] = roleName.toLatin1();
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+        setRoleNames(roleNames_);
+#endif
     }
 
     virtual ~QObjectListModel()
@@ -51,7 +52,12 @@ public:
     }
 
     const QList<QObject *> &items() const { return items_; }
-    void forceFullUpdate() { reset(); emit changed(); }
+    void forceFullUpdate()
+    {
+        beginResetModel();
+        endResetModel();
+        emit changed();
+    }
 
     void setItems(const QList<QObject *> &items)
     {
@@ -69,10 +75,15 @@ public:
         emit changed();
     }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    virtual QHash<int,QByteArray> roleNames() const { return roleNames_; }
+#endif
+
 signals:
     void changed();
 
 protected:
+    QHash<int, QByteArray> roleNames_;
     QList<QObject *> items_;
 };
 

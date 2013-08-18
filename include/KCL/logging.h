@@ -50,7 +50,11 @@ public slots:
 protected:
     explicit Logging();
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    static void customMessageHandler(QtMsgType type, const QMessageLogContext &, const QString &);
+#else
     static void customMessageHandler(QtMsgType type, const char *msg);
+#endif
 };
 
 #endif // LOGGING_H

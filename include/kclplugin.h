@@ -31,6 +31,9 @@
 class KCL_EXPORT KCLPlugin : public QDeclarativeExtensionPlugin
 {
     Q_OBJECT
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    Q_PLUGIN_METADATA(IID "net.katastrophos.kcl")
+#endif
 public:
     void registerTypes(const char *uri);
     void initializeEngine(QDeclarativeEngine *engine, const char *uri);

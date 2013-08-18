@@ -41,6 +41,7 @@ class KCL_EXPORT FileSystemUtils : public QObject
     Q_PROPERTY(QString tempLocation READ tempLocation CONSTANT)
     Q_PROPERTY(QString dataLocation READ dataLocation CONSTANT)
     Q_PROPERTY(QString cacheLocation READ cacheLocation CONSTANT)
+    Q_PROPERTY(QString applicationsLocation READ applicationsLocation CONSTANT)
 public:
     explicit FileSystemUtils(QObject *parent = 0);
 
@@ -79,6 +80,7 @@ public:
     static QString tempLocation();
     static QString dataLocation();
     static QString cacheLocation();
+    static QString applicationsLocation();
 
 signals:
 

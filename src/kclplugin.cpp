@@ -83,4 +83,6 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
     engine->rootContext()->setContextProperty("progressManager", &globalProgressManager);
 }
 
-Q_EXPORT_PLUGIN2(styleplugin, KCLPlugin)
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+Q_EXPORT_PLUGIN2(kclplugin, KCLPlugin)
+#endif

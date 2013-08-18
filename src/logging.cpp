@@ -41,12 +41,20 @@ Logging &Logging::singleton()
 
 void Logging::registerHandler()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    qInstallMessageHandler(customMessageHandler);
+#else
     qInstallMsgHandler(customMessageHandler);
+#endif
 }
 
 void Logging::unregisterHandler()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    qInstallMessageHandler(0);
+#else
     qInstallMsgHandler(0);
+#endif
 }
 
 void Logging::enableLogWindow()
@@ -106,11 +114,20 @@ Logging::Logging()
 {
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+void Logging::customMessageHandler(QtMsgType type, const QMessageLogContext &, const QString &msgText)
+#else
 void Logging::customMessageHandler(QtMsgType type, const char *msg)
+#endif
 {
     if (!loggingEnabled_ && type != QtFatalMsg) return;
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    const char *msg = msgText.toUtf8().constData();
+    QString message = msgText;
+#else
     QString message = msg;
+#endif
 
     if (message.isEmpty())
         return;

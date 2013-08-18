@@ -27,8 +27,13 @@
 #include <QUrl>
 #include <QFileInfo>
 #include <QFileDialog>
-#include <QDesktopServices>
 #include <QCryptographicHash>
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#include <QStandardPaths>
+#else
+#include <QDesktopServices>
+#endif
 
 FileSystemUtils::FileSystemUtils(QObject *parent) :
     QObject(parent)
@@ -184,40 +189,81 @@ bool FileSystemUtils::removeDirectoryRecursively(const QString &dirName)
 
 QString FileSystemUtils::homeLocation()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    return QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + "/";
+#else
     return QDesktopServices::storageLocation(QDesktopServices::HomeLocation) + "/";
+#endif
 }
 
 QString FileSystemUtils::documentsLocation()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/";
+#else
     return QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/";
+#endif
 }
 
 QString FileSystemUtils::desktopLocation()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    return QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/";
+#else
     return QDesktopServices::storageLocation(QDesktopServices::DesktopLocation) + "/";
+#endif
 }
 
 QString FileSystemUtils::musicLocation()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    return QStandardPaths::writableLocation(QStandardPaths::MusicLocation) + "/";
+#else
     return QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "/";
+#endif
 }
 
 QString FileSystemUtils::moviesLocation()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    return QStandardPaths::writableLocation(QStandardPaths::MoviesLocation) + "/";
+#else
     return QDesktopServices::storageLocation(QDesktopServices::MoviesLocation) + "/";
+#endif
 }
 
 QString FileSystemUtils::tempLocation()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    return QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/";
+#else
     return QDesktopServices::storageLocation(QDesktopServices::TempLocation) + "/";
+#endif
 }
 
 QString FileSystemUtils::dataLocation()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    return QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/";
+#else
     return QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/";
+#endif
 }
 
 QString FileSystemUtils::cacheLocation()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    return QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/";
+#else
     return QDesktopServices::storageLocation(QDesktopServices::CacheLocation) + "/";
+#endif
+}
+
+QString FileSystemUtils::applicationsLocation()
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    return QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation) + "/";
+#else
+    return QDesktopServices::storageLocation(QDesktopServices::ApplicationsLocation) + "/";
+#endif
 }
