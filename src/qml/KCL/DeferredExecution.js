@@ -1,6 +1,6 @@
 var scheduledTimers = {};
 
-var debug = true;
+var debug = false;
 
 // QtTimers will trigger everytime a Qt event loop is running.
 // QML Timers are strictly serialized and scheduled by the declarative engine.
