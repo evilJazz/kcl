@@ -23,6 +23,11 @@
 
 #include "KCL/cursorarea.h"
 
+#ifdef KCL_QTQUICK2
+#include <QCursor>
+#define QDeclarativeItem QQuickItem
+#endif
+
 CursorArea::CursorArea(QDeclarativeItem *parent) :
     QDeclarativeItem(parent),
     cursor_(DefaultCursor)

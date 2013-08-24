@@ -37,8 +37,10 @@ public:
     void registerHandler();
     void unregisterHandler();
 
+#ifdef KCL_WIDGETS
     void enableLogWindow();
     void disableLogWindow();
+#endif
 
     void enableLogFile(const QString &fileName);
     void disableLogFile();

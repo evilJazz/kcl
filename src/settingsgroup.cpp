@@ -26,8 +26,13 @@
 #include <QVariant>
 #include <QMetaProperty>
 #include <QSettings>
-#include <QApplication>
-#include <QDeclarativeProperty>
+
+#ifdef KCL_QTQUICK2
+    #include <QQmlProperty>
+    #define QDeclarativeProperty QQmlProperty
+#else
+    #include <QDeclarativeProperty>
+#endif
 
 static QString *globalIniFilename = NULL;
 static QSettings *globalSettings_ = NULL;
@@ -219,10 +224,17 @@ QString SettingsGroup::globalIniFilename()
     return getGlobalIniFilenameSingleton();
 }
 
+#ifdef KCL_QTQUICK2
+QQmlListProperty<SettingsGroup> SettingsGroup::groups()
+{
+    return QQmlListProperty<SettingsGroup>(this, groups_);
+}
+#else
 QDeclarativeListProperty<SettingsGroup> SettingsGroup::groups()
 {
     return QDeclarativeListProperty<SettingsGroup>(this, groups_);
 }
+#endif
 
 void SettingsGroup::save()
 {

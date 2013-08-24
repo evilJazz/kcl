@@ -23,11 +23,15 @@
 
 #include "kclplugin.h"
 
-#include <QtDeclarative>
+#ifdef KCL_QTQUICK2
+    #include <QtQuick>
+    #define QDeclarativeEngine QQmlEngine
+#else
+    #include <QtDeclarative>
+#endif
 
 #include "KCL/settingsgroup.h"
 #include "KCL/filesystemutils.h"
-#include "KCL/nativedialogs.h"
 #include "KCL/cursorarea.h"
 #include "KCL/filescanner.h"
 #include "KCL/binaryfiledownloader.h"
@@ -35,8 +39,15 @@
 #include "KCL/progressmanager.h"
 #include "KCL/keyeventfilter.h"
 #include "KCL/settingsgroup.h"
-#include "KCL/logging.h"
-#include "KCL/declarativedebug.h"
+
+#ifdef KCL_WIDGETS
+    #include "KCL/nativedialogs.h"
+    #include "KCL/logging.h"
+#endif
+
+#ifndef KCL_QTQUICK2
+    #include "KCL/declarativedebug.h"
+#endif
 
 void KCLPlugin::registerTypes(const char *uri)
 {
@@ -44,8 +55,11 @@ void KCLPlugin::registerTypes(const char *uri)
     qmlRegisterType<BinaryFileDownloader>(uri, 1, 0, "BinaryFileDownloader");
     qmlRegisterType<SettingsGroup>(uri, 1, 0, "SettingsGroup");
     qmlRegisterType<FileScanner>(uri, 1, 0, "FileScanner");
-    qmlRegisterType<NativeDialogs>(uri, 1, 0, "NativeDialogs");
     qmlRegisterType<CursorArea>(uri, 1, 0, "CursorArea");
+
+#ifdef KCL_WIDGETS
+    qmlRegisterType<NativeDialogs>(uri, 1, 0, "NativeDialogs");
+#endif
 
     qmlRegisterType<QTimer>(uri, 1, 0, "QtTimer");
 
@@ -61,7 +75,9 @@ void KCLPlugin::registerTypes(const char *uri)
     qmlRegisterType<QDeclarativeKeyEvent>();
     qmlRegisterType<KeyEventFilter>();
 
+#ifndef KCL_QTQUICK2
     qmlRegisterType<DeclarativeDebug>();
+#endif
 }
 
 void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
@@ -73,11 +89,15 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
     FileSystemUtils *fsUtils = new FileSystemUtils(engine);
     engine->rootContext()->setContextProperty("fsUtils", fsUtils);
 
+#ifdef KCL_WIDGETS
     NativeDialogs *nativeDialogs = new NativeDialogs(engine);
     engine->rootContext()->setContextProperty("nativeDialogs", nativeDialogs);
+#endif
 
+#ifndef KCL_QTQUICK2
     DeclarativeDebug *declarativeDebug = new DeclarativeDebug(engine);
     engine->rootContext()->setContextProperty("debug", declarativeDebug);
+#endif
 
     engine->rootContext()->setContextProperty("performanceDataManager", &qPerformanceDataManager);
     engine->rootContext()->setContextProperty("progressManager", &globalProgressManager);

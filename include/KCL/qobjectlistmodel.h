@@ -5,8 +5,6 @@
 #include <QList>
 #include <QAbstractListModel>
 
-#include <QDeclarativeListProperty>
-
 class QObjectListModel : public QAbstractListModel
 {
     Q_OBJECT

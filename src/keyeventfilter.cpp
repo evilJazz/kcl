@@ -23,7 +23,12 @@
 
 #include "KCL/keyeventfilter.h"
 
-#include <QApplication>
+#ifdef KCL_QTQUICK2
+    #include <QtGui/QGuiApplication>
+    #include <QtGui/QStyleHints>
+#else
+    #include <QApplication>
+#endif
 
 KeyEventFilter::KeyEventFilter(QObject *parent) :
     QObject(parent)
@@ -36,7 +41,11 @@ KeyEventFilter::~KeyEventFilter()
 
 int KeyEventFilter::inputInterval() const
 {
+#ifdef KCL_QTQUICK2
+    return qApp->styleHints()->keyboardInputInterval();
+#else
     return qApp->keyboardInputInterval();
+#endif
 }
 
 bool KeyEventFilter::eventFilter(QObject *watched, QEvent *event)

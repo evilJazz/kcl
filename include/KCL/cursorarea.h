@@ -24,15 +24,28 @@
 #ifndef CURSORAREA_H
 #define CURSORAREA_H
 
-#include <QDeclarativeItem>
+#ifdef KCL_QTQUICK2
+    #include <QQuickItem>
+#else
+    #include <QDeclarativeItem>
+#endif
 
-class CursorArea : public QDeclarativeItem
+class CursorArea :
+#ifdef KCL_QTQUICK2
+    public QQuickItem
+#else
+    public QDeclarativeItem
+#endif
 {
     Q_OBJECT
     Q_ENUMS(Cursor)
     Q_PROPERTY(Cursor cursor READ cursor WRITE setCursor NOTIFY cursorChanged)
 public:
+#ifdef KCL_QTQUICK2
+    explicit CursorArea(QQuickItem *parent = 0);
+#else
     explicit CursorArea(QDeclarativeItem *parent = 0);
+#endif
     virtual ~CursorArea();
 
     enum Cursor {

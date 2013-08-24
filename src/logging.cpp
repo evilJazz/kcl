@@ -23,13 +23,16 @@
 
 #include "KCL/logging.h"
 
-#include <QTextEdit>
 #include <QFile>
 
 static Logging *loggingInstance = NULL;
-static QTextEdit *logWindow_ = NULL;
 static bool loggingEnabled_ = true;
 static QFile *logFile_ = NULL;
+
+#ifdef KCL_WIDGETS
+#include <QTextEdit>
+static QTextEdit *logWindow_ = NULL;
+#endif
 
 Logging &Logging::singleton()
 {
@@ -57,6 +60,7 @@ void Logging::unregisterHandler()
 #endif
 }
 
+#ifdef KCL_WIDGETS
 void Logging::enableLogWindow()
 {
     if (!logWindow_)
@@ -84,6 +88,7 @@ void Logging::disableLogWindow()
         delete temp;
     }
 }
+#endif
 
 void Logging::enableLogFile(const QString &fileName)
 {
@@ -138,39 +143,47 @@ void Logging::customMessageHandler(QtMsgType type, const char *msg)
     switch (type)
     {
     case QtDebugMsg:
+#ifdef KCL_WIDGETS
         if (logWindow_)
         {
             message = "<span style='color: blue'>" + message + "</span>";
             logWindow_->append(message);
         }
         else
+#endif
             fprintf(stderr, "%s \n", msg);
 
         break;
     case QtCriticalMsg:
+#ifdef KCL_WIDGETS
         if (logWindow_)
         {
             message = "<span style='color: red'>" + message + "</span>";
             logWindow_->append("<b>Critical:</b> " + message);
         }
         else
+#endif
             fprintf(stderr, "Critical: %s \n", msg);
 
         break;
     case QtWarningMsg:
+#ifdef KCL_WIDGETS
         if (logWindow_)
         {
             message = "<span style='color: red'>" + message + "</span>";
             logWindow_->append("<b>Warning:</b> " + message);
         }
         else
+#endif
             fprintf(stderr, "Warning: %s \n", msg);
 
         break;
     case QtFatalMsg:
+#ifdef KCL_WIDGETS
         if (logWindow_)
             logWindow_->append("<span style='color: red'><b>Fatal: " + message + "</b></span>");
         else
+#endif
             fprintf(stderr, "Fatal: %s \n", msg);
 
         exit(1);
@@ -184,6 +197,8 @@ void Logging::customMessageHandler(QtMsgType type, const char *msg)
             logFile_->write(message.toUtf8() + "\n");
     }
 
+#ifdef KCL_WIDGETS
     if (logWindow_)
         logWindow_->show();
+#endif
 }

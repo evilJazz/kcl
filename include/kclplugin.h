@@ -26,9 +26,18 @@
 
 #include "KCL/kcl_global.h"
 
-#include <QDeclarativeExtensionPlugin>
+#ifdef KCL_QTQUICK2
+    #include <QQmlExtensionPlugin>
+#else
+    #include <QDeclarativeExtensionPlugin>
+#endif
 
-class KCL_EXPORT KCLPlugin : public QDeclarativeExtensionPlugin
+class KCL_EXPORT KCLPlugin :
+#ifdef KCL_QTQUICK2
+    public QQmlExtensionPlugin
+#else
+    public QDeclarativeExtensionPlugin
+#endif
 {
     Q_OBJECT
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
@@ -36,7 +45,11 @@ class KCL_EXPORT KCLPlugin : public QDeclarativeExtensionPlugin
 #endif
 public:
     void registerTypes(const char *uri);
+#ifdef KCL_QTQUICK2
+    void initializeEngine(QQmlEngine *engine, const char *uri);
+#else
     void initializeEngine(QDeclarativeEngine *engine, const char *uri);
+#endif
 };
 
 #endif // KCLPLUGIN_H

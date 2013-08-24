@@ -1,3 +1,32 @@
+contains(QT_VERSION, ^4\\.[0-6]\\..*) {
+    message("KCL: Cannot build using Qt version $${QT_VERSION}.")
+    error("Use at least Qt 4.7.")
+}
+
+contains(QT_VERSION, ^4\\..*) {
+    CONFIG += kcl_qt4 kcl_qtquick1 kcl_widgets
+    QT += declarative
+    message("KCL: Configuring for Qt 4, actual version: $${QT_VERSION}")
+}
+
+contains(QT_VERSION, ^5\\..*) {
+    CONFIG += kcl_qt5
+    QT += concurrent
+
+    contains(QT, declarative) {
+        CONFIG += kcl_qtquick1
+    }
+
+    contains(QT, quick) {
+        CONFIG += kcl_qtquick2
+        DEFINES += KCL_QTQUICK2
+    }
+
+    contains(QT, widgets): CONFIG += kcl_widgets
+
+    message("KCL: Configuring for Qt 5, actual version: $${QT_VERSION}")
+}
+
 QT += script
 
 KCL_SRC_PATH = $${PWD}/src
@@ -16,13 +45,11 @@ HEADERS += \
     $$KCL_INC_PATH/KCL/history.h \
     $$KCL_INC_PATH/KCL/progressmanager.h \
     $$KCL_INC_PATH/KCL/performancedatamanager.h \
-    $$KCL_INC_PATH/KCL/logging.h \
     $$KCL_INC_PATH/KCL/keyeventfilter.h \
     $$KCL_INC_PATH/KCL/imagefastloader.h \
-    $$KCL_INC_PATH/KCL/nativedialogs.h \
     $$KCL_INC_PATH/KCL/cursorarea.h \
+    $$KCL_INC_PATH/KCL/logging.h \
     $$KCL_INC_PATH/KCL/debug.h \
-    $$KCL_INC_PATH/KCL/declarativedebug.h \
     $$KCL_INC_PATH/KCL/qobjectlistmodel.h
 
 SOURCES += \
@@ -34,13 +61,35 @@ SOURCES += \
     $$KCL_SRC_PATH/history.cpp \
     $$KCL_SRC_PATH/progressmanager.cpp \
     $$KCL_SRC_PATH/performancedatamanager.cpp \
-    $$KCL_SRC_PATH/logging.cpp \
     $$KCL_SRC_PATH/keyeventfilter.cpp \
     $$KCL_SRC_PATH/imagefastloader.cpp \
-    $$KCL_SRC_PATH/nativedialogs.cpp \
     $$KCL_SRC_PATH/cursorarea.cpp \
-    $$KCL_SRC_PATH/debug.cpp \
-    $$KCL_SRC_PATH/declarativedebug.cpp
+    $$KCL_SRC_PATH/logging.cpp \
+    $$KCL_SRC_PATH/debug.cpp
+
+kcl_widgets {
+    message("KCL: Configuring with Widgets support")
+
+    DEFINES += KCL_WIDGETS
+
+    HEADERS += \
+        $$KCL_INC_PATH/KCL/nativedialogs.h
+
+    SOURCES += \
+        $$KCL_SRC_PATH/nativedialogs.cpp
+}
+
+kcl_qtquick1 {
+    message("KCL: Configuring with QtQuick 1.x support")
+
+    DEFINES -= KCL_QTQUICK2
+
+    HEADERS += \
+        $$KCL_INC_PATH/KCL/declarativedebug.h
+
+    SOURCES += \
+        $$KCL_SRC_PATH/declarativedebug.cpp
+}
 
 OTHER_FILES += \
     $$KCL_SRC_PATH/qml/Tests/SplitterTest/SplitterTest.qml \

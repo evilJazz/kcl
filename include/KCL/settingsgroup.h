@@ -30,21 +30,39 @@
 #include <QEvent>
 #include <QVariantMap>
 #include <QTimer>
-#include <QDeclarativeListProperty>
-#include <QDeclarativeParserStatus>
+
+#ifdef KCL_QTQUICK2
+    #include <QtQuick>
+#else
+    #include <QDeclarativeListProperty>
+    #include <QDeclarativeParserStatus>
+#endif
+
 #include <QSettings>
 
-class KCL_EXPORT SettingsGroup : public QObject, public QDeclarativeParserStatus
+class KCL_EXPORT SettingsGroup :
+    public QObject,
+#ifdef KCL_QTQUICK2
+    public QQmlParserStatus
+#else
+    public QDeclarativeParserStatus
+#endif
 {
     Q_OBJECT
-    Q_INTERFACES(QDeclarativeParserStatus)
     Q_PROPERTY(QString groupName READ groupName WRITE setGroupName NOTIFY groupNameChanged)
     Q_PROPERTY(QString fullGroupName READ fullGroupName NOTIFY groupNameChanged)
     Q_PROPERTY(bool autoLoad READ autoLoad WRITE setAutoLoad NOTIFY autoLoadChanged)
     Q_PROPERTY(bool autoSave READ autoSave WRITE setAutoSave NOTIFY autoSaveChanged)
     Q_PROPERTY(bool saveDefaults READ saveDefaults WRITE setSaveDefaults NOTIFY saveDefaultsChanged)
 
+#ifdef KCL_QTQUICK2
+    Q_PROPERTY(QQmlListProperty<SettingsGroup> groups READ groups)
+    Q_INTERFACES(QQmlParserStatus)
+#else
     Q_PROPERTY(QDeclarativeListProperty<SettingsGroup> groups READ groups)
+    Q_INTERFACES(QDeclarativeParserStatus)
+#endif
+
     Q_CLASSINFO("DefaultProperty", "groups")
 
 public:
@@ -69,7 +87,11 @@ public:
     static void setGlobalIniFilename(const QString fileName);
     static QString globalIniFilename();
 
+#ifdef KCL_QTQUICK2
+    QQmlListProperty<SettingsGroup> groups();
+#else
     QDeclarativeListProperty<SettingsGroup> groups();
+#endif
 
 public slots:
     void save();

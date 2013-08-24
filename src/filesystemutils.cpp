@@ -26,7 +26,6 @@
 #include <QDir>
 #include <QUrl>
 #include <QFileInfo>
-#include <QFileDialog>
 #include <QCryptographicHash>
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
