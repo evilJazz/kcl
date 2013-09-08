@@ -13,11 +13,15 @@ Rectangle {
         if (opacity == 1)
             fadedIn();
         else if (opacity == 0)
+        {
+            visible = false;
             fadedOut();
+        }
     }
 
     function fadeIn()
     {
+        visible = true;
         fadingIn();
         opacity = 1;
     }
