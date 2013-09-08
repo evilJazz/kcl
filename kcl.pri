@@ -139,3 +139,8 @@ RESOURCES += \
 
 QML_IMPORT_PATH += \
     $$KCL_SRC_PATH/qml/
+
+include(qmlpp/qmlpp.pri)
+
+kcl_qtquick1: qmlPreprocessFolder($$KCL_SRC_PATH/qml, @QtQuick1, 1.0)
+kcl_qtquick2: qmlPreprocessFolder($$KCL_SRC_PATH/qml, @QtQuick2, 2.0)
