@@ -34,7 +34,9 @@
 
 #ifdef Q_OS_LINUX
 #include <stdlib.h>
+#ifndef Q_OS_ANDROID
 #include <execinfo.h>
+#endif
 #endif
 
 static int indentlevel = -1;
@@ -129,7 +131,7 @@ void kaPrintMemStat()
 
 void kaPrintBacktrace()
 {
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
     void *array[10];
     int size = backtrace(array, 10);
 

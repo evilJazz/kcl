@@ -26,7 +26,10 @@ Item {
 
         transformOrigin: Item.TopLeft
 
-        onPaintedSizeChanged:
+        onPaintedSizeChanged: text.updateAll() //@QtQuick1
+        //onContentSizeChanged: text.updateAll() //@QtQuick2
+
+        function updateAll()
         {
             updateScale();
             updateImplicitSize();

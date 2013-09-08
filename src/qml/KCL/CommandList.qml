@@ -5,7 +5,7 @@ Item {
     property variant commands: [{}]
 
     property ListModel model: ListModel {
-        ListElement { name: ""; value: ""; commandRef: 0 }
+        ListElement { name: ""; value: "" }
     }
 
     function executeCommand(commandName, commandParam)
@@ -50,7 +50,7 @@ Item {
             }
 
             newCommands[currentCommand.command] = currentCommand;
-            model.append({ name: currentCommand.text, value: currentCommand.command, commandRef: currentCommand });
+            model.append({ name: currentCommand.text, value: currentCommand.command });
         }
 
         commands = newCommands;

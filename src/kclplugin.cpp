@@ -68,6 +68,7 @@ void KCLPlugin::registerTypes(const char *uri)
     qmlRegisterUncreatableType<PerformanceDataManager>(uri, 1, 0, "PerformanceDataManager", "Can not instantiate PerformanceDataManager, use performanceDataManager singleton instead.");
     qmlRegisterType<PerformanceData>();
     qmlRegisterType<PerformanceDataAspect>();
+    qmlRegisterType<PerformanceDataDetail>();
 
     qmlRegisterUncreatableType<ProgressManager>(uri, 1, 0, "ProgressManager", "Can not instantiate ProgressManager, use progressManager singleton instead.");
     qmlRegisterType<ProgressContext>();

@@ -1,5 +1,7 @@
 import QtQuick 1.0
 
+import "qrc:/KCL/DeferredExecution.js" as DeferredExecution
+
 Fader {
     id: overlay
     anchors.fill: parent
@@ -87,7 +89,9 @@ Fader {
         loader.source = "";
 
         if (destroyOnDone)
-            overlay.destroy();
+            // Use Queued invocation because destroy() may be called when still in Component.onCompleted, which causes
+            // Error: Invalid attempt to destroy() an indestructible object in QtQuick 2+
+            DeferredExecution.invoke(function () { overlay.destroy(); });
     }
 
     function updateState()

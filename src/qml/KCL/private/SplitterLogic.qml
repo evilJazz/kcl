@@ -27,7 +27,7 @@ QtObject {
     {
         if (connectedParent)
         {
-            connectedParent.childrenChanged.disconnect(initFromSiblings());
+            connectedParent.childrenChanged.disconnect(internal.initFromSiblings);
             connectedParent = null;
         }
 
@@ -41,7 +41,7 @@ QtObject {
                 orientation = (target.parent.orientation === Qt.Vertical ? Qt.Horizontal : Qt.Vertical);
 
             connectedParent = target.parent;
-            connectedParent.childrenChanged.connect(initFromSiblings());
+            connectedParent.childrenChanged.connect(internal.initFromSiblings);
 
             initFromSiblings();
         }

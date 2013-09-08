@@ -24,7 +24,7 @@ QtObject {
 
     function fullUpdate()
     {
-        if (blockUpdate) return;
+        if (logic.blockUpdate) return;
 
         updateNonAutoSizedChildren();
         updateAutoSizedChildren();
@@ -32,7 +32,7 @@ QtObject {
 
     function updateNonAutoSizedChildren()
     {
-        if (blockUpdate) return;
+        if (logic.blockUpdate) return;
 
         var newVisibleNonAutoSizedChildrenSize = 0;
         var item;
@@ -57,12 +57,12 @@ QtObject {
             // disconnect from signals...
 
             if (isHorizontal)
-                item.widthChanged.disconnect(this.fullUpdate);
+                item.widthChanged.disconnect(logic.fullUpdate);
             else
-                item.heightChanged.disconnect(this.fullUpdate);
+                item.heightChanged.disconnect(logic.fullUpdate);
 
-            item.visibleChanged.disconnect(this.fullUpdate);
-            item.opacityChanged.disconnect(this.fullUpdate);
+            item.visibleChanged.disconnect(logic.fullUpdate);
+            item.opacityChanged.disconnect(logic.fullUpdate);
 
             // Analyze and connect to signals...
 
@@ -74,16 +74,16 @@ QtObject {
                 newVisibleNonAutoSizedChildrenSize += itemVisible ? (isHorizontal ? item.width : item.height) : 0;
 
                 if (isHorizontal)
-                    item.widthChanged.connect(this.fullUpdate);
+                    item.widthChanged.connect(logic.fullUpdate);
                 else
-                    item.heightChanged.connect(this.fullUpdate);
+                    item.heightChanged.connect(logic.fullUpdate);
             }
 
             if (itemVisible)
                 ++visibleCount;
 
-            item.visibleChanged.connect(this.fullUpdate);
-            item.opacityChanged.connect(this.fullUpdate);
+            item.visibleChanged.connect(logic.fullUpdate);
+            item.opacityChanged.connect(logic.fullUpdate);
         }
 
         //nonAutoSizedChildren = newNonAutoSizedChildren;

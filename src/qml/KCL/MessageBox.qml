@@ -1,4 +1,4 @@
-import QtQuick 1.1
+import QtQuick 1.0
 
 import "MessageBox.js" as MessageBox
 import "DeferredExecution.js" as DeferredExecution

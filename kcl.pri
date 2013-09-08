@@ -95,6 +95,7 @@ OTHER_FILES += \
     $$KCL_SRC_PATH/qml/Tests/SplitterTest/SplitterTest.qml \
     $$KCL_SRC_PATH/qml/Tests/SplitterTest/SplitterTest.qmlproject \
     $$KCL_SRC_PATH/qml/Tests/SplitterTest/SplitterTest2.qml \
+    $$KCL_SRC_PATH/qml/Tests/ConstrainedText/ConstrainedTextTest.qml \
     $$KCL_SRC_PATH/qml/KCL/QueueManager.js \
     $$KCL_SRC_PATH/qml/KCL/MessageOverlay.js \
     $$KCL_SRC_PATH/qml/KCL/Splitter.qml \
@@ -130,9 +131,8 @@ OTHER_FILES += \
     $$KCL_SRC_PATH/qml/KCL/MessageBox.js \
     $$KCL_SRC_PATH/qml/KCL/MessageBox.qml \
     $$KCL_SRC_PATH/qml/KCL/FileDialog.qml \
-    libs/kcl/src/qml/Tests/ConstrainedText/ConstrainedTextTest.qml \
-    libs/kcl/src/qml/KCL/ValueChangeWatcher.qml \
-    ../3rdparty/kcl/src/qml/KCL/MouseEater.qml
+    $$KCL_SRC_PATH/qml/KCL/ValueChangeWatcher.qml \
+    $$KCL_SRC_PATH/qml/KCL/MouseEater.qml
 
 RESOURCES += \
     $$KCL_SRC_PATH/qml/KCL/kcl-qml.qrc
