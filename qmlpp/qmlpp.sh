@@ -58,7 +58,7 @@ while getopts ":hiq:d:" OPTION; do
 done
 
 rewriteParams=""
-[ "$rewriteQtQuickVersion" != "" ] && rewriteParams="s/(import QtQuick)\s*[0-9].[0-9]/\1 $rewriteQtQuickVersion/"
+[ "$rewriteQtQuickVersion" != "" ] && rewriteParams="/\/\/!noRewrite/!s/(import QtQuick)\s*[0-9].[0-9]/\1 $rewriteQtQuickVersion/"
 
 input="${@: -1}"
 
