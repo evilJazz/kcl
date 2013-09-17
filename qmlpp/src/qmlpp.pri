@@ -1,8 +1,8 @@
-QMLPP_REWRITEVERSION =
-QMLPP_DEFINES =
-QMLPP_FOLDERS =
 QMLPP_PATH = $${PWD}
 QMLPP_SCRIPT = $${QMLPP_PATH}/qmlpp.sh
+
+# To process one or more individual folders, use qmlPreprocessFolder method as follows:
+# qmlPreprocessFolder(test blah qml, @QtQuick2 @QtQuick1 @QtQuick3, 2.1)
 
 # qmlPreprocessFolder(folders, defines, rewriteVersion)
 defineTest(qmlPreprocessFolder) {
@@ -17,7 +17,6 @@ defineTest(qmlPreprocessFolder) {
         }
 
         for(folder, 1) {
-            message(folder: $$folder)
             !isEmpty(qmlppCommands): qmlppCommands += &&
             qmlppCommands += $${qmlppCommand} \"$$folder\"
         }
@@ -26,9 +25,16 @@ defineTest(qmlPreprocessFolder) {
     }
 }
 
-defineTest(qmlPreprocessFolders) {
+# Global variables that are used in simplified qmlPreprocessGlobal function below.
+# Define these global variables in your .pro file:
+#
+# QMLPP_REWRITEVERSION = 2.1
+# QMLPP_DEFINES = @QtQuick2 @QtQuick1 @QtQuick3
+# QMLPP_FOLDERS = test blah qml
+#
+# and finally call:
+# qmlPreprocessGlobal()
+
+defineTest(qmlPreprocessGlobal) {
     qmlPreprocessFolder($$QMLPP_FOLDERS, $$QMLPP_DEFINES, $$QMLPP_REWRITEVERSION)
 }
-
-#qmlPreprocessFolder(test blah qml, @QtQuick2 @QtQuick1 @QtQuick3, 2.1)
-#qmlPreprocessFolders()
