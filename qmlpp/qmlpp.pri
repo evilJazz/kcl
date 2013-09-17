@@ -17,7 +17,6 @@ defineTest(qmlPreprocessFolder) {
         }
 
         for(folder, 1) {
-            message(folder: $$folder)
             !isEmpty(qmlppCommands): qmlppCommands += &&
             qmlppCommands += $${qmlppCommand} \"$$folder\"
         }

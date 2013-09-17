@@ -90,7 +90,12 @@ QVariant FileSystemUtils::canonicalizePath(const QString &path, bool asURL)
     return asURL ? QUrl::fromLocalFile(newName) : newName;
 }
 
-QString FileSystemUtils::localPath(const QUrl &url)
+QUrl FileSystemUtils::urlFromLocalPath(const QString &path)
+{
+    return QUrl::fromLocalFile(path);
+}
+
+QString FileSystemUtils::localPathFromUrl(const QUrl &url)
 {
     return url.toLocalFile();
 }
