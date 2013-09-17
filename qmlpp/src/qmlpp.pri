@@ -1,5 +1,5 @@
 QMLPP_PATH = $${PWD}
-QMLPP_SCRIPT = $${QMLPP_PATH}/qmlpp.sh
+QMLPP_SCRIPT = "bash $${QMLPP_PATH}/qmlpp.sh"
 
 # To process one or more individual folders, use qmlPreprocessFolder method as follows:
 # qmlPreprocessFolder(test blah qml, @QtQuick2 @QtQuick1 @QtQuick3, 2.1)

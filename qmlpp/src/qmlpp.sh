@@ -23,9 +23,18 @@
 # License Version 1.1.  You may obtain a copy of the License at
 # http://www.mozilla.org/MPL/
 
+findCmd=$(which find)
+sedCmd=$(which sed)
+
+isWindows=$(echo $OS | grep "Windows")
+if [ $isWindows != "" ]; then
+        findCmd="/usr/bin/find" # to override Microsoft Windows FIND command and
+        sedCmd="/usr/bin/sed"   # make sure the Cygwin's find and sed are launched...
+fi
+
 function preprocessFile()
 {
-    sed -r \
+    "$sedCmd" -r \
         $additionalSedArgs -e "$rewriteParams" \
         -e "s/^(\s*)(\/\/)?(.*)\/\/@(.*)/\1\3\/\/@\4/" \
         -e "/($defines)/!s/^(\s*)(.*)\/\/(@.*)/\1\/\/\2\/\/\3/" \
@@ -34,7 +43,7 @@ function preprocessFile()
 
 function preprocessDirectory()
 {
-    find "$1" -type f | grep -v .svn | grep -v .git | while read file; do
+    "$findCmd" "$1" -type f | grep -v .svn | grep -v .git | while read file; do
             preprocessFile "$file"
     done
 }
