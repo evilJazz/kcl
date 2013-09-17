@@ -27,7 +27,7 @@ findCmd=$(which find)
 sedCmd=$(which sed)
 
 isWindows=$(echo $OS | grep "Windows")
-if [ $isWindows != "" ]; then
+if [ "$isWindows" != "" ]; then
         findCmd="/usr/bin/find" # to override Microsoft Windows FIND command and
         sedCmd="/usr/bin/sed"   # make sure the Cygwin's find and sed are launched...
 fi
