@@ -102,7 +102,14 @@ QString FileSystemUtils::localPathFromUrl(const QUrl &url)
 
 QString FileSystemUtils::pathAppend(const QString &path1, const QString &path2)
 {
-    return path1.endsWith("/") ? path1 + path2 : path1 + "/" + path2;
+    if (path1.isEmpty())
+        return path2;
+    else if (path2.isEmpty())
+        return path1;
+    else if (path1.endsWith('/'))
+        return path1 + path2;
+    else
+        return path1 + "/" + path2;
 }
 
 QString FileSystemUtils::formatFileSize(long long fileSize)
