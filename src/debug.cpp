@@ -24,6 +24,7 @@
 #include "KCL/debug.h"
 
 #include <QHash>
+#include <QThread>
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -70,31 +71,31 @@ QString kaFormatFunctionSignature(const char *fileName, int line, const char *fu
 void kaDebugEnterMethod(const QString &name)
 {
     if (diagnosticOutputEnabled_)
-        qDebug("%*s>> %s", ++indentlevel * 3, "", (const char*)name.toUtf8());
+        qDebug("[%p]%*s>> %s", QThread::currentThreadId(), ++indentlevel * 3, "", (const char*)name.toUtf8());
 }
 
 void kaDebugExitMethod(const QString &name)
 {
     if (diagnosticOutputEnabled_)
-        qDebug("%*s<< %s", indentlevel-- * 3, "", (const char*)name.toUtf8());
+        qDebug("[%p]%*s<< %s", QThread::currentThreadId(), indentlevel-- * 3, "", (const char*)name.toUtf8());
 }
 
 void kaDebugEnterMethod(const char *fileName, int line, const char *functionSignature, const QString &text)
 {
     if (diagnosticOutputEnabled_)
-        qDebug("%*s>> %s", ++indentlevel * 3, "", (const char*)kaFormatFunctionSignature(fileName, line, functionSignature, text).toUtf8());
+        qDebug("[%p]%*s>> %s", QThread::currentThreadId(), ++indentlevel * 3, "", (const char*)kaFormatFunctionSignature(fileName, line, functionSignature, text).toUtf8());
 }
 
 void kaDebugExitMethod(const char *fileName, int line, const char *functionSignature, const QString &text)
 {
     if (diagnosticOutputEnabled_)
-        qDebug("%*s<< %s", indentlevel-- * 3, "", (const char*)kaFormatFunctionSignature(fileName, line, functionSignature, text).toUtf8());
+        qDebug("[%p]%*s<< %s", QThread::currentThreadId(), indentlevel-- * 3, "", (const char*)kaFormatFunctionSignature(fileName, line, functionSignature, text).toUtf8());
 }
 
 void kaDebug(const QString &msg)
 {
     if (diagnosticOutputEnabled_)
-        qDebug("%*s%s", (indentlevel == -1 ? 0 : indentlevel * 3 + 3), "", (const char*)msg.toUtf8());
+        qDebug("[%p]%*s%s", QThread::currentThreadId(), (indentlevel == -1 ? 0 : indentlevel * 3 + 3), "", (const char*)msg.toUtf8());
 }
 
 void kaFatal(const QString &msg)
