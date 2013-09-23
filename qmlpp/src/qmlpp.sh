@@ -32,12 +32,30 @@ if [ "$isWindows" != "" ]; then
         sedCmd="/usr/bin/sed"   # make sure the Cygwin's find and sed are launched...
 fi
 
+sedPingTest=$(echo "ping" | $sedCmd -r "s/ping/pong/" 2> /dev/null)
+if [ "$sedPingTest" != "pong" ]; then
+    sedIsBSD=true
+    sedCmdExt=-E
+else
+    sedIsBSD=
+    sedCmdExt=-r
+fi
+
+function callSed()
+{
+    if [[ -n "$sedIsBSD" && -n "$processInline" ]]; then
+        "$sedCmd" $sedCmdExt -i '' "$@" # Braindead BSD sed syntax, try to escape '' in Bash!
+    else
+        "$sedCmd" $sedCmdExt $additionalSedArgs "$@"
+    fi
+}
+
 function preprocessFile()
 {
-    "$sedCmd" -r \
-        $additionalSedArgs -e "$rewriteParams" \
-        -e "s/^(\s*)(\/\/)?(.*)\/\/@(.*)/\1\3\/\/@\4/" \
-        -e "/($defines)/!s/^(\s*)(.*)\/\/(@.*)/\1\/\/\2\/\/\3/" \
+    callSed \
+        -e "$rewriteParams" \
+        -e "s/^([ \x9]*)(\/\/){0,1}(.*)\/\/@(.*)/\1\3\/\/@\4/" \
+        -e "/($defines)/!s/^([ \x9]*)(.*)\/\/(@.*)/\1\/\/\2\/\/\3/" \
         "$1"
 }
 
@@ -61,7 +79,7 @@ OPTIONS:
 EOF
 }
 
-processInline=false
+processInline=
 additionalSedArgs=
 defines=@NODEFINESET
 
@@ -90,7 +108,7 @@ while getopts ":hiq:d:" OPTION; do
 done
 
 rewriteParams=""
-[ "$rewriteQtQuickVersion" != "" ] && rewriteParams="/\/\/!noRewrite/!s/(import QtQuick)\s*[0-9].[0-9]/\1 $rewriteQtQuickVersion/"
+[ "$rewriteQtQuickVersion" != "" ] && rewriteParams="/\/\/!noRewrite/!s/(import QtQuick)[ \x9]*[0-9].[0-9]/\1 $rewriteQtQuickVersion/"
 
 input="${@: -1}"
 
