@@ -25,11 +25,13 @@
 
 findCmd=$(which find)
 sedCmd=$(which sed)
+sedOSCmdExt=
 
 isWindows=$(echo $OS | grep "Windows")
 if [ "$isWindows" != "" ]; then
         findCmd="/usr/bin/find" # to override Microsoft Windows FIND command and
         sedCmd="/usr/bin/sed"   # make sure the Cygwin's find and sed are launched...
+        sedOSCmdExt=-b
 fi
 
 sedPingTest=$(echo "ping" | $sedCmd -r "s/ping/pong/" 2> /dev/null)
@@ -44,9 +46,9 @@ fi
 function callSed()
 {
     if [[ -n "$sedIsBSD" && -n "$processInline" ]]; then
-        "$sedCmd" $sedCmdExt -i '' "$@" # Braindead BSD sed syntax, try to escape '' in Bash!
+        "$sedCmd" $sedOSCmdExt $sedCmdExt -i '' "$@" # Braindead BSD sed syntax, try to escape '' in Bash!
     else
-        "$sedCmd" $sedCmdExt $additionalSedArgs "$@"
+        "$sedCmd" $sedOSCmdExt $sedCmdExt $additionalSedArgs "$@"
     fi
 }
 
