@@ -50,7 +50,8 @@ HEADERS += \
     $$KCL_INC_PATH/KCL/cursorarea.h \
     $$KCL_INC_PATH/KCL/logging.h \
     $$KCL_INC_PATH/KCL/debug.h \
-    $$KCL_INC_PATH/KCL/qobjectlistmodel.h
+    $$KCL_INC_PATH/KCL/qobjectlistmodel.h \
+    $$KCL_INC_PATH/KCL/translationenumerator.h
 
 SOURCES += \
     $$KCL_SRC_PATH/kclplugin.cpp \
@@ -65,7 +66,8 @@ SOURCES += \
     $$KCL_SRC_PATH/imagefastloader.cpp \
     $$KCL_SRC_PATH/cursorarea.cpp \
     $$KCL_SRC_PATH/logging.cpp \
-    $$KCL_SRC_PATH/debug.cpp
+    $$KCL_SRC_PATH/debug.cpp \
+    $$KCL_SRC_PATH/translationenumerator.cpp
 
 kcl_widgets {
     message("KCL: Configuring with Widgets support")
