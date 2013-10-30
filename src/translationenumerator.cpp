@@ -37,12 +37,11 @@ void TranslationEnumerator::updateList()
 
             QLocale locale = QLocale(languageAbbr);
             translation.insert("languageName", QLocale::languageToString(locale.language()));
-            translation.insert("languageNativeName", locale.nativeLanguageName());
+            //translation.insert("languageNativeName", locale.nativeLanguageName());
 
-            DPRINTF("languageAbbrev: %s, languageName: %s, languageNativeName: %s",
+            DPRINTF("languageAbbrev: %s, languageName: %s",
                 translation["languageAbbrev"].toString().toUtf8().constData(),
-                translation["languageName"].toString().toUtf8().constData(),
-                translation["languageNativeName"].toString().toUtf8().constData()
+                translation["languageName"].toString().toUtf8().constData()
             );
 
             availableTranslations_.append(translation);
