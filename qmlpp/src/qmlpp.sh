@@ -64,7 +64,7 @@ function preprocessFile()
 function preprocessDirectory()
 {
     "$findCmd" "$1" -type f | grep -v .svn | grep -v .git | while read file; do
-        [[ "${file#*.}" == "qml" || "${file#*.}" == "js" ]] && preprocessFile "$file"
+        [[ "${file##*.}" == "qml" || "${file##*.}" == "js" ]] && preprocessFile "$file"
     done
 }
 
