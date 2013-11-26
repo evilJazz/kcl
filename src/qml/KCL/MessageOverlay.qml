@@ -19,7 +19,7 @@ Fader {
     property bool destroyOnDone: true
 
     property bool faderEnabled: true
-    onFaderEnabledChanged: overlay.fadeAnimation.enabled = faderEnabled
+    onFaderEnabledChanged: overlay.fadeAnimation.duration = faderEnabled ? 250 : 0
 
     property bool opened: false
     property bool done: false
