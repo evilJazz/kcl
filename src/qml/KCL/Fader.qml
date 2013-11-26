@@ -1,7 +1,9 @@
 import QtQuick 1.0
 
 Rectangle {
-    Behavior on opacity { NumberAnimation { duration: 250 } }
+    Behavior on opacity { NumberAnimation { id: animation; duration: 250 } }
+
+    property alias fadeAnimation: animation
 
     signal fadingIn
     signal fadedIn

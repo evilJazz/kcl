@@ -18,6 +18,9 @@ Fader {
     property bool autoOpen: true
     property bool destroyOnDone: true
 
+    property bool faderEnabled: true
+    onFaderEnabledChanged: overlay.fadeAnimation.enabled = faderEnabled
+
     property bool opened: false
     property bool done: false
 
@@ -72,7 +75,12 @@ Fader {
                 loader.sourceComponent = overlay.sourceComponent;
         }
         else
-            fadeTimer.start();
+        {
+            if (faderEnabled)
+                fadeTimer.start();
+            else
+                overlay.fadeIn();
+        }
     }
 
     function close()
