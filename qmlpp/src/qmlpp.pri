@@ -21,6 +21,8 @@ defineTest(qmlPreprocessFolder) {
             qmlppCommands += $${qmlppCommand} \"$$folder\"
         }
 
+        #message($$qmlppCommands)
+
         system($$qmlppCommands)
     }
 }
