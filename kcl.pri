@@ -51,7 +51,8 @@ HEADERS += \
     $$KCL_INC_PATH/KCL/logging.h \
     $$KCL_INC_PATH/KCL/debug.h \
     $$KCL_INC_PATH/KCL/qobjectlistmodel.h \
-    $$KCL_INC_PATH/KCL/translationenumerator.h
+    $$KCL_INC_PATH/KCL/translationenumerator.h \
+    $$KCL_INC_PATH/KCL/sleepaid.h
 
 SOURCES += \
     $$KCL_SRC_PATH/kclplugin.cpp \
