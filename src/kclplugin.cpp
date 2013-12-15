@@ -33,6 +33,7 @@
 #include "KCL/settingsgroup.h"
 #include "KCL/filesystemutils.h"
 #include "KCL/cursorarea.h"
+#include "KCL/imagerendersurface.h"
 #include "KCL/filescanner.h"
 #include "KCL/binaryfiledownloader.h"
 #include "KCL/performancedatamanager.h"
@@ -56,6 +57,7 @@ void KCLPlugin::registerTypes(const char *uri)
     qmlRegisterType<SettingsGroup>(uri, 1, 0, "SettingsGroup");
     qmlRegisterType<FileScanner>(uri, 1, 0, "FileScanner");
     qmlRegisterType<CursorArea>(uri, 1, 0, "CursorArea");
+    qmlRegisterType<ImageRenderSurface>(uri, 1, 0, "ImageRenderSurface");
 
 #ifdef KCL_WIDGETS
     qmlRegisterType<NativeDialogs>(uri, 1, 0, "NativeDialogs");

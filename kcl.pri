@@ -55,7 +55,8 @@ HEADERS += \
     $$KCL_INC_PATH/KCL/qobjectlistmodel.h \
     $$KCL_INC_PATH/KCL/translationenumerator.h \
     $$KCL_INC_PATH/KCL/sleepaid.h \
-    $$KCL_INC_PATH/KCL/backgroundtasks.h
+    $$KCL_INC_PATH/KCL/backgroundtasks.h \
+    $$KCL_INC_PATH/KCL/imagerendersurface.h
 
 SOURCES += \
     $$KCL_SRC_PATH/kclplugin.cpp \
@@ -72,7 +73,8 @@ SOURCES += \
     $$KCL_SRC_PATH/logging.cpp \
     $$KCL_SRC_PATH/debug.cpp \
     $$KCL_SRC_PATH/translationenumerator.cpp \
-    $$KCL_SRC_PATH/backgroundtasks.cpp
+    $$KCL_SRC_PATH/backgroundtasks.cpp \
+    $$KCL_SRC_PATH/imagerendersurface.cpp
 
 kcl_widgets {
     message("KCL: Configuring with Widgets support")
