@@ -3,6 +3,8 @@ contains(QT_VERSION, ^4\\.[0-6]\\..*) {
     error("Use at least Qt 4.7.")
 }
 
+QT += network
+
 contains(QT_VERSION, ^4\\..*) {
     CONFIG += kcl_qt4 kcl_qtquick1 kcl_widgets
     QT += declarative
@@ -52,7 +54,8 @@ HEADERS += \
     $$KCL_INC_PATH/KCL/debug.h \
     $$KCL_INC_PATH/KCL/qobjectlistmodel.h \
     $$KCL_INC_PATH/KCL/translationenumerator.h \
-    $$KCL_INC_PATH/KCL/sleepaid.h
+    $$KCL_INC_PATH/KCL/sleepaid.h \
+    $$KCL_INC_PATH/KCL/backgroundtasks.h
 
 SOURCES += \
     $$KCL_SRC_PATH/kclplugin.cpp \
@@ -68,7 +71,8 @@ SOURCES += \
     $$KCL_SRC_PATH/cursorarea.cpp \
     $$KCL_SRC_PATH/logging.cpp \
     $$KCL_SRC_PATH/debug.cpp \
-    $$KCL_SRC_PATH/translationenumerator.cpp
+    $$KCL_SRC_PATH/translationenumerator.cpp \
+    $$KCL_SRC_PATH/backgroundtasks.cpp
 
 kcl_widgets {
     message("KCL: Configuring with Widgets support")
