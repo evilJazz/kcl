@@ -28,6 +28,14 @@
 
 /* PerformanceDataDetail */
 
+PerformanceDataDetail::PerformanceDataDetail(PerformanceDataAspect *parent, const QString &identifier) :
+    QObject(parent),
+    identifier(identifier),
+    startTimeStamp(0),
+    stopTimeStamp(0)
+{
+}
+
 QVariantMap PerformanceDataDetail::asVariant()
 {
     QVariantMap map;
@@ -70,9 +78,8 @@ PerformanceDataDetail *PerformanceDataAspect::startDetail(const QString &identif
 
     if (i == detailHash_.end())
     {
-        detail = new PerformanceDataDetail();
+        detail = new PerformanceDataDetail(this, identifier);
         details_.append(detail);
-        detail->identifier = identifier;
         detailHash_.insert(identifier, detail);
     }
     else

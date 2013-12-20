@@ -32,11 +32,14 @@
 
 class PerformanceDataManager;
 class PerformanceData;
+class PerformanceDataAspect;
 
 class KCL_EXPORT PerformanceDataDetail : public QObject
 {
     Q_OBJECT
 public:
+    PerformanceDataDetail(PerformanceDataAspect *parent, const QString &identifier);
+
     QString identifier;
     qint64 startTimeStamp;
     qint64 stopTimeStamp;
