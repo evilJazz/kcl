@@ -99,6 +99,9 @@ public:
 protected:
     virtual QString getFilenameForKey(const QString &key) const;
     virtual DiskImageCache::ImageCacheResult createImage(const QString &filename);
+
+private:
+    QString createCacheKeyForFileName(const QString &filename) const;
 };
 
 #endif // IMAGEFASTLOADER_H

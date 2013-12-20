@@ -36,6 +36,7 @@ class KCL_EXPORT FileSystemUtils : public QObject
     Q_PROPERTY(QString homeLocation READ homeLocation CONSTANT)
     Q_PROPERTY(QString documentsLocation READ documentsLocation CONSTANT)
     Q_PROPERTY(QString desktopLocation READ desktopLocation CONSTANT)
+    Q_PROPERTY(QString picturesLocation READ picturesLocation CONSTANT)
     Q_PROPERTY(QString musicLocation READ musicLocation CONSTANT)
     Q_PROPERTY(QString moviesLocation READ moviesLocation CONSTANT)
     Q_PROPERTY(QString tempLocation READ tempLocation CONSTANT)
@@ -74,8 +75,9 @@ public:
     Q_INVOKABLE static bool removeDirectoryRecursively(const QString &dirName);
 
     static QString homeLocation();
-    static QString documentsLocation();
+    static QString documentsLocation();    
     static QString desktopLocation();
+    static QString picturesLocation();
     static QString musicLocation();
     static QString moviesLocation();
     static QString tempLocation();

@@ -32,6 +32,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QDateTime>
+#include <QCryptographicHash>
 
 #include "KCL/debug.h"
 
@@ -437,10 +438,18 @@ DiskImageCache::ImageCacheResult ImageFastLoader::createImage(const QString &fil
     return result;
 }
 
+QString ImageFastLoader::createCacheKeyForFileName(const QString &filename) const
+{
+    QCryptographicHash crypto(QCryptographicHash::Md5);
+    crypto.addData(filename.toUtf8());
+    QString md5Sum = crypto.result().toHex();
+    return md5Sum.left(2) + "/" + md5Sum.mid(2, 2) + "/" + md5Sum.mid(4, 2) + "/" + md5Sum.mid(6);
+}
+
 QString ImageFastLoader::getFilenameForKey(const QString &key) const
 {
     if (cacheDirectory().isEmpty())
         return key + ".cbci";
     else
-        return cacheDirectory() + "/" + QFileInfo(key).fileName() + ".cbci";
+        return cacheDirectory() + "/" + createCacheKeyForFileName(key) + ".cbci";
 }

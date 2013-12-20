@@ -225,6 +225,15 @@ QString FileSystemUtils::desktopLocation()
 #endif
 }
 
+QString FileSystemUtils::picturesLocation()
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    return QStandardPaths::writableLocation(QStandardPaths::PicturesLocation) + "/";
+#else
+    return QDesktopServices::storageLocation(QDesktopServices::PicturesLocation) + "/";
+#endif
+}
+
 QString FileSystemUtils::musicLocation()
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)

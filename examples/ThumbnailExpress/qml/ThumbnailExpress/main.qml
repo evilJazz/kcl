@@ -1,17 +1,72 @@
 import QtQuick 1.1
 import KCL 1.0
+import Qt.labs.folderlistmodel 1.0
 
-Rectangle {
-    width: 360
-    height: 360
+AutoColumn {
+    width: 720
+    height: 500
+
+    autoSizedChildren: [gridView]
+
+    Text {
+        anchors.left: parent.left
+        anchors.right: parent.right
+
+        height: 40
+
+        text: "Selected folder:\n" + fsModel.folder
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked:
+            {
+                fsModel.folder = nativeDialogs.getExistingDirectory
+                (
+                    "Please select a directory containing pictures",
+                    fsModel.folder,
+                    true,
+                    true
+                );
+            }
+        }
+    }
+
+    FolderListModel {
+        id: fsModel
+        folder: fsUtils.picturesLocation
+    }
 
     GridView {
-        anchors.fill: parent
+        id: gridView
+        anchors.left: parent.left
+        anchors.right: parent.right
+        clip: true
+
         cacheBuffer: height * 2
-        model: 2000
 
         cellHeight: 160
         cellWidth: 160
+
+        //*
+        model: fsModel
+
+        delegate:
+            Rectangle {
+                width: gridView.cellWidth
+                height: gridView.cellHeight
+                border.color: "black"
+
+                ImageRenderSurface {
+                    anchors.fill: parent
+                    source: "image://imgcache/" + fsUtils.localPathFromUrl(filePath)
+                    opacity: status === ImageRenderSurface.Rendered ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 250 } }
+                }
+            }
+        //*/
+
+        /*
+        model: 2000
 
         delegate: ImageRenderSurface {
             width: 160
@@ -21,5 +76,6 @@ Rectangle {
             opacity: status === ImageRenderSurface.Rendered ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: 250 } }
         }
+        */
     }
 }

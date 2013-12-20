@@ -11,6 +11,7 @@
 #include "kclplugin.h"
 
 #include "testimageprovider.h"
+#include "imagefastloaderimageprovider.h"
 
 Q_DECL_EXPORT int main(int argc, char *argv[])
 {
@@ -32,6 +33,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     kclPlugin.initializeEngine(viewer.engine(), "KCL");
 
     viewer.engine()->addImageProvider("test", new TestImageProvider());
+    viewer.engine()->addImageProvider("imgcache", new ImageFastLoaderImageProvider());
 
     viewer.setMainQmlFile(QLatin1String("qml/ThumbnailExpress/main.qml"));
     viewer.showExpanded();

@@ -16,10 +16,12 @@ QML_IMPORT_PATH =
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
-    testimageprovider.cpp
+    testimageprovider.cpp \
+    imagefastloaderimageprovider.cpp
 
 HEADERS += \
-    testimageprovider.h
+    testimageprovider.h \
+    imagefastloaderimageprovider.h
 
 # Installation path
 # target.path =
