@@ -32,35 +32,6 @@ TaskProcessingController &tpc()
     return *instance;
 }
 
-QSize optimalFitSize(const QSize &srcSize, const QSize &maxDstSize)
-{
-    qreal cx, cy;
-    qreal rscaleX, rscaleY;
-
-    cx = srcSize.width();
-    cy = srcSize.height();
-
-    if (!cx || !cy)
-        return QSize(0, 0);
-
-    rscaleX = maxDstSize.width() / cx;
-    rscaleY = maxDstSize.height() / cy;
-
-    if (rscaleX >= rscaleY)
-    {
-        cx = cx * rscaleY;
-        cy = maxDstSize.height();
-    }
-    else
-    {
-        cx = maxDstSize.width();
-        cy = cy * rscaleX;
-    }
-
-    return QSize(cx, cy);
-}
-
-
 class RenderTask : public Task
 {
 public:
@@ -69,9 +40,10 @@ public:
         QSize realSize;
         QImage image = provider->requestImage(imageId, &realSize, requestedSize);
 
-        QSize newSize = optimalFitSize(image.size(), requestedSize);
+        QSize newSize = image.size();
+        newSize.scale(requestedSize, Qt::KeepAspectRatio);
 
-        QImage dstImage(newSize, QImage::Format_ARGB32_Premultiplied);
+        QImage dstImage(newSize, QImage::Format_ARGB32_Premultiplied);      
 
         QPainter painter(&dstImage);
         painter.drawImage(dstImage.rect(), image);
