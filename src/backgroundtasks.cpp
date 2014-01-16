@@ -24,14 +24,39 @@ void Task::run()
 {
     DGUARDMETHODTIMED;
 
-    //moveToThread(QThread::currentThread());
-
+    emit started(this, QThread::currentThread());
     execute();
     emit finished(this);
 }
 
 void Task::postExecute()
 {
+}
+
+
+/* EventLoopTask */
+
+EventLoopTask::EventLoopTask() :
+    Task(),
+    eventLoop_(NULL)
+{
+}
+
+EventLoopTask::~EventLoopTask()
+{
+}
+
+void EventLoopTask::execute()
+{
+    DGUARDMETHOD;
+    eventLoop_ = new QEventLoop(this);
+    eventLoop_->exec();
+}
+
+void EventLoopTask::quit()
+{
+    if (eventLoop_)
+        eventLoop_->quit();
 }
 
 
@@ -63,6 +88,12 @@ void TaskProcessingController::clear()
     taskQueue_.clear();
 }
 
+void TaskProcessingController::handleTaskStarted(Task *task, QThread *thread)
+{
+    DGUARDMETHODTIMED;
+    task->moveToThread(thread);
+}
+
 void TaskProcessingController::handleTaskFinished(Task *task)
 {
     DGUARDMETHODTIMED;
@@ -75,6 +106,7 @@ void TaskProcessingController::addTask(Task *task)
 
     DPRINTF("Adding task %p", task);
 	
+    connect(task, SIGNAL(started(Task*, QThread*)), this, SLOT(handleTaskStarted(Task*, QThread*)), Qt::BlockingQueuedConnection);
     connect(task, SIGNAL(finished(Task*)), this, SLOT(handleTaskFinished(Task*)), Qt::BlockingQueuedConnection);
     connect(task, SIGNAL(destroyed()), this, SLOT(tryStartNextTask()), Qt::QueuedConnection);
 
@@ -116,7 +148,6 @@ void TaskProcessingController::tryStartNextTask()
 
     DPRINTF("Tasks left in queue: %d, active threads: %d, max threads: %d", taskQueue_.length(), pool_->activeThreadCount(), pool_->maxThreadCount());
 }
-
 
 void TaskProcessingController::waitForDone()
 {
