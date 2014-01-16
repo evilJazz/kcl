@@ -34,6 +34,7 @@
 #include <QDateTime>
 #include <QCryptographicHash>
 
+#include "KCL/filesystemutils.h"
 #include "KCL/debug.h"
 
 #define CBCI_MARKER "CBCIV3"
@@ -50,6 +51,14 @@ DiskImageCache::DiskImageCache(QObject *parent)
     :   QObject(parent),
         cacheDirectory_()
 {
+}
+
+void DiskImageCache::clearCacheDirectory()
+{
+    if (!cacheDirectory_.isEmpty() && cacheDirectory_.length() > 3 && QDir(cacheDirectory_).exists())
+    {
+        FileSystemUtils::removeDirectoryRecursively(cacheDirectory_);
+    }
 }
 
 QString DiskImageCache::getFilenameForKey(const QString &key) const

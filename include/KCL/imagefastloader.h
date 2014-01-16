@@ -61,8 +61,9 @@ public:
     QString cacheDirectory() const { return cacheDirectory_; }
     void setCacheDirectory(const QString &dirName) { cacheDirectory_ = dirName; }
 
-    QList<QSize> &imageSizes() { return imageSizes_; }
+    virtual void clearCacheDirectory();
 
+    QList<QSize> &imageSizes() { return imageSizes_; }
     virtual bool isImageCached(const QString &key) const;
 
     virtual ImageCacheResult saveImage(const QString &key, QImage *srcImage);
