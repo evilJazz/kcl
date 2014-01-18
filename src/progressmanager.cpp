@@ -258,11 +258,8 @@ void ProgressManager::endActivity()
 
 void ProgressManager::asyncTick(int progressValue, int progressTotal)
 {
-    if (qApp->hasPendingEvents())
-    {
-        qApp->processEvents();
-        qApp->sendPostedEvents();
-    }
+    QEventLoop el;
+    el.processEvents();
 }
 
 void ProgressManager::dumpTopLevelContext()
@@ -290,9 +287,6 @@ void ProgressManager::setTopLevelContext(ProgressContext *context)
 
 void ProgressManager::progressPercentageChangedHandler()
 {
-    if (qApp->hasPendingEvents())
-    {
-        qApp->processEvents();
-        qApp->sendPostedEvents();
-    }
+    QEventLoop el;
+    el.processEvents();
 }

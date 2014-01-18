@@ -372,6 +372,7 @@ QSize ImageFastLoader::getOriginalImageSizeFromImage(const QString &filename)
     if (result.isEmpty())
     {
         QImageReader reader;
+        reader.setDecideFormatFromContent(true); // Important!
         reader.setFileName(filename);
         result = reader.size();
     }
@@ -389,6 +390,7 @@ DiskImageCache::ImageCacheResult ImageFastLoader::loadImage(const QString &filen
     if (result == DiskImageCache::RequestedSizeNotInCache)
     {
         QImageReader reader;
+        reader.setDecideFormatFromContent(true); // Important!
         reader.setFileName(filename);
         if (returnExactSize)
         {
