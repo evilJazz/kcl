@@ -48,6 +48,24 @@ int KeyEventFilter::inputInterval() const
 #endif
 }
 
+bool KeyEventFilter::injectKeyPressed(int key, Qt::KeyboardModifiers modifiers, const QString &text, bool autorep, ushort count)
+{
+    QDeclarativeKeyEvent qke(QEvent::KeyPress, key, modifiers, text, autorep, count);
+    emit keyPressed(&qke);
+    if (qke.isAccepted())
+        return true;
+    return false;
+}
+
+bool KeyEventFilter::injectKeyReleased(int key, Qt::KeyboardModifiers modifiers, const QString &text, bool autorep, ushort count)
+{
+    QDeclarativeKeyEvent qke(QEvent::KeyRelease, key, modifiers, text, autorep, count);
+    emit keyReleased(&qke);
+    if (qke.isAccepted())
+        return true;
+    return false;
+}
+
 bool KeyEventFilter::eventFilter(QObject *watched, QEvent *event)
 {
     if (event->type() == QEvent::KeyPress)

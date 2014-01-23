@@ -68,6 +68,9 @@ public:
     
     int inputInterval() const;
 
+    Q_INVOKABLE bool injectKeyPressed(int key, Qt::KeyboardModifiers modifiers, const QString &text = QString(), bool autorep = false, ushort count = 1);
+    Q_INVOKABLE bool injectKeyReleased(int key, Qt::KeyboardModifiers modifiers, const QString &text = QString(), bool autorep = false, ushort count = 1);
+
 signals:
     void keyPressed(QDeclarativeKeyEvent *event);
     void keyReleased(QDeclarativeKeyEvent *event);
