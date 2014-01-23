@@ -33,6 +33,7 @@
 #include "KCL/settingsgroup.h"
 #include "KCL/filesystemutils.h"
 #include "KCL/cursorarea.h"
+#include "KCL/sceneutils.h"
 #include "KCL/imagerendersurface.h"
 #include "KCL/filescanner.h"
 #include "KCL/binaryfiledownloader.h"
@@ -91,6 +92,9 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 
     FileSystemUtils *fsUtils = new FileSystemUtils(engine);
     engine->rootContext()->setContextProperty("fsUtils", fsUtils);
+
+    SceneUtils *sceneUtils = new SceneUtils(engine);
+    engine->rootContext()->setContextProperty("sceneUtils", sceneUtils);
 
 #ifdef KCL_WIDGETS
     NativeDialogs *nativeDialogs = new NativeDialogs(engine);
