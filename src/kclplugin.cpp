@@ -42,6 +42,7 @@
 #include "KCL/progressmanager.h"
 #include "KCL/keyeventfilter.h"
 #include "KCL/settingsgroup.h"
+#include "KCL/colorutils.h"
 
 #ifdef KCL_WIDGETS
     #include "KCL/nativedialogs.h"
@@ -93,6 +94,9 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 
     FileSystemUtils *fsUtils = new FileSystemUtils(engine);
     engine->rootContext()->setContextProperty("fsUtils", fsUtils);
+
+    ColorUtils *colorUtils = new ColorUtils(engine);
+    engine->rootContext()->setContextProperty("colorUtils", colorUtils);
 
     SceneUtils *sceneUtils = new SceneUtils(engine);
     engine->rootContext()->setContextProperty("sceneUtils", sceneUtils);
