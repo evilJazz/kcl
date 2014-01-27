@@ -173,7 +173,7 @@ function webCall(url, params, action, callbackObject, useCache)
         }
     }
 
-    if (!quasarCore.isOnline)
+    if (!networkUtils.isOnline)
     {
         if (debug) console.log("No internet connection, will not do anything.");
 

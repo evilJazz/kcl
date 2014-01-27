@@ -57,7 +57,8 @@ HEADERS += \
     $$KCL_INC_PATH/KCL/sleepaid.h \
     $$KCL_INC_PATH/KCL/backgroundtasks.h \
     $$KCL_INC_PATH/KCL/imagerendersurface.h \
-    $$KCL_INC_PATH/KCL/sceneutils.h
+    $$KCL_INC_PATH/KCL/sceneutils.h \
+    $$KCL_INC_PATH/KCL/networkutils.h
 
 SOURCES += \
     $$KCL_SRC_PATH/kclplugin.cpp \
@@ -76,7 +77,8 @@ SOURCES += \
     $$KCL_SRC_PATH/translationenumerator.cpp \
     $$KCL_SRC_PATH/backgroundtasks.cpp \
     $$KCL_SRC_PATH/imagerendersurface.cpp \
-    $$KCL_SRC_PATH/sceneutils.cpp
+    $$KCL_SRC_PATH/sceneutils.cpp \
+    $$KCL_SRC_PATH/networkutils.cpp
 
 kcl_widgets {
     message("KCL: Configuring with Widgets support")
