@@ -13,8 +13,6 @@
 #include <QMap>
 #include <QTimerEvent>
 
-namespace KCL {
-
 class KCL_EXPORT Task : public QObject, public QRunnable
 {
     Q_OBJECT
@@ -75,7 +73,5 @@ protected:
     QThreadPool *pool_;
     QList<Task *> taskQueue_;
 };
-
-}
 
 #endif /*BACKGROUNDTASKS_H_INCLUDED*/

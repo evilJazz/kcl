@@ -6,8 +6,6 @@
 #include <QObject>
 #include <QVariant>
 
-namespace KCL {
-
 class KCL_EXPORT TranslationEnumerator : public QObject
 {
     Q_OBJECT
@@ -31,7 +29,5 @@ private:
     QString translationPath_;
     QVariantList availableTranslations_;
 };
-
-}
 
 #endif // TRANSLATIONENUMERATOR_H

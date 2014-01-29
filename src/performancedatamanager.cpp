@@ -26,8 +26,6 @@
 
 #include "KCL/debug.h"
 
-KCL_USE_NAMESPACE
-
 /* PerformanceDataDetail */
 
 PerformanceDataDetail::PerformanceDataDetail(PerformanceDataAspect *parent, const QString &identifier) :
@@ -36,6 +34,12 @@ PerformanceDataDetail::PerformanceDataDetail(PerformanceDataAspect *parent, cons
     startTimeStamp(0),
     stopTimeStamp(0)
 {
+    DGUARDMETHOD;
+}
+
+PerformanceDataDetail::~PerformanceDataDetail()
+{
+    DGUARDMETHOD;
 }
 
 QVariantMap PerformanceDataDetail::asVariant()
@@ -58,10 +62,12 @@ PerformanceDataAspect::PerformanceDataAspect(PerformanceData *parent, const QStr
     startTimeStamp_(0),
     endTimeStamp_(0)
 {
+    DGUARDMETHOD;
 }
 
 PerformanceDataAspect::~PerformanceDataAspect()
 {
+    DGUARDMETHOD;
     qDeleteAll(details_);
     details_.clear();
     detailHash_.clear();
@@ -141,11 +147,12 @@ PerformanceData::PerformanceData(PerformanceDataManager *parent, const QString &
     parent_(parent),
     name_(name)
 {
-
+    DGUARDMETHOD;
 }
 
 PerformanceData::~PerformanceData()
 {
+    DGUARDMETHOD;
     qDeleteAll(aspects_);
     aspects_.clear();
     aspectHash_.clear();

@@ -7,8 +7,6 @@
 #include <QList>
 #include <QAbstractListModel>
 
-namespace KCL {
-
 class KCL_EXPORT QObjectListModel : public QAbstractListModel
 {
     Q_OBJECT
@@ -100,8 +98,6 @@ template <typename T> const QList<QObject *> &castToObjectList(const QList<T> &l
 template <typename T> QList<QObject *> &castToObjectList(QList<T> &list)
 {
     return reinterpret_cast<QList<QObject *> &>(list);
-}
-
 }
 
 #endif // QOBJECTLISTMODEL_H

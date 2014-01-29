@@ -31,8 +31,6 @@
 
 #include "KCL/filesystemutils.h"
 
-KCL_USE_NAMESPACE
-
 /* FileScannerRunnable */
 
 FileScannerRunnable::FileScannerRunnable(FileScanner *fileScanner) :

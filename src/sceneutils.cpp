@@ -7,8 +7,6 @@
     #include <QGraphicsScene>
 #endif
 
-KCL_USE_NAMESPACE
-
 SceneUtils::SceneUtils(QObject *parent) :
     QObject(parent)
 {

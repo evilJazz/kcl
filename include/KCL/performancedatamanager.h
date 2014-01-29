@@ -30,8 +30,6 @@
 #include <QVariant>
 #include <QHash>
 
-namespace KCL {
-
 class PerformanceDataManager;
 class PerformanceData;
 class PerformanceDataAspect;
@@ -41,6 +39,7 @@ class KCL_EXPORT PerformanceDataDetail : public QObject
     Q_OBJECT
 public:
     PerformanceDataDetail(PerformanceDataAspect *parent, const QString &identifier);
+    virtual ~PerformanceDataDetail();
 
     QString identifier;
     qint64 startTimeStamp;
@@ -105,7 +104,7 @@ public:
     explicit PerformanceDataManager(QObject *parent = 0);
     virtual ~PerformanceDataManager();
 
-#define qPerformanceDataManager PerformanceDataManager::singleton()
+#define globalPerformanceDataManager PerformanceDataManager::singleton()
     static PerformanceDataManager &singleton();
 
     Q_INVOKABLE PerformanceData *addNewPerformanceData(const QString &name = QString::null);
@@ -140,10 +139,8 @@ public:
     QHash<QString, PerformanceData *> perfDataHash_;
 };
 
-}
-
-#define PERFDATA_STARTDETAIL(dataId, aspectId, detailId) qPerformanceDataManager.startDetail(dataId, aspectId, detailId)
-#define PERFDATA_STOPDETAIL(dataId, aspectId, detailId) qPerformanceDataManager.stopDetail(dataId, aspectId, detailId)
+#define PERFDATA_STARTDETAIL(dataId, aspectId, detailId) globalPerformanceDataManager.startDetail(dataId, aspectId, detailId)
+#define PERFDATA_STOPDETAIL(dataId, aspectId, detailId) globalPerformanceDataManager.stopDetail(dataId, aspectId, detailId)
 
 #define cStartUp "Start Up"
 

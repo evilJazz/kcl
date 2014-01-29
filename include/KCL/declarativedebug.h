@@ -9,8 +9,6 @@ class QDeclarativeEngine;
 class QScriptEngine;
 class QScriptContextInfo;
 
-namespace KCL {
-
 class KCL_EXPORT DeclarativeDebug : public QObject
 {
     Q_OBJECT
@@ -30,7 +28,5 @@ private:
 
     static QString getFunctionSignature(QScriptContextInfo *info);
 };
-
-}
 
 #endif // DECLARATIVEDEBUG_H

@@ -7,8 +7,6 @@
 #include "KCL/backgroundtasks.h"
 #include "KCL/debug.h"
 
-KCL_USE_NAMESPACE
-
 /* Task */
 
 Task::Task() :

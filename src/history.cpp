@@ -26,8 +26,6 @@
 #undef DEBUG
 #include "KCL/debug.h"
 
-KCL_USE_NAMESPACE
-
 History::History(bool undoMode, QObject *parent) :
     QObject(parent),
     undoMode_(undoMode)

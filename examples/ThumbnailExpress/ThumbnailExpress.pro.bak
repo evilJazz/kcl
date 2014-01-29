@@ -16,29 +16,50 @@ QML_IMPORT_PATH =
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
-    imagerendersurface.cpp \
-    testimageprovider.cpp
+    testimageprovider.cpp \
+    imagefastloaderimageprovider.cpp
+
+HEADERS += \
+    testimageprovider.h \
+    imagefastloaderimageprovider.h
 
 # Installation path
 # target.path =
 
-# Please do not modify the following two lines. Required for deployment.
-include(qmlapplicationviewer/qmlapplicationviewer.pri)
-qtcAddDeployment()
+## -- QMLPP RELATED CHANGES ARE BELOW -- #
 
-HEADERS += \
-    imagerendersurface.h \
-    testimageprovider.h
+# Include QML preprocessor
+include(../../qmlpp/src/qmlpp.pri)
 
-#DEFINES += DEBUG
+# Check which version of Qt we are dealing with and set up targets...
+contains(QT_VERSION, ^4\\..*): CONFIG += target_qtquick1
+contains(QT_VERSION, ^5\\..*): CONFIG += target_qtquick2
 
-include(kcl/kcl.pri)
+target_qtquick1 {
+    # Call preprocessor on all files in qml/qmlpptest, set defines @QtQuick1 and @JavaScriptTest1
+    # and rewrite QtQuick import to version 1.1
+    qmlPreprocessFolder($$PWD/qml/ThumbnailExpress, @QtQuick1 @JavaScriptTest1, 1.1)
 
-OTHER_FILES += \
-    qtc_packaging/debian_harmattan/rules \
-    qtc_packaging/debian_harmattan/README \
-    qtc_packaging/debian_harmattan/manifest.aegis \
-    qtc_packaging/debian_harmattan/copyright \
-    qtc_packaging/debian_harmattan/control \
-    qtc_packaging/debian_harmattan/compat \
-    qtc_packaging/debian_harmattan/changelog
+    # Set define required for combined viewer code in main.cpp
+    DEFINES += TARGET_QTQUICK1
+    QT += declarative
+
+    # Please do not modify the following two lines. Required for deployment.
+    include(qmlapplicationviewer/qmlapplicationviewer.pri)
+    qtcAddDeployment()
+}
+else: target_qtquick2 {
+    # Call preprocessor on all files in qml/qmlpptest, set define @QtQuick2 and @JavaScriptTest2
+    # and rewrite QtQuick import to version 2.1
+    qmlPreprocessFolder($$PWD/qml/ThumbnailExpress, @QtQuick2 @JavaScriptTest2, 2.1)
+
+    # Set define required for combined viewer code in main.cpp
+    DEFINES += TARGET_QTQUICK2
+    QT += quick
+
+    # Please do not modify the following two lines. Required for deployment.
+    include(qtquick2applicationviewer/qtquick2applicationviewer.pri)
+    qtcAddDeployment()
+}
+
+include(../../kcl.pri)

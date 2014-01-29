@@ -1,7 +1,5 @@
 #include "KCL/colorutils.h"
 
-KCL_USE_NAMESPACE
-
 ColorUtils::ColorUtils(QObject *parent) :
     QObject(parent)
 {

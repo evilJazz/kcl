@@ -28,8 +28,6 @@
 
 #include <QObject>
 
-namespace KCL {
-
 class KCL_EXPORT HistorySnapshot
 {
 public:
@@ -79,7 +77,5 @@ private:
     void loadSnapshot(int index);
     void dumpSnapshot(int index);
 };
-
-}
 
 #endif // HISTORY_H

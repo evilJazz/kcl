@@ -29,8 +29,6 @@
 #include <QObject>
 #include <QKeyEvent>
 
-namespace KCL {
-
 class KCL_EXPORT DeclarativeKeyEvent : public QObject
 {
     Q_OBJECT
@@ -80,7 +78,5 @@ signals:
 protected:
     virtual bool eventFilter(QObject *watched, QEvent *event);
 };
-
-}
 
 #endif // KEYEVENTFILTER_H

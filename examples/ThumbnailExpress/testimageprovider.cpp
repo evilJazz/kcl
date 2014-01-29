@@ -24,7 +24,7 @@ QImage TestImageProvider::requestImage(const QString &id, QSize *size, const QSi
     //image.fill(QColor(id).rgba());
     image.fill(QColor(qrand()).rgba());
 
-    KCL::SleepAid::msleep(qrand() % 20);
+    SleepAid::msleep(qrand() % 20);
     //SleepAid::msleep(20);
 
     return image;

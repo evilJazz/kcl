@@ -40,8 +40,6 @@
 #define CBCI_MARKER "CBCIV3"
 #define CBCI_MARKER_SIZE (sizeof(CBCI_MARKER) - 1)
 
-KCL_USE_NAMESPACE
-
 bool megaPixelLessThan(const CachedImageSize &s1, const CachedImageSize &s2)
 {
     return (s1.width * s1.height) < (s2.width * s2.height);

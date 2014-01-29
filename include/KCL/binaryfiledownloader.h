@@ -32,8 +32,6 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 
-namespace KCL {
-
 class KCL_EXPORT BinaryFileDownloader : public QObject
 {
     Q_OBJECT
@@ -68,7 +66,5 @@ private:
     QString errorText_;
     bool autoDelete_;
 };
-
-}
 
 #endif // BINARYFILEDOWNLOADER_H

@@ -30,9 +30,7 @@
 #include <QVariant>
 #include <QMessageBox>
 
-namespace KCL {
-
-class NativeDialogs : public QObject
+class KCL_EXPORT NativeDialogs : public QObject
 {
     Q_OBJECT
     Q_ENUMS(StandardButton)
@@ -106,7 +104,5 @@ public:
 public slots:
     
 };
-
-}
 
 #endif // NATIVEDIALOGS_H

@@ -11,8 +11,6 @@
     #include <QDeclarativeItem>
 #endif
 
-namespace KCL {
-
 class Task;
 
 class KCL_EXPORT ImageRenderSurface :
@@ -71,7 +69,5 @@ private:
     void removeTask();
     void setStatus(Status newStatus);
 };
-
-}
 
 #endif // IMAGERENDERSURFACE_H

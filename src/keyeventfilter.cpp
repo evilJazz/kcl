@@ -30,8 +30,6 @@
     #include <QApplication>
 #endif
 
-KCL_USE_NAMESPACE
-
 KeyEventFilter::KeyEventFilter(QObject *parent) :
     QObject(parent)
 {

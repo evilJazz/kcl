@@ -7,8 +7,6 @@
 #include <QVariant>
 #include <QColor>
 
-namespace KCL {
-
 class KCL_EXPORT ColorUtils : public QObject
 {
     Q_OBJECT
@@ -24,7 +22,5 @@ signals:
 public slots:
 
 };
-
-}
 
 #endif // COLORUTILS_H

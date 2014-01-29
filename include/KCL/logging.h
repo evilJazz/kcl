@@ -28,13 +28,11 @@
 
 #include <QObject>
 
-namespace KCL {
-
 class KCL_EXPORT Logging
 {
 public:
     static Logging& singleton();
-#	define gLogging Logging::singleton()
+#	define globalLogging Logging::singleton()
 
     void registerHandler();
     void unregisterHandler();
@@ -60,7 +58,5 @@ protected:
     static void customMessageHandler(QtMsgType type, const char *msg);
 #endif
 };
-
-}
 
 #endif // LOGGING_H

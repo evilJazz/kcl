@@ -8,8 +8,6 @@
 #include <QNetworkSession>
 #include <QRunnable>
 
-namespace KCL {
-
 class KCL_EXPORT NetworkUtils : public QObject
 {
     Q_OBJECT
@@ -59,7 +57,4 @@ protected:
         emit done(network);
     }
 };
-
-}
-
 #endif // NETWORKUTILS_H

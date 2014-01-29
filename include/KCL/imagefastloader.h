@@ -31,8 +31,6 @@
 #include <QSize>
 #include <QImage>
 
-namespace KCL {
-
 class KCL_EXPORT CachedImageSize
 {
 public:
@@ -106,7 +104,5 @@ protected:
 private:
     QString createCacheKeyForFileName(const QString &filename) const;
 };
-
-}
 
 #endif // IMAGEFASTLOADER_H

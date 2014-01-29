@@ -12,8 +12,6 @@
     #include <QDeclarativeItem>
 #endif
 
-namespace KCL {
-
 class KCL_EXPORT SceneUtils : public QObject
 {
     Q_OBJECT
@@ -28,7 +26,5 @@ public:
     Q_INVOKABLE static QVariantList getItemsBelow(QDeclarativeItem *item, qreal sceneX, qreal sceneY);
 #endif
 };
-
-}
 
 #endif // SCENEUTILS_H

@@ -28,8 +28,6 @@
 
 #include "KCL/debug.h"
 
-KCL_USE_NAMESPACE
-
 static ProgressManager *progressMan = NULL;
 
 /* ProgressContext */

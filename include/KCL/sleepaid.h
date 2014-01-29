@@ -5,8 +5,6 @@
 
 #include <QThread>
 
-namespace KCL {
-
 class KCL_EXPORT SleepAid : public QThread
 {
 public:
@@ -14,7 +12,5 @@ public:
     static void msleep(unsigned long msecs) { QThread::msleep(msecs); }
     static void usleep(unsigned long usecs) { QThread::usleep(usecs); }
 };
-
-}
 
 #endif // SLEEPAID_H

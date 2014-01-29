@@ -24,7 +24,7 @@ public:
     QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize);
 
 protected:
-    KCL::ImageFastLoader fastLoader_;
+    ImageFastLoader fastLoader_;
 };
 
 #endif // IMAGEFASTLOADERIMAGEPROVIDER_H

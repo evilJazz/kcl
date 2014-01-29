@@ -32,8 +32,6 @@
     #include <QDeclarativeItem>
 #endif
 
-namespace KCL {
-
 class KCL_EXPORT CursorArea :
 #ifdef KCL_QTQUICK2
     public QQuickItem
@@ -73,7 +71,5 @@ signals:
 private:
     Cursor cursor_;
 };
-
-}
 
 #endif // CURSORAREA_H

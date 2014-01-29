@@ -53,8 +53,6 @@
     #include "KCL/declarativedebug.h"
 #endif
 
-KCL_USE_NAMESPACE
-
 void KCLPlugin::registerTypes(const char *uri)
 {
     //@uri KCL
@@ -116,7 +114,7 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
     engine->rootContext()->setContextProperty("debug", declarativeDebug);
 #endif
 
-    engine->rootContext()->setContextProperty("performanceDataManager", &qPerformanceDataManager);
+    engine->rootContext()->setContextProperty("performanceDataManager", &globalPerformanceDataManager);
     engine->rootContext()->setContextProperty("progressManager", &globalProgressManager);
 }
 

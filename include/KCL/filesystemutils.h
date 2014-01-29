@@ -30,8 +30,6 @@
 #include <QUrl>
 #include <QVariantMap>
 
-namespace KCL {
-
 class KCL_EXPORT FileSystemUtils : public QObject
 {
     Q_OBJECT
@@ -92,7 +90,5 @@ signals:
 public slots:
 
 };
-
-}
 
 #endif // FILESYSTEMUTILS_H

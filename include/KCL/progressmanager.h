@@ -28,8 +28,6 @@
 
 #include <QObject>
 
-namespace KCL {
-
 class ProgressManager;
 class ProgressContext;
 class ProgressActivityGuard;
@@ -104,7 +102,7 @@ public:
 
     static ProgressManager& singleton();
 
-#   define globalProgressManager KCL::ProgressManager::singleton()
+#   define globalProgressManager ProgressManager::singleton()
 
     Q_INVOKABLE void beginActivity(const QString &activityName, int subSteps = 0);
 
@@ -157,10 +155,8 @@ private:
     QString theGreatOptimizationPreventer_;
 };
 
-}
-
-#define ScopedActivity() volatile KCL::ProgressActivityGuard scopedActivity(0, "Activity")
-#define ScopedActivityWithSubSteps(subSteps) volatile KCL::ProgressActivityGuard scopedActivityWithSubSteps(subSteps, "Activity")
-#define NamedScopedActivityWithSubSteps(name, subSteps) volatile KCL::ProgressActivityGuard name(subSteps, "Activity")
+#define ScopedActivity() volatile ProgressActivityGuard scopedActivity(0, "Activity")
+#define ScopedActivityWithSubSteps(subSteps) volatile ProgressActivityGuard scopedActivityWithSubSteps(subSteps, "Activity")
+#define NamedScopedActivityWithSubSteps(name, subSteps) volatile ProgressActivityGuard name(subSteps, "Activity")
 
 #endif // PROGRESSMANAGER_H
