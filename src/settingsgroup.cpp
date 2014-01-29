@@ -34,6 +34,8 @@
     #include <QDeclarativeProperty>
 #endif
 
+KCL_USE_NAMESPACE
+
 static QString *globalIniFilename = NULL;
 static QSettings *globalSettings_ = NULL;
 

@@ -26,6 +26,8 @@
 
 #include "KCL/debug.h"
 
+KCL_USE_NAMESPACE
+
 /* PerformanceDataDetail */
 
 PerformanceDataDetail::PerformanceDataDetail(PerformanceDataAspect *parent, const QString &identifier) :

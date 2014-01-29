@@ -28,6 +28,8 @@
 
 #include <QObject>
 
+namespace KCL {
+
 class KCL_EXPORT Logging
 {
 public:
@@ -58,5 +60,7 @@ protected:
     static void customMessageHandler(QtMsgType type, const char *msg);
 #endif
 };
+
+}
 
 #endif // LOGGING_H

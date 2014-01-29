@@ -4,6 +4,8 @@
 #include <QThreadPool>
 #include <QTimer>
 
+KCL_USE_NAMESPACE
+
 /* NetworkUtils */
 
 NetworkUtils::NetworkUtils(QObject *parent) :

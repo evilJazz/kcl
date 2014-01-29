@@ -10,6 +10,8 @@
 
 #include "qdeclarativedebughelper_p.h"
 
+KCL_USE_NAMESPACE
+
 const QString cIdentifier("QML/JS");
 
 DeclarativeDebug::DeclarativeDebug(QDeclarativeEngine *engine) :

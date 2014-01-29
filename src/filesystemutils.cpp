@@ -34,6 +34,8 @@
 #include <QDesktopServices>
 #endif
 
+KCL_USE_NAMESPACE
+
 FileSystemUtils::FileSystemUtils(QObject *parent) :
     QObject(parent)
 {

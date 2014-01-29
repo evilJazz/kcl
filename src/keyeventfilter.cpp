@@ -30,6 +30,8 @@
     #include <QApplication>
 #endif
 
+KCL_USE_NAMESPACE
+
 KeyEventFilter::KeyEventFilter(QObject *parent) :
     QObject(parent)
 {
@@ -50,7 +52,7 @@ int KeyEventFilter::inputInterval() const
 
 bool KeyEventFilter::injectKeyPressed(int key, Qt::KeyboardModifiers modifiers, const QString &text, bool autorep, ushort count)
 {
-    QDeclarativeKeyEvent qke(QEvent::KeyPress, key, modifiers, text, autorep, count);
+    DeclarativeKeyEvent qke(QEvent::KeyPress, key, modifiers, text, autorep, count);
     emit keyPressed(&qke);
     if (qke.isAccepted())
         return true;
@@ -59,7 +61,7 @@ bool KeyEventFilter::injectKeyPressed(int key, Qt::KeyboardModifiers modifiers, 
 
 bool KeyEventFilter::injectKeyReleased(int key, Qt::KeyboardModifiers modifiers, const QString &text, bool autorep, ushort count)
 {
-    QDeclarativeKeyEvent qke(QEvent::KeyRelease, key, modifiers, text, autorep, count);
+    DeclarativeKeyEvent qke(QEvent::KeyRelease, key, modifiers, text, autorep, count);
     emit keyReleased(&qke);
     if (qke.isAccepted())
         return true;
@@ -70,14 +72,14 @@ bool KeyEventFilter::eventFilter(QObject *watched, QEvent *event)
 {
     if (event->type() == QEvent::KeyPress)
     {
-        QDeclarativeKeyEvent qke(*static_cast<QKeyEvent *>(event));
+        DeclarativeKeyEvent qke(*static_cast<QKeyEvent *>(event));
         emit keyPressed(&qke);
         if (qke.isAccepted())
             return true;
     }
     else if (event->type() == QEvent::KeyRelease)
     {
-        QDeclarativeKeyEvent qke(*static_cast<QKeyEvent *>(event));
+        DeclarativeKeyEvent qke(*static_cast<QKeyEvent *>(event));
         emit keyReleased(&qke);
         if (qke.isAccepted())
             return true;

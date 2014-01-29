@@ -1,12 +1,16 @@
 #ifndef NETWORKUTILS_H
 #define NETWORKUTILS_H
 
+#include "KCL/kcl_global.h"
+
 #include <QObject>
 #include <QNetworkConfigurationManager>
 #include <QNetworkSession>
 #include <QRunnable>
 
-class NetworkUtils : public QObject
+namespace KCL {
+
+class KCL_EXPORT NetworkUtils : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool isOnline READ isOnline NOTIFY onlineStateChanged)
@@ -36,7 +40,7 @@ private:
     void connectToNetworkConfigurationManager();
 };
 
-class NetworkConfigurationRunnable : public QObject, public QRunnable
+class KCL_EXPORT NetworkConfigurationRunnable : public QObject, public QRunnable
 {
     Q_OBJECT
 public:
@@ -55,4 +59,7 @@ protected:
         emit done(network);
     }
 };
+
+}
+
 #endif // NETWORKUTILS_H

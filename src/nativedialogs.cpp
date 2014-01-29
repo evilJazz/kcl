@@ -25,6 +25,8 @@
 
 #include <QFileDialog>
 
+KCL_USE_NAMESPACE
+
 NativeDialogs::NativeDialogs(QObject *parent) :
     QObject(parent)
 {

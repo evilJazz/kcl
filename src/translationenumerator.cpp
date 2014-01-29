@@ -5,6 +5,8 @@
 
 #include "KCL/debug.h"
 
+KCL_USE_NAMESPACE
+
 TranslationEnumerator::TranslationEnumerator(const QString translationPath, QObject *parent) :
     QObject(parent),
     translationPath_(translationPath)

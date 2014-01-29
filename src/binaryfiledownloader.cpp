@@ -23,6 +23,8 @@
 
 #include "KCL/binaryfiledownloader.h"
 
+KCL_USE_NAMESPACE
+
 BinaryFileDownloader::BinaryFileDownloader() :
     QObject(),
     errorCode_(0),

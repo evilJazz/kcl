@@ -24,9 +24,13 @@
 #ifndef NATIVEDIALOGS_H
 #define NATIVEDIALOGS_H
 
+#include "KCL/kcl_global.h"
+
 #include <QObject>
 #include <QVariant>
 #include <QMessageBox>
+
+namespace KCL {
 
 class NativeDialogs : public QObject
 {
@@ -102,5 +106,7 @@ public:
 public slots:
     
 };
+
+}
 
 #endif // NATIVEDIALOGS_H

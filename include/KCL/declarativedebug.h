@@ -1,13 +1,17 @@
 #ifndef DECLARATIVEDEBUG_H
 #define DECLARATIVEDEBUG_H
 
+#include "KCL/kcl_global.h"
+
 #include <QObject>
 
 class QDeclarativeEngine;
 class QScriptEngine;
 class QScriptContextInfo;
 
-class DeclarativeDebug : public QObject
+namespace KCL {
+
+class KCL_EXPORT DeclarativeDebug : public QObject
 {
     Q_OBJECT
 public:
@@ -26,5 +30,7 @@ private:
 
     static QString getFunctionSignature(QScriptContextInfo *info);
 };
+
+}
 
 #endif // DECLARATIVEDEBUG_H

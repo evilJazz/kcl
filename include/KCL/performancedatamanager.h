@@ -30,6 +30,8 @@
 #include <QVariant>
 #include <QHash>
 
+namespace KCL {
+
 class PerformanceDataManager;
 class PerformanceData;
 class PerformanceDataAspect;
@@ -137,6 +139,8 @@ public:
     QList<PerformanceData *> perfDataList_;
     QHash<QString, PerformanceData *> perfDataHash_;
 };
+
+}
 
 #define PERFDATA_STARTDETAIL(dataId, aspectId, detailId) qPerformanceDataManager.startDetail(dataId, aspectId, detailId)
 #define PERFDATA_STOPDETAIL(dataId, aspectId, detailId) qPerformanceDataManager.stopDetail(dataId, aspectId, detailId)

@@ -22,6 +22,8 @@
     #define QDeclarativePaintedItem QDeclarativeItem
 #endif
 
+KCL_BEGIN_NAMESPACE
+
 static TaskProcessingController *instance = NULL;
 
 TaskProcessingController &tpc()
@@ -192,3 +194,5 @@ void ImageRenderSurface::setStatus(ImageRenderSurface::Status newStatus)
         emit statusChanged();
     }
 }
+
+KCL_END_NAMESPACE

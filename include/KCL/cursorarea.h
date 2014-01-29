@@ -24,13 +24,17 @@
 #ifndef CURSORAREA_H
 #define CURSORAREA_H
 
+#include "KCL/kcl_global.h"
+
 #ifdef KCL_QTQUICK2
     #include <QQuickItem>
 #else
     #include <QDeclarativeItem>
 #endif
 
-class CursorArea :
+namespace KCL {
+
+class KCL_EXPORT CursorArea :
 #ifdef KCL_QTQUICK2
     public QQuickItem
 #else
@@ -69,5 +73,7 @@ signals:
 private:
     Cursor cursor_;
 };
+
+}
 
 #endif // CURSORAREA_H

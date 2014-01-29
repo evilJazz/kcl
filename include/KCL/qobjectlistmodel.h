@@ -1,11 +1,15 @@
 #ifndef QOBJECTLISTMODEL_H
 #define QOBJECTLISTMODEL_H
 
+#include "KCL/kcl_global.h"
+
 #include <QObject>
 #include <QList>
 #include <QAbstractListModel>
 
-class QObjectListModel : public QAbstractListModel
+namespace KCL {
+
+class KCL_EXPORT QObjectListModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ rowCount NOTIFY changed)
@@ -96,6 +100,8 @@ template <typename T> const QList<QObject *> &castToObjectList(const QList<T> &l
 template <typename T> QList<QObject *> &castToObjectList(QList<T> &list)
 {
     return reinterpret_cast<QList<QObject *> &>(list);
+}
+
 }
 
 #endif // QOBJECTLISTMODEL_H

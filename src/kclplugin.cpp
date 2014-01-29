@@ -53,6 +53,8 @@
     #include "KCL/declarativedebug.h"
 #endif
 
+KCL_USE_NAMESPACE
+
 void KCLPlugin::registerTypes(const char *uri)
 {
     //@uri KCL
@@ -78,7 +80,7 @@ void KCLPlugin::registerTypes(const char *uri)
     qmlRegisterUncreatableType<ProgressManager>(uri, 1, 0, "ProgressManager", "Can not instantiate ProgressManager, use progressManager singleton instead.");
     qmlRegisterType<ProgressContext>();
 
-    qmlRegisterType<QDeclarativeKeyEvent>();
+    qmlRegisterType<DeclarativeKeyEvent>();
     qmlRegisterType<KeyEventFilter>();
 
 #ifndef KCL_QTQUICK2

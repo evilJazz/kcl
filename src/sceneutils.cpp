@@ -1,18 +1,20 @@
 #include "KCL/sceneutils.h"
 #include "KCL/debug.h"
 
-#ifdef QTQUICK2
+#ifdef KCL_QTQUICK2
     #include <QQuickWindow>
 #else
     #include <QGraphicsScene>
 #endif
+
+KCL_USE_NAMESPACE
 
 SceneUtils::SceneUtils(QObject *parent) :
     QObject(parent)
 {
 }
 
-#ifdef QTQUICK2
+#ifdef KCL_QTQUICK2
 
 static bool itemZOrder_sort(QQuickItem *lhs, QQuickItem *rhs)
 {

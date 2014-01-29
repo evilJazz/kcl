@@ -28,6 +28,8 @@
 #define QDeclarativeItem QQuickItem
 #endif
 
+KCL_USE_NAMESPACE
+
 CursorArea::CursorArea(QDeclarativeItem *parent) :
     QDeclarativeItem(parent),
     cursor_(DefaultCursor)

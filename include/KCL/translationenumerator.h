@@ -1,10 +1,14 @@
 #ifndef TRANSLATIONENUMERATOR_H
 #define TRANSLATIONENUMERATOR_H
 
+#include "KCL/kcl_global.h"
+
 #include <QObject>
 #include <QVariant>
 
-class TranslationEnumerator : public QObject
+namespace KCL {
+
+class KCL_EXPORT TranslationEnumerator : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QVariantList availableTranslations READ availableTranslations NOTIFY availableTranslationsChanged)
@@ -27,5 +31,7 @@ private:
     QString translationPath_;
     QVariantList availableTranslations_;
 };
+
+}
 
 #endif // TRANSLATIONENUMERATOR_H

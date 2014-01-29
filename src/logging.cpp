@@ -24,13 +24,17 @@
 #include "KCL/logging.h"
 
 #include <QFile>
+#ifdef KCL_WIDGETS
+#include <QTextEdit>
+#endif
+
+KCL_USE_NAMESPACE
 
 static Logging *loggingInstance = NULL;
 static bool loggingEnabled_ = true;
 static QFile *logFile_ = NULL;
 
 #ifdef KCL_WIDGETS
-#include <QTextEdit>
 static QTextEdit *logWindow_ = NULL;
 #endif
 

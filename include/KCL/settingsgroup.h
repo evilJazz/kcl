@@ -40,6 +40,8 @@
 
 #include <QSettings>
 
+namespace KCL {
+
 class KCL_EXPORT SettingsGroup :
     public QObject,
 #ifdef KCL_QTQUICK2
@@ -134,5 +136,7 @@ private:
     void connectToNotifySignals();
     bool shallSkipProperty(const QString &propName);
 };
+
+}
 
 #endif // SETTINGSGROUP_H

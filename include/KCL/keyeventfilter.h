@@ -29,7 +29,9 @@
 #include <QObject>
 #include <QKeyEvent>
 
-class KCL_EXPORT QDeclarativeKeyEvent : public QObject
+namespace KCL {
+
+class KCL_EXPORT DeclarativeKeyEvent : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(int key READ key)
@@ -40,9 +42,9 @@ class KCL_EXPORT QDeclarativeKeyEvent : public QObject
     Q_PROPERTY(bool accepted READ isAccepted WRITE setAccepted)
 
 public:
-    QDeclarativeKeyEvent(QEvent::Type type, int key, Qt::KeyboardModifiers modifiers, const QString &text=QString(), bool autorep=false, ushort count=1)
+    DeclarativeKeyEvent(QEvent::Type type, int key, Qt::KeyboardModifiers modifiers, const QString &text=QString(), bool autorep=false, ushort count=1)
         : event(type, key, modifiers, text, autorep, count) { event.setAccepted(false); }
-    QDeclarativeKeyEvent(const QKeyEvent &ke)
+    DeclarativeKeyEvent(const QKeyEvent &ke)
         : event(ke) { event.setAccepted(false); }
 
     int key() const { return event.key(); }
@@ -72,11 +74,13 @@ public:
     Q_INVOKABLE bool injectKeyReleased(int key, Qt::KeyboardModifiers modifiers, const QString &text = QString(), bool autorep = false, ushort count = 1);
 
 signals:
-    void keyPressed(QDeclarativeKeyEvent *event);
-    void keyReleased(QDeclarativeKeyEvent *event);
+    void keyPressed(DeclarativeKeyEvent *event);
+    void keyReleased(DeclarativeKeyEvent *event);
 
 protected:
     virtual bool eventFilter(QObject *watched, QEvent *event);
 };
+
+}
 
 #endif // KEYEVENTFILTER_H

@@ -1,11 +1,15 @@
 #ifndef COLORUTILS_H
 #define COLORUTILS_H
 
+#include "KCL/kcl_global.h"
+
 #include <QObject>
 #include <QVariant>
 #include <QColor>
 
-class ColorUtils : public QObject
+namespace KCL {
+
+class KCL_EXPORT ColorUtils : public QObject
 {
     Q_OBJECT
 public:
@@ -20,5 +24,7 @@ signals:
 public slots:
 
 };
+
+}
 
 #endif // COLORUTILS_H

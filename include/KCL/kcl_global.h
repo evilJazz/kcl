@@ -36,4 +36,11 @@
     #endif
 #endif
 
+// Don't use the following defines in header files that will be
+// processed by MOC since it will not evaluate defines. Sigh.
+#define KCL_BEGIN_NAMESPACE namespace KCL {
+#define KCL_END_NAMESPACE }
+
+#define KCL_USE_NAMESPACE using namespace KCL;
+
 #endif // KCL_GLOBAL_H

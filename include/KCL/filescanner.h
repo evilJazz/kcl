@@ -31,9 +31,11 @@
 #include <QVariant>
 #include <QRunnable>
 
+namespace KCL {
+
 class FileScanner;
 
-class FileScannerRunnable : public QObject, public QRunnable
+class KCL_EXPORT FileScannerRunnable : public QObject, public QRunnable
 {
     Q_OBJECT
 public:
@@ -118,5 +120,7 @@ private:
 
     FileScannerRunnable *runnable_;
 };
+
+}
 
 #endif // FILESCANNER_H

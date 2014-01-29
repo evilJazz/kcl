@@ -1,6 +1,8 @@
 #ifndef BACKGROUNDTASKS_H_INCLUDED
 #define BACKGROUNDTASKS_H_INCLUDED
 
+#include "kcl_global.h"
+
 #include <QMutex>
 #include <QList>
 #include <QEventLoop>
@@ -11,7 +13,9 @@
 #include <QMap>
 #include <QTimerEvent>
 
-class Task : public QObject, public QRunnable
+namespace KCL {
+
+class KCL_EXPORT Task : public QObject, public QRunnable
 {
     Q_OBJECT
 public:
@@ -30,7 +34,7 @@ private:
     virtual void run();
 };
 
-class EventLoopTask : public Task
+class KCL_EXPORT EventLoopTask : public Task
 {
     Q_OBJECT
 public:
@@ -46,7 +50,7 @@ private:
     QEventLoop *eventLoop_;
 };
 
-class TaskProcessingController : public QObject
+class KCL_EXPORT TaskProcessingController : public QObject
 {
     Q_OBJECT
 public:
@@ -71,5 +75,7 @@ protected:
     QThreadPool *pool_;
     QList<Task *> taskQueue_;
 };
+
+}
 
 #endif /*BACKGROUNDTASKS_H_INCLUDED*/
