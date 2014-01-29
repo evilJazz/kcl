@@ -55,7 +55,7 @@ else: target_qtquick2 {
 
     # Set define required for combined viewer code in main.cpp
     DEFINES += TARGET_QTQUICK2
-    QT += quick
+    QT += quick widgets
 
     # Please do not modify the following two lines. Required for deployment.
     include(qtquick2applicationviewer/qtquick2applicationviewer.pri)

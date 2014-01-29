@@ -4,6 +4,7 @@
     #include <QDeclarativeEngine>
 #elif defined(TARGET_QTQUICK2)
     #include <QtGui/QGuiApplication>
+    #include <QtWidgets/QApplication>
     #include "qtquick2applicationviewer.h"
     #include <QQmlEngine>
 #endif
@@ -23,7 +24,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     viewer.addImportPath(QLatin1String("modules"));
     viewer.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
 #elif defined(TARGET_QTQUICK2)
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
 
     QtQuick2ApplicationViewer viewer;
 #endif

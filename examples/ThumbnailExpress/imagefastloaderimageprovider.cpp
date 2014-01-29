@@ -11,7 +11,7 @@
 ImageFastLoaderImageProvider::ImageFastLoaderImageProvider() :
     QDeclarativeImageProvider(QDeclarativeImageProvider::Image)
 {
-    fastLoader_.setCacheDirectory(FileSystemUtils::pathAppend(FileSystemUtils::cacheLocation(), "imgcache"));
+    fastLoader_.setCacheDirectory(KCL::FileSystemUtils::pathAppend(KCL::FileSystemUtils::cacheLocation(), "imgcache"));
 
     QList<QSize> cachedSizes;
     cachedSizes.append(QSize(32, 32));
@@ -26,7 +26,7 @@ QImage ImageFastLoaderImageProvider::requestImage(const QString &id, QSize *size
 {
     QImage resultImage;
 
-    DiskImageCache::ImageCacheResult result = fastLoader_.getImage(id, &resultImage, requestedSize, true, size);
+    KCL::DiskImageCache::ImageCacheResult result = fastLoader_.getImage(id, &resultImage, requestedSize, true, size);
 
     return resultImage;
 }
