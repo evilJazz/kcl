@@ -36,14 +36,17 @@ class KCL_EXPORT DeclarativeKeyEvent : public QObject
     Q_PROPERTY(QString text READ text)
     Q_PROPERTY(int modifiers READ modifiers)
     Q_PROPERTY(bool isAutoRepeat READ isAutoRepeat)
+    Q_PROPERTY(bool isSpontaneous READ spontaneous)
     Q_PROPERTY(int count READ count)
     Q_PROPERTY(bool accepted READ isAccepted WRITE setAccepted)
-
+    Q_PROPERTY(quint32 nativeScanCode READ nativeScanCode)
+    Q_PROPERTY(quint32 nativeVirtualKey READ nativeVirtualKey)
+    Q_PROPERTY(quint32 nativeModifiers READ nativeModifiers)
 public:
-    DeclarativeKeyEvent(QEvent::Type type, int key, Qt::KeyboardModifiers modifiers, const QString &text=QString(), bool autorep=false, ushort count=1)
-        : event(type, key, modifiers, text, autorep, count) { event.setAccepted(false); }
+    DeclarativeKeyEvent(QEvent::Type type, int key, int modifiers, const QString &text=QString(), bool autorep=false, ushort count=1, bool spontaneous = true)
+        : event(type, key, (Qt::KeyboardModifiers)modifiers, text, autorep, count), spontaneous_(spontaneous) { event.setAccepted(false); }
     DeclarativeKeyEvent(const QKeyEvent &ke)
-        : event(ke) { event.setAccepted(false); }
+        : event(ke) { spontaneous_ = event.spontaneous(); event.setAccepted(false); }
 
     int key() const { return event.key(); }
     QString text() const { return event.text(); }
@@ -51,11 +54,18 @@ public:
     bool isAutoRepeat() const { return event.isAutoRepeat(); }
     int count() const { return event.count(); }
 
+    bool spontaneous() { return spontaneous_; }
+
     bool isAccepted() { return event.isAccepted(); }
     void setAccepted(bool accepted) { event.setAccepted(accepted); }
 
+    quint32 nativeScanCode() const { return event.nativeScanCode(); }
+    quint32 nativeVirtualKey() const { return event.nativeVirtualKey(); }
+    quint32 nativeModifiers() const { return event.nativeModifiers(); }
+
 private:
     QKeyEvent event;
+    bool spontaneous_;
 };
 
 class KCL_EXPORT KeyEventFilter : public QObject
@@ -66,10 +76,13 @@ public:
     explicit KeyEventFilter(QObject *parent = 0);
     virtual ~KeyEventFilter();
     
-    int inputInterval() const;
+    Q_INVOKABLE static int inputInterval();
 
-    Q_INVOKABLE bool injectKeyPressed(int key, Qt::KeyboardModifiers modifiers, const QString &text = QString(), bool autorep = false, ushort count = 1);
-    Q_INVOKABLE bool injectKeyReleased(int key, Qt::KeyboardModifiers modifiers, const QString &text = QString(), bool autorep = false, ushort count = 1);
+    Q_INVOKABLE static QString keyToString(int key);
+    Q_INVOKABLE static int interpretKeyEvent(DeclarativeKeyEvent *event);
+
+    Q_INVOKABLE bool injectKeyPressed(int key, int modifiers = 0, const QString &text = QString(), bool autorep = false, ushort count = 1);
+    Q_INVOKABLE bool injectKeyReleased(int key, int modifiers = 0, const QString &text = QString(), bool autorep = false, ushort count = 1);
 
 signals:
     void keyPressed(DeclarativeKeyEvent *event);

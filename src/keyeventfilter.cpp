@@ -39,7 +39,7 @@ KeyEventFilter::~KeyEventFilter()
 {
 }
 
-int KeyEventFilter::inputInterval() const
+int KeyEventFilter::inputInterval()
 {
 #ifdef KCL_QTQUICK2
     return qApp->styleHints()->keyboardInputInterval();
@@ -48,18 +48,44 @@ int KeyEventFilter::inputInterval() const
 #endif
 }
 
-bool KeyEventFilter::injectKeyPressed(int key, Qt::KeyboardModifiers modifiers, const QString &text, bool autorep, ushort count)
+QString KeyEventFilter::keyToString(int key)
 {
-    DeclarativeKeyEvent qke(QEvent::KeyPress, key, modifiers, text, autorep, count);
+    return QKeySequence(key).toString(QKeySequence::PortableText);
+}
+
+int KeyEventFilter::interpretKeyEvent(DeclarativeKeyEvent *event)
+{
+    int result = event->key();
+
+    if (result == Qt::Key_Control ||
+        result == Qt::Key_Shift ||
+        result == Qt::Key_Alt ||
+        result == Qt::Key_AltGr ||
+        result == Qt::Key_Meta)
+    {
+        result = event->modifiers();
+    }
+    else
+    {
+        if (event->modifiers() > 0)
+            result += event->modifiers();
+    }
+
+    return result;
+}
+
+bool KeyEventFilter::injectKeyPressed(int key, int modifiers, const QString &text, bool autorep, ushort count)
+{
+    DeclarativeKeyEvent qke(QEvent::KeyPress, key, modifiers, text, autorep, count, false);
     emit keyPressed(&qke);
     if (qke.isAccepted())
         return true;
     return false;
 }
 
-bool KeyEventFilter::injectKeyReleased(int key, Qt::KeyboardModifiers modifiers, const QString &text, bool autorep, ushort count)
+bool KeyEventFilter::injectKeyReleased(int key, int modifiers, const QString &text, bool autorep, ushort count)
 {
-    DeclarativeKeyEvent qke(QEvent::KeyRelease, key, modifiers, text, autorep, count);
+    DeclarativeKeyEvent qke(QEvent::KeyRelease, key, modifiers, text, autorep, count, false);
     emit keyReleased(&qke);
     if (qke.isAccepted())
         return true;
