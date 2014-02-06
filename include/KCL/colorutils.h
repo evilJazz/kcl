@@ -7,6 +7,11 @@
 #include <QVariant>
 #include <QColor>
 
+#ifdef Q_OS_SYMBIAN
+// Workaround to avoid naming clash with Symbian RTL
+#define ColorUtils KCLColorUtils
+#endif
+
 class KCL_EXPORT ColorUtils : public QObject
 {
     Q_OBJECT
