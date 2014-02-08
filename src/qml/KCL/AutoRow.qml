@@ -21,4 +21,9 @@ Row {
         logic.blockUpdate = false;
         logic.fullUpdate();
     }
+
+    Component.onDestruction:
+    {
+        childrenChanged.disconnect(logic.updateNonAutoSizedChildren);
+    }
 }

@@ -23,13 +23,23 @@ QtObject {
     property bool isHorizontal: orientation == Qt.Horizontal
     property int orientation: Qt.Horizontal
 
-    function initFromTargetParent()
+    Component.onDestruction:
+    {
+        disconnectConnectedParent();
+    }
+
+    function disconnectConnectedParent()
     {
         if (connectedParent)
         {
             connectedParent.childrenChanged.disconnect(internal.initFromSiblings);
             connectedParent = null;
         }
+    }
+
+    function initFromTargetParent()
+    {
+        disconnectConnectedParent();
 
         if (target.parent)
         {

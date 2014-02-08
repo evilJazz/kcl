@@ -20,6 +20,17 @@ QtObject {
     property real visibleNonAutoSizedChildrenSize
     property bool blockUpdate: true
 
+    Component.onDestruction:
+    {
+        if (!target) return;
+        
+        for (var i = 0; i < target.children.length; ++i)
+        {
+            var item = target.children[i];
+            disconnectAllSignals(item);
+        }
+    }
+
     onAutoSizedChildrenChanged: fullUpdate();
 
     function fullUpdate()
@@ -28,6 +39,17 @@ QtObject {
 
         updateNonAutoSizedChildren();
         updateAutoSizedChildren();
+    }
+
+    function disconnectAllSignals(item)
+    {
+        if (isHorizontal)
+            item.widthChanged.disconnect(logic.fullUpdate);
+        else
+            item.heightChanged.disconnect(logic.fullUpdate);
+
+        item.visibleChanged.disconnect(logic.fullUpdate);
+        item.opacityChanged.disconnect(logic.fullUpdate);
     }
 
     function updateNonAutoSizedChildren()
@@ -55,14 +77,7 @@ QtObject {
             }
 
             // disconnect from signals...
-
-            if (isHorizontal)
-                item.widthChanged.disconnect(logic.fullUpdate);
-            else
-                item.heightChanged.disconnect(logic.fullUpdate);
-
-            item.visibleChanged.disconnect(logic.fullUpdate);
-            item.opacityChanged.disconnect(logic.fullUpdate);
+            disconnectAllSignals(item);
 
             // Analyze and connect to signals...
 
