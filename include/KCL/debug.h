@@ -28,13 +28,9 @@
 
 #include <time.h>
 
-#include <qobject.h>
-#include <qstring.h>
-#ifdef QT4
+#include <QObject>
+#include <QString>
 #include <QTime>
-#else
-#include <qdatetime.h>
-#endif
 
 #include <QtGlobal>
 
