@@ -32,6 +32,7 @@
 
 #include "KCL/settingsgroup.h"
 #include "KCL/filesystemutils.h"
+#include "KCL/objectutils.h"
 #include "KCL/cursorarea.h"
 #include "KCL/sceneutils.h"
 #include "KCL/networkutils.h"
@@ -94,6 +95,9 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 
     FileSystemUtils *fsUtils = new FileSystemUtils(engine);
     engine->rootContext()->setContextProperty("fsUtils", fsUtils);
+
+    ObjectUtils *objectUtils = new ObjectUtils(engine);
+    engine->rootContext()->setContextProperty("objectUtils", objectUtils);
 
     ColorUtils *colorUtils = new ColorUtils(engine);
     engine->rootContext()->setContextProperty("colorUtils", colorUtils);

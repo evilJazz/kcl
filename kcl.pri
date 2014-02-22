@@ -59,7 +59,8 @@ HEADERS += \
     $$KCL_INC_PATH/KCL/imagerendersurface.h \
     $$KCL_INC_PATH/KCL/sceneutils.h \
     $$KCL_INC_PATH/KCL/networkutils.h \
-    $$KCL_INC_PATH/KCL/colorutils.h
+    $$KCL_INC_PATH/KCL/colorutils.h \
+    $$KCL_INC_PATH/KCL/objectutils.h
 
 SOURCES += \
     $$KCL_SRC_PATH/kclplugin.cpp \
@@ -80,7 +81,8 @@ SOURCES += \
     $$KCL_SRC_PATH/imagerendersurface.cpp \
     $$KCL_SRC_PATH/sceneutils.cpp \
     $$KCL_SRC_PATH/networkutils.cpp \
-    $$KCL_SRC_PATH/colorutils.cpp
+    $$KCL_SRC_PATH/colorutils.cpp \
+    $$KCL_SRC_PATH/objectutils.cpp
 
 kcl_widgets {
     message("KCL: Configuring with Widgets support")
