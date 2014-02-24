@@ -30,59 +30,122 @@
     #include <QtDeclarative>
 #endif
 
-#include "KCL/settingsgroup.h"
-#include "KCL/filesystemutils.h"
-#include "KCL/objectutils.h"
-#include "KCL/cursorarea.h"
-#include "KCL/sceneutils.h"
-#include "KCL/networkutils.h"
-#include "KCL/imagerendersurface.h"
-#include "KCL/filescanner.h"
-#include "KCL/binaryfiledownloader.h"
-#include "KCL/performancedatamanager.h"
-#include "KCL/progressmanager.h"
-#include "KCL/keyeventfilter.h"
-#include "KCL/settingsgroup.h"
-#include "KCL/colorutils.h"
+#ifdef KCL_filesystemutils
+    #include "KCL/filesystemutils.h"
+#endif
 
-#ifdef KCL_WIDGETS
+#ifdef KCL_objectutils
+    #include "KCL/objectutils.h"
+#endif
+
+#ifdef KCL_cursorarea
+    #include "KCL/cursorarea.h"
+#endif
+
+#ifdef KCL_sceneutils
+    #include "KCL/sceneutils.h"
+#endif
+
+#ifdef KCL_networkutils
+    #include "KCL/networkutils.h"
+#endif
+
+#ifdef KCL_imagerendersurface
+    #include "KCL/imagerendersurface.h"
+#endif
+
+#ifdef KCL_filescanner
+    #include "KCL/filescanner.h"
+#endif
+
+#ifdef KCL_binaryfiledownloader
+    #include "KCL/binaryfiledownloader.h"
+#endif
+
+#ifdef KCL_performancedatamanager
+    #include "KCL/performancedatamanager.h"
+#endif
+
+#ifdef KCL_progressmanager
+    #include "KCL/progressmanager.h"
+#endif
+
+#ifdef KCL_keyeventfilter
+    #include "KCL/keyeventfilter.h"
+#endif
+
+#ifdef KCL_settingsgroup
+    #include "KCL/settingsgroup.h"
+#endif
+
+#ifdef KCL_colorutils
+    #include "KCL/colorutils.h"
+#endif
+
+#ifdef KCL_nativedialogs
     #include "KCL/nativedialogs.h"
+#endif
+
+#ifdef KCL_logging
     #include "KCL/logging.h"
 #endif
 
-#ifndef KCL_QTQUICK2
+#ifdef KCL_declarativedebug
     #include "KCL/declarativedebug.h"
 #endif
 
 void KCLPlugin::registerTypes(const char *uri)
 {
     //@uri KCL
-    qmlRegisterType<BinaryFileDownloader>(uri, 1, 0, "BinaryFileDownloader");
-    qmlRegisterType<SettingsGroup>(uri, 1, 0, "SettingsGroup");
-    qmlRegisterType<FileScanner>(uri, 1, 0, "FileScanner");
-    qmlRegisterType<CursorArea>(uri, 1, 0, "CursorArea");
-    qmlRegisterType<ImageRenderSurface>(uri, 1, 0, "ImageRenderSurface");
 
-#ifdef KCL_WIDGETS
+#ifdef KCL_binaryfiledownloader
+    qmlRegisterType<BinaryFileDownloader>(uri, 1, 0, "BinaryFileDownloader");
+#endif
+
+#ifdef KCL_settingsgroup
+    qmlRegisterType<SettingsGroup>(uri, 1, 0, "SettingsGroup");
+#endif
+
+#ifdef KCL_filescanner
+    qmlRegisterType<FileScanner>(uri, 1, 0, "FileScanner");
+#endif
+
+#ifdef KCL_cursorarea
+    qmlRegisterType<CursorArea>(uri, 1, 0, "CursorArea");
+#endif
+
+#ifdef KCL_imagerendersurface
+    qmlRegisterType<ImageRenderSurface>(uri, 1, 0, "ImageRenderSurface");
+#endif
+
+#ifdef KCL_nativedialogs
     qmlRegisterType<NativeDialogs>(uri, 1, 0, "NativeDialogs");
 #endif
 
     qmlRegisterType<QTimer>(uri, 1, 0, "QtTimer");
 
+#ifdef KCL_filesystemutils
     qmlRegisterUncreatableType<FileSystemUtils>(uri, 1, 0, "FileSystemUtils", "Can not instantiate FileSystemUtils, use fsUtils singleton instead.");
+#endif
 
+#ifdef KCL_performancedatamanager
     qmlRegisterUncreatableType<PerformanceDataManager>(uri, 1, 0, "PerformanceDataManager", "Can not instantiate PerformanceDataManager, use performanceDataManager singleton instead.");
     qmlRegisterType<PerformanceData>();
     qmlRegisterType<PerformanceDataAspect>();
     qmlRegisterType<PerformanceDataDetail>();
+#endif
 
+#ifdef KCL_progressmanager
     qmlRegisterUncreatableType<ProgressManager>(uri, 1, 0, "ProgressManager", "Can not instantiate ProgressManager, use progressManager singleton instead.");
     qmlRegisterType<ProgressContext>();
+#endif
 
+#ifdef KCL_keyeventfilter
     qmlRegisterType<DeclarativeKeyEvent>();
     qmlRegisterType<KeyEventFilter>();
+#endif
 
-#ifndef KCL_QTQUICK2
+#ifdef KCL_declarativedebug
     qmlRegisterType<DeclarativeDebug>();
 #endif
 }
@@ -93,35 +156,51 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 
     engine->addImportPath(":/"); // to allow "import KCL 1.0"
 
+#ifdef KCL_filesystemutils
     FileSystemUtils *fsUtils = new FileSystemUtils(engine);
     engine->rootContext()->setContextProperty("fsUtils", fsUtils);
+#endif
 
+#ifdef KCL_objectutils
     ObjectUtils *objectUtils = new ObjectUtils(engine);
     engine->rootContext()->setContextProperty("objectUtils", objectUtils);
+#endif
 
+#ifdef KCL_colorutils
     ColorUtils *colorUtils = new ColorUtils(engine);
     engine->rootContext()->setContextProperty("colorUtils", colorUtils);
+#endif
 
+#ifdef KCL_sceneutils
     SceneUtils *sceneUtils = new SceneUtils(engine);
     engine->rootContext()->setContextProperty("sceneUtils", sceneUtils);
+#endif
 
+#ifdef KCL_networkutils
     NetworkUtils *networkUtils = new NetworkUtils(engine);
     engine->rootContext()->setContextProperty("networkUtils", networkUtils);
+#endif
 
-#ifdef KCL_WIDGETS
+#ifdef KCL_nativedialogs
     NativeDialogs *nativeDialogs = new NativeDialogs(engine);
     engine->rootContext()->setContextProperty("nativeDialogs", nativeDialogs);
 #endif
 
-#ifndef KCL_QTQUICK2
+#ifdef KCL_declarativedebug
     DeclarativeDebug *declarativeDebug = new DeclarativeDebug(engine);
     engine->rootContext()->setContextProperty("debug", declarativeDebug);
 #endif
 
+#ifdef KCL_performancedatamanager
     engine->rootContext()->setContextProperty("performanceDataManager", &globalPerformanceDataManager);
+#endif
+
+#ifdef KCL_progressmanager
     engine->rootContext()->setContextProperty("progressManager", &globalProgressManager);
+#endif
 }
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#if defined(KCL_PLUGIN) && QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(kclplugin, KCLPlugin)
+
 #endif

@@ -40,7 +40,7 @@ class KCL_EXPORT KCLPlugin :
 #endif
 {
     Q_OBJECT
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#if defined(KCL_PLUGIN) && QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     Q_PLUGIN_METADATA(IID "net.katastrophos.kcl")
 #endif
 public:
