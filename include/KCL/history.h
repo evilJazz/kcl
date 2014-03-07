@@ -56,6 +56,8 @@ public:
     Q_INVOKABLE bool addSnapshot(HistorySnapshot *newSnapshot, bool forceEvenIfEqual = false);
     Q_INVOKABLE bool replaceSnapshotWithNew(HistorySnapshot *newSnapshot);
 
+    const QList<HistorySnapshot *> snapshots() const { return snapshots_; }
+
 signals:
     void changed();
     void activeIndexChanged();

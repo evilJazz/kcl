@@ -462,5 +462,5 @@ QString ImageFastLoader::getFilenameForKey(const QString &key) const
     if (cacheDirectory().isEmpty())
         return key + ".cbci";
     else
-        return cacheDirectory() + "/" + createCacheKeyForFileName(key) + ".cbci";
+        return cacheDirectory() + "/" + (createSubdirectoriesInCacheDirectory_ ? createCacheKeyForFileName(key) : QFileInfo(key).fileName()) + ".cbci";
 }

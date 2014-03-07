@@ -91,17 +91,22 @@ class KCL_EXPORT ImageFastLoader : public DiskImageCache
 {
     Q_OBJECT
 public:
-    ImageFastLoader(QObject *parent = 0) : DiskImageCache(parent) {}
+    ImageFastLoader(QObject *parent = 0) : DiskImageCache(parent), createSubdirectoriesInCacheDirectory_(true) {}
 
     virtual QSize getOriginalImageSizeFromImage(const QString &filename);
     virtual DiskImageCache::ImageCacheResult loadImage(const QString &filename, QImage *dstImage, const QSize &requestedSize, bool returnExactSize = false, QSize *originalSize = NULL);
     virtual DiskImageCache::ImageCacheResult getImage(const QString &filename, QImage *dstImage, const QSize &requestedSize, bool returnExactSize = false, QSize *originalSize = NULL);
+
+    bool createSubdirectoriesInCacheDirectory() const { return createSubdirectoriesInCacheDirectory_; }
+    void setCreateSubdirectoriesInCacheDirectory(bool value) { createSubdirectoriesInCacheDirectory_ = value; }
 
 protected:
     virtual QString getFilenameForKey(const QString &key) const;
     virtual DiskImageCache::ImageCacheResult createImage(const QString &filename);
 
 private:
+    bool createSubdirectoriesInCacheDirectory_;
+
     QString createCacheKeyForFileName(const QString &filename) const;
 };
 
