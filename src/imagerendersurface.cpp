@@ -44,6 +44,7 @@ public:
         newSize.scale(requestedSize, Qt::KeepAspectRatio);
 
         QImage dstImage(newSize, QImage::Format_ARGB32_Premultiplied);      
+        dstImage.fill(0);
 
         QPainter painter(&dstImage);
         painter.drawImage(dstImage.rect(), image);
