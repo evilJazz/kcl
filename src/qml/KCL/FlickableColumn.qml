@@ -6,6 +6,8 @@ Flickable {
 
     default property alias data: column.data
 
+    property alias spacing: column.spacing
+
     property int decoratorWidth: 0
     property alias column: column
 
