@@ -3,6 +3,7 @@
 
 #ifdef KCL_QTQUICK2
     #include <QQuickWindow>
+    #define zValue() z()
 #else
     #include <QGraphicsScene>
 #endif
@@ -12,43 +13,35 @@ SceneUtils::SceneUtils(QObject *parent) :
 {
 }
 
-#ifdef KCL_QTQUICK2
-
-static bool itemZOrder_sort(QQuickItem *lhs, QQuickItem *rhs)
+static bool itemZOrder_sort(KCLGraphicsItem *lhs, KCLGraphicsItem *rhs)
 {
-    return lhs->z() < rhs->z();
+    return lhs->zValue() < rhs->zValue();
 }
-
-struct PaintOrderFilter
-{
-    virtual bool matches(QQuickItem *item) { return false; }
-    virtual bool filterChildren(QQuickItem *item) { return false; }
-};
 
 struct PositionPaintOrderFilter : PaintOrderFilter
 {
     QPointF scenePoint;
 
-    virtual bool matches(QQuickItem *item)
+    virtual bool matches(KCLGraphicsItem *item)
     {
         QPointF p = item->mapFromScene(scenePoint);
         //qDebug("item: %p, className: %s, name: %s, contains(p): %s", item, item->metaObject()->className(), item->objectName().toUtf8().constData(), item->contains(p) ? "true" : "false");
         return item->contains(p);
     }
 
-    virtual bool filterChildren(QQuickItem *item) { return true; }
+    virtual bool filterChildren(KCLGraphicsItem *item) { return true; }
 };
 
-QList<QQuickItem *> paintOrderChildItems(QQuickItem *item, bool recursive, PaintOrderFilter *filter)
+QList<KCLGraphicsItem *> SceneUtils::paintOrderChildItems(KCLGraphicsItem *item, bool recursive, PaintOrderFilter *filter)
 {
-    QList<QQuickItem *> childItems = item->childItems();
+    QList<KCLGraphicsItem *> childItems = item->childItems();
 
     // If none of the items have set Z then the paint order list is the same as
     // the childItems list.  This is by far the most common case.
     bool haveZ = false;
     for (int i = 0; i < childItems.count(); ++i)
     {
-        if (childItems.at(i)->z() != 0.)
+        if (childItems.at(i)->zValue() != 0.)
         {
             haveZ = true;
             break;
@@ -60,10 +53,10 @@ QList<QQuickItem *> paintOrderChildItems(QQuickItem *item, bool recursive, Paint
 
     if (recursive)
     {
-        QList<QQuickItem *> resultItems;
+        QList<KCLGraphicsItem *> resultItems;
         for (int i = 0; i < childItems.count(); ++i)
         {
-            QQuickItem *item = childItems.at(i);
+            KCLGraphicsItem *item = childItems.at(i);
             if (!filter || filter->matches(item))
                 resultItems += item;
 
@@ -77,6 +70,8 @@ QList<QQuickItem *> paintOrderChildItems(QQuickItem *item, bool recursive, Paint
         return childItems;
 }
 
+#ifdef KCL_QTQUICK2
+
 QVariantList SceneUtils::getAllItemsInScene(QQuickItem *item, qreal sceneX, qreal sceneY)
 {
     QVariantList result;
@@ -84,7 +79,7 @@ QVariantList SceneUtils::getAllItemsInScene(QQuickItem *item, qreal sceneX, qrea
     PositionPaintOrderFilter filter;
     filter.scenePoint = item->mapToScene(QPointF(sceneX, sceneY));
 
-    QList<QQuickItem *> itemList = paintOrderChildItems(item->window()->contentItem(), true, &filter);
+    QList<QQuickItem *> itemList = SceneUtils::paintOrderChildItems(item->window()->contentItem(), true, &filter);
 
     for (int i = 0; i < itemList.count(); ++i)
     {
@@ -103,7 +98,7 @@ QVariantList SceneUtils::getItemsBelow(QQuickItem *item, qreal sceneX, qreal sce
     PositionPaintOrderFilter filter;
     filter.scenePoint = item->mapToScene(QPointF(sceneX, sceneY));
 
-    QList<QQuickItem *> itemList = paintOrderChildItems(item->window()->contentItem(), true, &filter);
+    QList<QQuickItem *> itemList = SceneUtils::paintOrderChildItems(item->window()->contentItem(), true, &filter);
 
     int index = itemList.indexOf(item);
 

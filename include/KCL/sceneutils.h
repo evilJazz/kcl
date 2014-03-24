@@ -8,9 +8,22 @@
 
 #ifdef KCL_QTQUICK2
     #include <QQuickItem>
+
+    #define KCLGraphicsItem QQuickItem
+    #define KCLDeclarativeItem QQuickItem
 #else
+    #include <QGraphicsItem>
     #include <QDeclarativeItem>
+
+    #define KCLGraphicsItem QGraphicsItem
+    #define KCLDeclarativeItem QDeclarativeItem
 #endif
+
+struct KCL_EXPORT PaintOrderFilter
+{
+    virtual bool matches(KCLGraphicsItem *item) { return false; }
+    virtual bool filterChildren(KCLGraphicsItem *item) { return false; }
+};
 
 class KCL_EXPORT SceneUtils : public QObject
 {
@@ -18,13 +31,10 @@ class KCL_EXPORT SceneUtils : public QObject
 public:
     explicit SceneUtils(QObject *parent = 0);
 
-#ifdef KCL_QTQUICK2
-    Q_INVOKABLE static QVariantList getAllItemsInScene(QQuickItem *item, qreal sceneX, qreal sceneY);
-    Q_INVOKABLE static QVariantList getItemsBelow(QQuickItem *item, qreal sceneX, qreal sceneY);
-#else
-    Q_INVOKABLE static QVariantList getAllItemsInScene(QDeclarativeItem *item, qreal sceneX, qreal sceneY);
-    Q_INVOKABLE static QVariantList getItemsBelow(QDeclarativeItem *item, qreal sceneX, qreal sceneY);
-#endif
+    static QList<KCLGraphicsItem *> paintOrderChildItems(KCLGraphicsItem *item, bool recursive, PaintOrderFilter *filter = NULL);
+
+    Q_INVOKABLE static QVariantList getAllItemsInScene(KCLDeclarativeItem *item, qreal sceneX, qreal sceneY);
+    Q_INVOKABLE static QVariantList getItemsBelow(KCLDeclarativeItem *item, qreal sceneX, qreal sceneY);
 };
 
 #endif // SCENEUTILS_H
