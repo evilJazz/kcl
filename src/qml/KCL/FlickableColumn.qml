@@ -11,8 +11,13 @@ Flickable {
     property int decoratorWidth: 0
     property alias column: column
 
-    Column {
-        id: column
+    MouseEater {
         width: parent.width - decoratorWidth
+        height: Math.max(column.implicitHeight, flicker.height)
+
+        Column {
+            id: column
+            width: parent.width
+        }
     }
 }
