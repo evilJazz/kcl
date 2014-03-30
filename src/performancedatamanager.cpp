@@ -24,6 +24,7 @@
 #include "KCL/performancedatamanager.h"
 #include <QDateTime>
 
+#undef DEBUG
 #include "KCL/debug.h"
 
 /* PerformanceDataDetail */
