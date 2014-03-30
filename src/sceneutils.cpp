@@ -8,6 +8,8 @@
     #include <QGraphicsScene>
 #endif
 
+#include <algorithm> // std::stable_sort
+
 SceneUtils::SceneUtils(QObject *parent) :
     QObject(parent)
 {
