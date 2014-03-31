@@ -117,7 +117,7 @@ QSize DiskImageCache::getOriginalImageSizeFromImage(const QString &key)
     return readCacheOriginalImageSize(&file);
 }
 
-DiskImageCache::ImageCacheResult DiskImageCache::loadImage(const QString &key, QImage *dstImage, const QSize &requestedSize, bool returnExactSize, QSize *originalSize)
+DiskImageCache::ImageCacheResult DiskImageCache::loadImage(const QString &key, QImage *dstImage, const QSize &requestedSize, bool returnExactSize, QSize *originalSize, QList<CachedImageSize> *availableImageSizesInCache)
 {
     DGUARDMETHODTIMED;
 
@@ -131,7 +131,7 @@ DiskImageCache::ImageCacheResult DiskImageCache::loadImage(const QString &key, Q
     QFile file(filename);
     file.open(QIODevice::ReadOnly);
 
-    return loadCacheImage(&file, requestedSize, dstImage, returnExactSize, originalSize);
+    return loadCacheImage(&file, requestedSize, dstImage, returnExactSize, originalSize, availableImageSizesInCache);
 }
 
 bool DiskImageCache::saveCacheImages(QImage *srcImage, const QList<QSize> &sizes, QIODevice *dstStream)
@@ -321,11 +321,16 @@ DiskImageCache::ImageCacheResult DiskImageCache::loadCacheImage(QIODevice *srcSt
     return NoError;
 }
 
-DiskImageCache::ImageCacheResult DiskImageCache::loadCacheImage(QIODevice *srcStream, const QSize &requestedSize, QImage *dstImage, bool returnExactSize, QSize *originalSize)
+DiskImageCache::ImageCacheResult DiskImageCache::loadCacheImage(
+    QIODevice *srcStream, const QSize &requestedSize, QImage *dstImage, bool returnExactSize, QSize *originalSize, QList<CachedImageSize> *availableImageSizesInCache)
 {
     DGUARDMETHODTIMED;
 
     QList<CachedImageSize> cacheImageSizes = readCacheImageSizes(srcStream);
+
+    if (availableImageSizesInCache)
+        *availableImageSizesInCache = cacheImageSizes;
+
     if (cacheImageSizes.count() == 0)
         return LoadError;
 
@@ -380,10 +385,10 @@ QSize ImageFastLoader::getOriginalImageSizeFromImage(const QString &filename)
     return result;
 }
 
-DiskImageCache::ImageCacheResult ImageFastLoader::loadImage(const QString &filename, QImage *dstImage, const QSize &requestedSize, bool returnExactSize, QSize *originalSize)
+DiskImageCache::ImageCacheResult ImageFastLoader::loadImage(const QString &filename, QImage *dstImage, const QSize &requestedSize, bool returnExactSize, QSize *originalSize, QList<CachedImageSize> *availableImageSizesInCache)
 {
     QSize originalImageSize;
-    DiskImageCache::ImageCacheResult result = DiskImageCache::loadImage(filename, dstImage, requestedSize, returnExactSize, &originalImageSize);
+    DiskImageCache::ImageCacheResult result = DiskImageCache::loadImage(filename, dstImage, requestedSize, returnExactSize, &originalImageSize, availableImageSizesInCache);
     if (originalSize)
         *originalSize = originalImageSize;
 
@@ -405,7 +410,7 @@ DiskImageCache::ImageCacheResult ImageFastLoader::loadImage(const QString &filen
     return result;
 }
 
-DiskImageCache::ImageCacheResult ImageFastLoader::getImage(const QString &filename, QImage *dstImage, const QSize &requestedSize, bool returnExactSize, QSize *originalSize)
+DiskImageCache::ImageCacheResult ImageFastLoader::getImage(const QString &filename, QImage *dstImage, const QSize &requestedSize, bool returnExactSize, QSize *originalSize, QList<CachedImageSize> *availableImageSizesInCache)
 {
     QFileInfo srcFileInfo(filename);
 
@@ -426,14 +431,14 @@ DiskImageCache::ImageCacheResult ImageFastLoader::getImage(const QString &filena
             return result;
     }
 
-    result = loadImage(filename, dstImage, requestedSize, returnExactSize, originalSize);
+    result = loadImage(filename, dstImage, requestedSize, returnExactSize, originalSize, availableImageSizesInCache);
 
     // Invalid file?
     if (result == DiskImageCache::LoadError)
     {
         result = createImage(filename);
         if (result == NoError)
-            result = loadImage(filename, dstImage, requestedSize, returnExactSize, originalSize);
+            result = loadImage(filename, dstImage, requestedSize, returnExactSize, originalSize, availableImageSizesInCache);
     }
 
     return result;

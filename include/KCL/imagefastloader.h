@@ -40,6 +40,8 @@ public:
     qint32 offset;
     qint32 count;
     qint32 maskCount;
+
+    const QSize size() const { return QSize(width, height); }
 };
 
 class KCL_EXPORT DiskImageCache : public QObject
@@ -69,7 +71,7 @@ public:
     virtual ImageCacheResult saveImage(const QString &key, QImage *srcImage);
     virtual ImageCacheResult saveImage(const QString &key, QIODevice *srcImageStream);
     virtual QSize getOriginalImageSizeFromImage(const QString &key);
-    virtual ImageCacheResult loadImage(const QString &key, QImage *dstImage, const QSize &requestedSize, bool returnExactSize = false, QSize *originalSize = NULL);
+    virtual ImageCacheResult loadImage(const QString &key, QImage *dstImage, const QSize &requestedSize, bool returnExactSize = false, QSize *originalSize = NULL, QList<CachedImageSize> *availableImageSizesInCache = NULL);
 
 public:
     static bool saveCacheImages(QImage *srcImage, const QList<QSize> &sizes, QIODevice *dstStream);
@@ -77,7 +79,7 @@ public:
     static QSize readCacheOriginalImageSize(QIODevice *srcStream);
     static int findBestCacheImageMatch(const QList<CachedImageSize> &cacheImageSizes, const QSize &requestedSize);
     static ImageCacheResult loadCacheImage(QIODevice *srcStream, const CachedImageSize &imageSize, QImage *dstImage);
-    static ImageCacheResult loadCacheImage(QIODevice *srcStream, const QSize &requestedSize, QImage *dstImage, bool returnExactSize = false, QSize *originalSize = NULL);
+    static ImageCacheResult loadCacheImage(QIODevice *srcStream, const QSize &requestedSize, QImage *dstImage, bool returnExactSize = false, QSize *originalSize = NULL, QList<CachedImageSize> *availableImageSizesInCache = NULL);
 
 protected:
     virtual QString getFilenameForKey(const QString &key) const;
@@ -94,8 +96,8 @@ public:
     ImageFastLoader(QObject *parent = 0) : DiskImageCache(parent), createSubdirectoriesInCacheDirectory_(true) {}
 
     virtual QSize getOriginalImageSizeFromImage(const QString &filename);
-    virtual DiskImageCache::ImageCacheResult loadImage(const QString &filename, QImage *dstImage, const QSize &requestedSize, bool returnExactSize = false, QSize *originalSize = NULL);
-    virtual DiskImageCache::ImageCacheResult getImage(const QString &filename, QImage *dstImage, const QSize &requestedSize, bool returnExactSize = false, QSize *originalSize = NULL);
+    virtual DiskImageCache::ImageCacheResult loadImage(const QString &filename, QImage *dstImage, const QSize &requestedSize, bool returnExactSize = false, QSize *originalSize = NULL, QList<CachedImageSize> *availableImageSizesInCache = NULL);
+    virtual DiskImageCache::ImageCacheResult getImage(const QString &filename, QImage *dstImage, const QSize &requestedSize, bool returnExactSize = false, QSize *originalSize = NULL, QList<CachedImageSize> *availableImageSizesInCache = NULL);
 
     bool createSubdirectoriesInCacheDirectory() const { return createSubdirectoriesInCacheDirectory_; }
     void setCreateSubdirectoriesInCacheDirectory(bool value) { createSubdirectoriesInCacheDirectory_ = value; }
