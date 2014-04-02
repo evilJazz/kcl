@@ -59,7 +59,9 @@ public:
     Q_INVOKABLE static QString extractSuffix(const QString &filename);
     Q_INVOKABLE static QString extractCompleteSuffix(const QString &filename);
 
-    Q_INVOKABLE static QVariant canonicalizePath(const QString &path, bool asURL);
+    Q_INVOKABLE static QVariant absoluteFilePath(const QString &filePath);
+    Q_INVOKABLE static QVariant canonicalFilePath(const QString &filePath);
+
     Q_INVOKABLE static QUrl urlFromLocalPath(const QString &path);
     Q_INVOKABLE static QString localPathFromUrl(const QUrl &url);
 
