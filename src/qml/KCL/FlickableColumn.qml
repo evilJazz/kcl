@@ -5,6 +5,8 @@ Flickable {
     contentHeight: column.height
 
     default property alias data: column.data
+    property alias children: column.children
+    property alias resources: column.resources
 
     property alias spacing: column.spacing
 
