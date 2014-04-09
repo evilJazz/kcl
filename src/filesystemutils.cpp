@@ -94,6 +94,16 @@ QVariant FileSystemUtils::canonicalFilePath(const QString &filePath)
     return QFileInfo(filePath).canonicalFilePath();
 }
 
+QUrl FileSystemUtils::urlFromString(const QString &url)
+{
+    return QUrl(url);
+}
+
+QString FileSystemUtils::stringFromUrl(const QUrl &url)
+{
+    return url.toString();
+}
+
 QUrl FileSystemUtils::urlFromLocalPath(const QString &path)
 {
     return QUrl::fromLocalFile(path);

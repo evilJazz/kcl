@@ -62,6 +62,8 @@ public:
     Q_INVOKABLE static QVariant absoluteFilePath(const QString &filePath);
     Q_INVOKABLE static QVariant canonicalFilePath(const QString &filePath);
 
+    Q_INVOKABLE static QUrl urlFromString(const QString &url);
+    Q_INVOKABLE static QString stringFromUrl(const QUrl &url);
     Q_INVOKABLE static QUrl urlFromLocalPath(const QString &path);
     Q_INVOKABLE static QString localPathFromUrl(const QUrl &url);
 
