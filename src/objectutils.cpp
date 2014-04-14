@@ -5,9 +5,9 @@ ObjectUtils::ObjectUtils(QObject *parent) :
 {
 }
 
-QByteArray ObjectUtils::className(QObject *target)
+QString ObjectUtils::className(QObject *target)
 {
-    return QByteArray(target->metaObject()->className());
+    return QString::fromLatin1(target->metaObject()->className());
 }
 
 bool ObjectUtils::sameClass(QObject *object1, QObject *object2)
