@@ -82,6 +82,10 @@
     #include "KCL/colorutils.h"
 #endif
 
+#ifdef KCL_graphicsutils
+    #include "KCL/graphicsutils.h"
+#endif
+
 #ifdef KCL_nativedialogs
     #include "KCL/nativedialogs.h"
 #endif
@@ -169,6 +173,11 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 #ifdef KCL_colorutils
     ColorUtils *colorUtils = new ColorUtils(engine);
     engine->rootContext()->setContextProperty("colorUtils", colorUtils);
+#endif
+
+#ifdef KCL_graphicsutils
+    GraphicsUtils *graphicsUtils = new GraphicsUtils(engine);
+    engine->rootContext()->setContextProperty("graphicsUtils", graphicsUtils);
 #endif
 
 #ifdef KCL_sceneutils

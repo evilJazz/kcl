@@ -49,6 +49,7 @@ isEmpty(kcl): kcl = \
     backgroundtasks \
     networkutils \
     colorutils \
+    graphicsutils \
     objectutils \
     nativedialogs \
     declarativedebug \
@@ -90,6 +91,7 @@ kclConditionalAddModule(sleepaid)
 kclConditionalAddModule(backgroundtasks)
 kclConditionalAddModule(networkutils)
 kclConditionalAddModule(colorutils)
+kclConditionalAddModule(graphicsutils)
 kclConditionalAddModule(objectutils)
 
 kcl_widgets {
