@@ -19,3 +19,8 @@ bool ObjectUtils::sameReference(QObject *object1, QObject *object2)
 {
     return object1 == object2;
 }
+
+bool ObjectUtils::inherits(QObject *target, const QString &className)
+{
+    return target->inherits(className.toLatin1());
+}

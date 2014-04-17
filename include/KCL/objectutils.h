@@ -14,6 +14,7 @@ public:
     Q_INVOKABLE static QString className(QObject *target);
     Q_INVOKABLE static bool sameClass(QObject *object1, QObject *object2);
     Q_INVOKABLE static bool sameReference(QObject *object1, QObject *object2);
+    Q_INVOKABLE static bool inherits(QObject *target, const QString &className);
 
 signals:
 
