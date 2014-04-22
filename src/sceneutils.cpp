@@ -6,7 +6,11 @@
     #define zValue() z()
 #else
     #include <QGraphicsScene>
+    #include <QGraphicsView>
 #endif
+
+#include <QPainter>
+#include <QImage>
 
 #include <algorithm> // std::stable_sort
 
@@ -156,5 +160,25 @@ QVariantList SceneUtils::getItemsBelow(QDeclarativeItem *item, qreal sceneX, qre
     }
 
     return result;
+}
+
+QVariant SceneUtils::takeImageFromScene(QDeclarativeItem *sceneItem)
+{
+    if (!sceneItem || !sceneItem->scene())
+        return QImage();
+
+    QSize size;
+
+    if (sceneItem->scene()->views().count() > 0)
+        size = sceneItem->scene()->views().at(0)->size();
+    else
+        size = sceneItem->scene()->sceneRect().size().toSize();
+
+    QImage image(size, QImage::Format_ARGB32);
+
+    QPainter p(&image);
+    sceneItem->scene()->render(&p, QRectF(image.rect()), QRectF(QPointF(0, 0), QSizeF(size)));
+
+    return image;
 }
 #endif

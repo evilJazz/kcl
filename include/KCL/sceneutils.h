@@ -33,8 +33,17 @@ public:
 
     static QList<KCLGraphicsItem *> paintOrderChildItems(KCLGraphicsItem *item, bool recursive, PaintOrderFilter *filter = NULL);
 
-    Q_INVOKABLE static QVariantList getAllItemsInScene(KCLDeclarativeItem *item, qreal sceneX, qreal sceneY);
-    Q_INVOKABLE static QVariantList getItemsBelow(KCLDeclarativeItem *item, qreal sceneX, qreal sceneY);
+
+// Can't use the KCLDeclarativeItem macro here because moc does not understand it...
+#ifdef KCL_QTQUICK2
+    Q_INVOKABLE static QVariantList getAllItemsInScene(QQuickItem *item, qreal sceneX, qreal sceneY);
+    Q_INVOKABLE static QVariantList getItemsBelow(QQuickItem *item, qreal sceneX, qreal sceneY);
+    Q_INVOKABLE static QVariant takeImageFromScene(QQuickItem *sceneItem);
+#else
+    Q_INVOKABLE static QVariantList getAllItemsInScene(QDeclarativeItem *item, qreal sceneX, qreal sceneY);
+    Q_INVOKABLE static QVariantList getItemsBelow(QDeclarativeItem *item, qreal sceneX, qreal sceneY);
+    Q_INVOKABLE static QVariant takeImageFromScene(QDeclarativeItem *sceneItem);
+#endif
 };
 
 #endif // SCENEUTILS_H
