@@ -56,7 +56,8 @@ isEmpty(kcl): kcl = \
     settingsgroup \
     cursorarea \
     imagerendersurface \
-    sceneutils
+    sceneutils \
+    base64imageprovider
 
 defineTest(kclAddModule) {
     message(KCL: Adding module $${1})
@@ -93,6 +94,7 @@ kclConditionalAddModule(networkutils)
 kclConditionalAddModule(colorutils)
 kclConditionalAddModule(graphicsutils)
 kclConditionalAddModule(objectutils)
+kclConditionalAddModule(base64imageprovider)
 
 kcl_widgets {
     message("KCL: Configuring with Widgets support")

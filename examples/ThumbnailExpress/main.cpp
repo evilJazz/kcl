@@ -13,6 +13,7 @@
 
 #include "testimageprovider.h"
 #include "imagefastloaderimageprovider.h"
+#include "KCL/base64imageprovider.h"
 
 Q_DECL_EXPORT int main(int argc, char *argv[])
 {
@@ -35,6 +36,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 
     viewer.engine()->addImageProvider("test", new TestImageProvider());
     viewer.engine()->addImageProvider("imgcache", new ImageFastLoaderImageProvider());
+    viewer.engine()->addImageProvider("base64", new Base64ImageProvider());
 
     viewer.setMainQmlFile(QLatin1String("qml/ThumbnailExpress/main.qml"));
     viewer.showExpanded();

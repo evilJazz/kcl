@@ -98,6 +98,10 @@
     #include "KCL/declarativedebug.h"
 #endif
 
+#ifdef KCL_base64imageprovider
+    #include "KCL/base64imageprovider.h"
+#endif
+
 void KCLPlugin::registerTypes(const char *uri)
 {
     //@uri KCL
@@ -206,6 +210,10 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 
 #ifdef KCL_progressmanager
     engine->rootContext()->setContextProperty("progressManager", &globalProgressManager);
+#endif
+
+#ifdef KCL_base64imageprovider
+    engine->addImageProvider("base64", new Base64ImageProvider());
 #endif
 }
 
