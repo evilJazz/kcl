@@ -121,6 +121,14 @@ QVariantList SceneUtils::getItemsBelow(QQuickItem *item, qreal sceneX, qreal sce
     return result;
 }
 
+QVariant SceneUtils::takeImageFromScene(QQuickItem *sceneItem)
+{
+    if (!sceneItem || !sceneItem->window())
+        return QImage();
+
+    return sceneItem->window()->grabWindow().convertToFormat(QImage::Format_ARGB32);
+}
+
 #else
 
 QVariantList SceneUtils::getAllItemsInScene(QDeclarativeItem *item, qreal sceneX, qreal sceneY)
