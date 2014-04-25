@@ -20,7 +20,7 @@ QVariantMap ColorUtils::colorComponents(const QColor &color)
 
 QString ColorUtils::colorName(const QColor &color)
 {
-    return QString().sprintf("#%8X", color.rgba());
+    return QString().sprintf("#%08X", color.rgba());
 }
 
 QColor ColorUtils::parseColor(const QString &colorString)
