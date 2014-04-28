@@ -20,13 +20,13 @@ QtObject {
         DeferredExecution.executeIn(1, function ()
         {
             if (type == MessageBox.Question)
-                clickedButton = nativeDialogs.critical(title, text, buttons, defaultButton);
+                clickedButton = NativeDialogs.critical(title, text, buttons, defaultButton);
             else if (type == MessageBox.Information)
-                clickedButton = nativeDialogs.information(title, text, buttons, defaultButton);
+                clickedButton = NativeDialogs.information(title, text, buttons, defaultButton);
             else if (type == MessageBox.Warning)
-                clickedButton = nativeDialogs.warning(title, text, buttons, defaultButton);
+                clickedButton = NativeDialogs.warning(title, text, buttons, defaultButton);
             else if (type == MessageBox.Critical)
-                clickedButton = nativeDialogs.critical(title, text, buttons, defaultButton);
+                clickedButton = NativeDialogs.critical(title, text, buttons, defaultButton);
 
             closed(clickedButton);
         })

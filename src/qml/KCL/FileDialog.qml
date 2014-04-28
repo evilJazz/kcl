@@ -42,7 +42,7 @@ QtObject {
 
     function open()
     {
-        var dialogResult = nativeDialogs.getOpenFileName(caption, folder, getNativeFilter(), resolveSymLinks);
+        var dialogResult = NativeDialogs.getOpenFileName(caption, folder, getNativeFilter(), resolveSymLinks);
 
         if (dialogResult.fileName.length > 0)
         {
@@ -58,7 +58,7 @@ QtObject {
 
     function save()
     {
-        var dialogResult = nativeDialogs.getSaveFileName(caption, folder, getNativeFilter(), resolveSymLinks);
+        var dialogResult = NativeDialogs.getSaveFileName(caption, folder, getNativeFilter(), resolveSymLinks);
 
         if (dialogResult.fileName.length > 0)
         {
@@ -74,7 +74,7 @@ QtObject {
 
     function existingDirectory()
     {
-        var dialogResult = nativeDialogs.getExistingDirectory(caption, folder, true, resolveSymLinks);
+        var dialogResult = NativeDialogs.getExistingDirectory(caption, folder, true, resolveSymLinks);
 
         if (dialogResult.length > 0)
         {

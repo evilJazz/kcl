@@ -130,25 +130,15 @@ void KCLPlugin::registerTypes(const char *uri)
     qmlRegisterType<ImageRenderSurface>(uri, 1, 0, "ImageRenderSurface");
 #endif
 
-#ifdef KCL_nativedialogs
-    qmlRegisterType<NativeDialogs>(uri, 1, 0, "NativeDialogs");
-#endif
-
     qmlRegisterType<QTimer>(uri, 1, 0, "QtTimer");
 
-#ifdef KCL_filesystemutils
-    qmlRegisterUncreatableType<FileSystemUtils>(uri, 1, 0, "FileSystemUtils", "Can not instantiate FileSystemUtils, use fsUtils singleton instead.");
-#endif
-
 #ifdef KCL_performancedatamanager
-    qmlRegisterUncreatableType<PerformanceDataManager>(uri, 1, 0, "PerformanceDataManager", "Can not instantiate PerformanceDataManager, use performanceDataManager singleton instead.");
     qmlRegisterType<PerformanceData>();
     qmlRegisterType<PerformanceDataAspect>();
     qmlRegisterType<PerformanceDataDetail>();
 #endif
 
 #ifdef KCL_progressmanager
-    qmlRegisterUncreatableType<ProgressManager>(uri, 1, 0, "ProgressManager", "Can not instantiate ProgressManager, use progressManager singleton instead.");
     qmlRegisterType<ProgressContext>();
 #endif
 
@@ -170,55 +160,55 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 
 #ifdef KCL_filesystemutils
     FileSystemUtils *fsUtils = new FileSystemUtils(engine);
-    engine->rootContext()->setContextProperty("fsUtils", fsUtils);
+    engine->rootContext()->setContextProperty("FsUtils", fsUtils);
 #endif
 
 #ifdef KCL_objectutils
     ObjectUtils *objectUtils = new ObjectUtils(engine);
-    engine->rootContext()->setContextProperty("objectUtils", objectUtils);
+    engine->rootContext()->setContextProperty("ObjectUtils", objectUtils);
 #endif
 
 #ifdef KCL_colorutils
     ColorUtils *colorUtils = new ColorUtils(engine);
-    engine->rootContext()->setContextProperty("colorUtils", colorUtils);
+    engine->rootContext()->setContextProperty("ColorUtils", colorUtils);
 #endif
 
 #ifdef KCL_graphicsutils
     GraphicsUtils *graphicsUtils = new GraphicsUtils(engine);
-    engine->rootContext()->setContextProperty("graphicsUtils", graphicsUtils);
+    engine->rootContext()->setContextProperty("GraphicsUtils", graphicsUtils);
 #endif
 
 #ifdef KCL_imageutils
     ImageUtils *imageUtils = new ImageUtils(engine);
-    engine->rootContext()->setContextProperty("imageUtils", imageUtils);
+    engine->rootContext()->setContextProperty("ImageUtils", imageUtils);
 #endif
 
 #ifdef KCL_sceneutils
     SceneUtils *sceneUtils = new SceneUtils(engine);
-    engine->rootContext()->setContextProperty("sceneUtils", sceneUtils);
+    engine->rootContext()->setContextProperty("SceneUtils", sceneUtils);
 #endif
 
 #ifdef KCL_networkutils
     NetworkUtils *networkUtils = new NetworkUtils(engine);
-    engine->rootContext()->setContextProperty("networkUtils", networkUtils);
+    engine->rootContext()->setContextProperty("NetworkUtils", networkUtils);
 #endif
 
 #ifdef KCL_nativedialogs
     NativeDialogs *nativeDialogs = new NativeDialogs(engine);
-    engine->rootContext()->setContextProperty("nativeDialogs", nativeDialogs);
+    engine->rootContext()->setContextProperty("NativeDialogs", nativeDialogs);
 #endif
 
 #ifdef KCL_declarativedebug
     DeclarativeDebug *declarativeDebug = new DeclarativeDebug(engine);
-    engine->rootContext()->setContextProperty("debug", declarativeDebug);
+    engine->rootContext()->setContextProperty("Debug", declarativeDebug);
 #endif
 
 #ifdef KCL_performancedatamanager
-    engine->rootContext()->setContextProperty("performanceDataManager", &globalPerformanceDataManager);
+    engine->rootContext()->setContextProperty("PerformanceDataManager", &globalPerformanceDataManager);
 #endif
 
 #ifdef KCL_progressmanager
-    engine->rootContext()->setContextProperty("progressManager", &globalProgressManager);
+    engine->rootContext()->setContextProperty("ProgressManager", &globalProgressManager);
 #endif
 
 #ifdef KCL_base64imageprovider

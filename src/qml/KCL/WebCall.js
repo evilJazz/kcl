@@ -173,7 +173,7 @@ function webCall(url, params, action, callbackObject, useCache)
         }
     }
 
-    if (!networkUtils.isOnline)
+    if (!NetworkUtils.isOnline)
     {
         if (debug) console.log("No internet connection, will not do anything.");
 
