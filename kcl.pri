@@ -56,6 +56,7 @@ isEmpty(kcl): kcl = \
     settingsgroup \
     cursorarea \
     imagerendersurface \
+    imageutils \
     sceneutils \
     base64imageprovider
 
@@ -93,6 +94,7 @@ kclConditionalAddModule(backgroundtasks)
 kclConditionalAddModule(networkutils)
 kclConditionalAddModule(colorutils)
 kclConditionalAddModule(graphicsutils)
+kclConditionalAddModule(imageutils)
 kclConditionalAddModule(objectutils)
 kclConditionalAddModule(base64imageprovider)
 

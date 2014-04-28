@@ -86,6 +86,10 @@
     #include "KCL/graphicsutils.h"
 #endif
 
+#ifdef KCL_imageutils
+    #include "KCL/imageutils.h"
+#endif
+
 #ifdef KCL_nativedialogs
     #include "KCL/nativedialogs.h"
 #endif
@@ -182,6 +186,11 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 #ifdef KCL_graphicsutils
     GraphicsUtils *graphicsUtils = new GraphicsUtils(engine);
     engine->rootContext()->setContextProperty("graphicsUtils", graphicsUtils);
+#endif
+
+#ifdef KCL_imageutils
+    ImageUtils *imageUtils = new ImageUtils(engine);
+    engine->rootContext()->setContextProperty("imageUtils", imageUtils);
 #endif
 
 #ifdef KCL_sceneutils
