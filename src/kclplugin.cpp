@@ -90,6 +90,10 @@
     #include "KCL/imageutils.h"
 #endif
 
+#ifdef KCL_datetimeutils
+    #include "KCL/datetimeutils.h"
+#endif
+
 #ifdef KCL_nativedialogs
     #include "KCL/nativedialogs.h"
 #endif
@@ -186,6 +190,11 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 #ifdef KCL_sceneutils
     SceneUtils *sceneUtils = new SceneUtils(engine);
     engine->rootContext()->setContextProperty("SceneUtils", sceneUtils);
+#endif
+
+#ifdef KCL_datetimeutils
+    DateTimeUtils *dateTimeUtils = new DateTimeUtils(engine);
+    engine->rootContext()->setContextProperty("DateTimeUtils", dateTimeUtils);
 #endif
 
 #ifdef KCL_networkutils

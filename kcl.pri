@@ -58,6 +58,7 @@ isEmpty(kcl): kcl = \
     imagerendersurface \
     imageutils \
     sceneutils \
+    datetimeutils \
     base64imageprovider
 
 defineTest(kclAddModule) {
@@ -96,6 +97,7 @@ kclConditionalAddModule(colorutils)
 kclConditionalAddModule(graphicsutils)
 kclConditionalAddModule(imageutils)
 kclConditionalAddModule(objectutils)
+kclConditionalAddModule(datetimeutils)
 kclConditionalAddModule(base64imageprovider)
 
 kcl_widgets {
@@ -182,3 +184,4 @@ kcl_qtquick1 | kcl_qtquick2 {
         kcl_qtquick2: qmlPreprocessFolder($$KCL_SRC_PATH/qml, @QtQuick2, 2.0)
     }
 }
+
