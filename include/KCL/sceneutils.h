@@ -39,10 +39,14 @@ public:
     Q_INVOKABLE static QVariantList getAllItemsInScene(QQuickItem *item, qreal sceneX, qreal sceneY);
     Q_INVOKABLE static QVariantList getItemsBelow(QQuickItem *item, qreal sceneX, qreal sceneY);
     Q_INVOKABLE static QVariant takeImageFromScene(QQuickItem *sceneItem);
+
+    Q_INVOKABLE static QVariant mappedBoundingRect(QQuickItem *targetItem, QQuickItem *sourceItem, const QRect &rect = QRect());
 #else
     Q_INVOKABLE static QVariantList getAllItemsInScene(QDeclarativeItem *item, qreal sceneX, qreal sceneY);
     Q_INVOKABLE static QVariantList getItemsBelow(QDeclarativeItem *item, qreal sceneX, qreal sceneY);
     Q_INVOKABLE static QVariant takeImageFromScene(QDeclarativeItem *sceneItem);
+
+    Q_INVOKABLE static QVariant mappedBoundingRect(QDeclarativeItem *targetItem, QDeclarativeItem *sourceItem, const QRect &rect = QRect());
 #endif
 };
 

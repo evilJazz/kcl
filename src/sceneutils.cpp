@@ -189,4 +189,11 @@ QVariant SceneUtils::takeImageFromScene(QDeclarativeItem *sceneItem)
 
     return image;
 }
+
 #endif
+
+QVariant SceneUtils::mappedBoundingRect(KCLDeclarativeItem *targetItem, KCLDeclarativeItem *sourceItem, const QRect &rect)
+{
+    QRectF sourceRect = rect.isNull() ? sourceItem->boundingRect() : rect;
+    return targetItem->mapRectFromItem(sourceItem, sourceRect);
+}
