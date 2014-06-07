@@ -60,11 +60,13 @@ private slots:
     void fileDownloaded(QNetworkReply* reply);
 
 private:
-    QNetworkAccessManager manager_;
+    QNetworkAccessManager *manager_;
     QByteArray downloadedData_;
     int errorCode_;
     QString errorText_;
     bool autoDelete_;
+
+    QNetworkAccessManager *manager();
 };
 
 #endif // BINARYFILEDOWNLOADER_H

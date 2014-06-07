@@ -23,12 +23,24 @@
 
 #include "KCL/binaryfiledownloader.h"
 
+#ifdef KCL_QTQUICK2
+    #include <QQmlEngine>
+    #include <QQmlContext>
+    #define KCLDeclarativeEngine QQmlEngine
+    #define KCLDeclarativeContext QQmlContext
+#else
+    #include <QDeclarativeEngine>
+    #include <QDeclarativeContext>
+    #define KCLDeclarativeEngine QDeclarativeEngine
+    #define KCLDeclarativeContext QDeclarativeContext
+#endif
+
 BinaryFileDownloader::BinaryFileDownloader() :
     QObject(),
+    manager_(NULL),
     errorCode_(0),
     autoDelete_(false)
 {
-    connect(&manager_, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloaded(QNetworkReply*)));
 }
 
 BinaryFileDownloader::~BinaryFileDownloader()
@@ -39,7 +51,7 @@ void BinaryFileDownloader::download(QString url)
 {
     QNetworkRequest request(QUrl::fromEncoded(url.toUtf8()));
     //request.setRawHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:7.0.1) Gecko/20100101 Firefox/7.0.1");
-    manager_.get(request);
+    manager()->get(request);
 }
 
 void BinaryFileDownloader::fileDownloaded(QNetworkReply* reply)
@@ -61,6 +73,23 @@ void BinaryFileDownloader::fileDownloaded(QNetworkReply* reply)
 
     if (autoDelete_)
         deleteLater();
+}
+
+QNetworkAccessManager *BinaryFileDownloader::manager()
+{
+    if (!manager_)
+    {
+        KCLDeclarativeContext *context = KCLDeclarativeEngine::contextForObject(this);
+
+        if (context)
+            manager_ = context->engine()->networkAccessManager();
+        else
+            manager_ = new QNetworkAccessManager(this);
+
+        connect(manager_, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloaded(QNetworkReply*)));
+    }
+
+    return manager_;
 }
 
 bool BinaryFileDownloader::autoDelete() const
