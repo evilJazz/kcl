@@ -41,12 +41,12 @@ FileSystemUtils::FileSystemUtils(QObject *parent) :
 
 bool FileSystemUtils::fileExists(const QString &filename)
 {
-    return QFileInfo(QUrl(filename).toLocalFile()).exists();
+    return QFileInfo(filename).exists();
 }
 
 bool FileSystemUtils::dirExists(const QString &dirname)
 {
-    return QDir(QUrl(dirname).toLocalFile()).exists();
+    return QDir(dirname).exists();
 }
 
 bool FileSystemUtils::isDir(const QString &dirname)
