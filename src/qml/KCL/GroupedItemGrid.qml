@@ -17,9 +17,23 @@ Repeater {
     // item object is attached via "itemModelData" property
     property Component itemDelegate
 
+    // when the space between delegates is clicked
+    signal clicked()
+
     Rectangle {
         width: groupRepeater.width
         height: header.height + itemGrid.height + itemGrid.anchors.topMargin
+
+        MouseArea {
+            id: clickCatcher
+
+            anchors.fill: parent
+
+            onClicked:
+            {
+                groupRepeater.clicked();
+            }
+        }
 
         Loader {
             id: header
