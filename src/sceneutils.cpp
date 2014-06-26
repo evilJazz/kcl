@@ -24,13 +24,28 @@ static bool itemZOrder_sort(KCLGraphicsItem *lhs, KCLGraphicsItem *rhs)
     return lhs->zValue() < rhs->zValue();
 }
 
-struct PositionPaintOrderFilter : PaintOrderFilter
+struct ScenePositionPaintOrderFilter : PaintOrderFilter
 {
     QPointF scenePoint;
 
     virtual bool matches(KCLGraphicsItem *item)
     {
         QPointF p = item->mapFromScene(scenePoint);
+        //qDebug("item: %p, className: %s, name: %s, contains(p): %s", item, item->metaObject()->className(), item->objectName().toUtf8().constData(), item->contains(p) ? "true" : "false");
+        return item->contains(p);
+    }
+
+    virtual bool filterChildren(KCLGraphicsItem *item) { return true; }
+};
+
+struct ItemPositionPaintOrderFilter : PaintOrderFilter
+{
+    KCLGraphicsItem *parentItem;
+    QPointF itemPoint;
+
+    virtual bool matches(KCLGraphicsItem *item)
+    {
+        QPointF p = item->mapFromItem(parentItem, itemPoint);
         //qDebug("item: %p, className: %s, name: %s, contains(p): %s", item, item->metaObject()->className(), item->objectName().toUtf8().constData(), item->contains(p) ? "true" : "false");
         return item->contains(p);
     }
@@ -76,13 +91,21 @@ QList<KCLGraphicsItem *> SceneUtils::paintOrderChildItems(KCLGraphicsItem *item,
         return childItems;
 }
 
+QList<KCLGraphicsItem *> SceneUtils::getItemsAtPositionInItem(QGraphicsItem *item, qreal itemX, qreal itemY)
+{
+    ItemPositionPaintOrderFilter filter;
+    filter.parentItem = item;
+    filter.itemPoint = QPointF(itemX, itemY);
+    return SceneUtils::paintOrderChildItems(item, true, &filter);
+}
+
 #ifdef KCL_QTQUICK2
 
 QVariantList SceneUtils::getAllItemsInScene(QQuickItem *item, qreal sceneX, qreal sceneY)
 {
     QVariantList result;
 
-    PositionPaintOrderFilter filter;
+    ScenePositionPaintOrderFilter filter;
     filter.scenePoint = item->mapToScene(QPointF(sceneX, sceneY));
 
     QList<QQuickItem *> itemList = SceneUtils::paintOrderChildItems(item->window()->contentItem(), true, &filter);
@@ -101,7 +124,7 @@ QVariantList SceneUtils::getItemsBelow(QQuickItem *item, qreal sceneX, qreal sce
 {
     QVariantList result;
 
-    PositionPaintOrderFilter filter;
+    ScenePositionPaintOrderFilter filter;
     filter.scenePoint = item->mapToScene(QPointF(sceneX, sceneY));
 
     QList<QQuickItem *> itemList = SceneUtils::paintOrderChildItems(item->window()->contentItem(), true, &filter);
