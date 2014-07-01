@@ -32,7 +32,7 @@ public:
     explicit SceneUtils(QObject *parent = 0);
 
     static QList<KCLGraphicsItem *> paintOrderChildItems(KCLGraphicsItem *item, bool recursive, PaintOrderFilter *filter = NULL);
-    static QList<KCLGraphicsItem *> getItemsAtPositionInItem(QGraphicsItem *item, qreal itemX, qreal itemY);
+    static QList<KCLGraphicsItem *> getItemsAtPositionInItem(KCLGraphicsItem *item, qreal itemX, qreal itemY);
 
 // Can't use the KCLDeclarativeItem macro here because moc does not understand it...
 #ifdef KCL_QTQUICK2

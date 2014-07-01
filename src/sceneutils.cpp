@@ -91,7 +91,7 @@ QList<KCLGraphicsItem *> SceneUtils::paintOrderChildItems(KCLGraphicsItem *item,
         return childItems;
 }
 
-QList<KCLGraphicsItem *> SceneUtils::getItemsAtPositionInItem(QGraphicsItem *item, qreal itemX, qreal itemY)
+QList<KCLGraphicsItem *> SceneUtils::getItemsAtPositionInItem(KCLGraphicsItem *item, qreal itemX, qreal itemY)
 {
     ItemPositionPaintOrderFilter filter;
     filter.parentItem = item;
