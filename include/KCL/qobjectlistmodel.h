@@ -62,30 +62,19 @@ public:
 
     void setItems(const QList<QObject *> &items)
     {
-        clear();
-
-        if (items.size() > 0)
-            beginInsertRows(QModelIndex(), 0, items.size() - 1);
-
+        beginResetModel();
+        items_.clear();
         items_ = items;
-
-        if (items.size() > 0)
-            endInsertRows();
+        endResetModel();
 
         emit changed();
     }
 
     void clear()
     {
-        int oldItemSize = items_.size();
-
-        if (oldItemSize > 0)
-            beginRemoveRows(QModelIndex(), 0, items_.size() - 1);
-
+        beginResetModel();
         items_.clear();
-
-        if (oldItemSize > 0)
-            endRemoveRows();
+        endResetModel();
 
         emit changed();
     }
@@ -169,30 +158,19 @@ public:
 
     void setItems(const QList< QSharedPointer<QObject> > &items)
     {
-        clear();
-
-        if (items.size() > 0)
-            beginInsertRows(QModelIndex(), 0, items.size() - 1);
-
+        beginResetModel();
+        items_.clear();
         items_ = items;
-
-        if (items.size() > 0)
-            endInsertRows();
+        endResetModel();
 
         emit changed();
     }
 
     void clear()
     {
-        int oldItemSize = items_.size();
-
-        if (oldItemSize > 0)
-            beginRemoveRows(QModelIndex(), 0, items_.size() - 1);
-
+        beginResetModel();
         items_.clear();
-
-        if (oldItemSize > 0)
-            endRemoveRows();
+        endResetModel();
 
         emit changed();
     }
