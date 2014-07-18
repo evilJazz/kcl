@@ -57,6 +57,8 @@ protected:
 #else
     static void customMessageHandler(QtMsgType type, const char *msg);
 #endif
+
+    static void kaCustomMessageHandler(const QString &msg);
 };
 
 #endif // LOGGING_H

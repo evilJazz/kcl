@@ -42,6 +42,13 @@
 
 static int indentlevel = -1;
 
+static KaMessageHandlerFunc customMessageHandler = NULL;
+
+void kaInstallMessageHandler(KaMessageHandlerFunc customFunc)
+{
+    customMessageHandler = customFunc;
+}
+
 #ifdef DEBUG
 static bool diagnosticOutputEnabled_ = true;
 #else
@@ -71,31 +78,42 @@ QString kaFormatFunctionSignature(const char *fileName, int line, const char *fu
 void kaDebugEnterMethod(const QString &name)
 {
     if (diagnosticOutputEnabled_)
-        qDebug("[%p]%*s>> %s", (void *)QThread::currentThreadId(), ++indentlevel * 3, "", (const char*)name.toUtf8());
+    {
+        kaDebug(">> " + name);
+        ++indentlevel;
+    }
 }
 
 void kaDebugExitMethod(const QString &name)
 {
     if (diagnosticOutputEnabled_)
-        qDebug("[%p]%*s<< %s", (void *)QThread::currentThreadId(), indentlevel-- * 3, "", (const char*)name.toUtf8());
+    {
+        --indentlevel;
+        kaDebug("<< " + name);
+    }
 }
 
 void kaDebugEnterMethod(const char *fileName, int line, const char *functionSignature, const QString &text)
 {
     if (diagnosticOutputEnabled_)
-        qDebug("[%p]%*s>> %s", (void *)QThread::currentThreadId(), ++indentlevel * 3, "", (const char*)kaFormatFunctionSignature(fileName, line, functionSignature, text).toUtf8());
+        kaDebugEnterMethod(kaFormatFunctionSignature(fileName, line, functionSignature, text));
 }
 
 void kaDebugExitMethod(const char *fileName, int line, const char *functionSignature, const QString &text)
 {
     if (diagnosticOutputEnabled_)
-        qDebug("[%p]%*s<< %s", (void *)QThread::currentThreadId(), indentlevel-- * 3, "", (const char*)kaFormatFunctionSignature(fileName, line, functionSignature, text).toUtf8());
+        kaDebugExitMethod(kaFormatFunctionSignature(fileName, line, functionSignature, text));
 }
 
 void kaDebug(const QString &msg)
 {
     if (diagnosticOutputEnabled_)
-        qDebug("[%p]%*s%s", (void *)QThread::currentThreadId(), (indentlevel == -1 ? 0 : indentlevel * 3 + 3), "", (const char*)msg.toUtf8());
+    {
+        if (customMessageHandler)
+            customMessageHandler(QString().sprintf("[%p]%*s%s", (void *)QThread::currentThreadId(), (indentlevel == -1 ? 0 : indentlevel * 3 + 3), "", (const char*)msg.toUtf8()));
+        else
+            qDebug("[%p]%*s%s", (void *)QThread::currentThreadId(), (indentlevel == -1 ? 0 : indentlevel * 3 + 3), "", (const char*)msg.toUtf8());
+    }
 }
 
 void kaFatal(const QString &msg)

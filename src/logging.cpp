@@ -22,6 +22,7 @@
  ***************************************************************************/
 
 #include "KCL/logging.h"
+#include "KCL/debug.h"
 
 #include <QFile>
 
@@ -49,6 +50,8 @@ void Logging::registerHandler()
 #else
     qInstallMsgHandler(customMessageHandler);
 #endif
+
+    kaInstallMessageHandler(kaCustomMessageHandler);
 }
 
 void Logging::unregisterHandler()
@@ -58,6 +61,8 @@ void Logging::unregisterHandler()
 #else
     qInstallMsgHandler(0);
 #endif
+
+    kaInstallMessageHandler(NULL);
 }
 
 #ifdef KCL_WIDGETS
@@ -128,14 +133,11 @@ void Logging::customMessageHandler(QtMsgType type, const char *msg)
     if (!loggingEnabled_ && type != QtFatalMsg) return;
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-    const char *msg = msgText.toUtf8().constData();
+    const char *msg = msgText.toLocal8Bit().constData();
     QString message = msgText;
 #else
     QString message = msg;
 #endif
-
-    if (message.isEmpty())
-        return;
 
     if (message.length() >= 8195)
         message.truncate(8195);
@@ -200,5 +202,14 @@ void Logging::customMessageHandler(QtMsgType type, const char *msg)
 #ifdef KCL_WIDGETS
     if (logWindow_)
         logWindow_->show();
+#endif
+}
+
+void Logging::kaCustomMessageHandler(const QString &msg)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    customMessageHandler(QtDebugMsg, QMessageLogContext(), msg);
+#else
+    customMessageHandler(QtDebugMsg, msg.toLocal8Bit());
 #endif
 }

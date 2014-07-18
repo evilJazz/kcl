@@ -43,6 +43,9 @@
 KCL_EXPORT void setDiagnosticOutputEnabled(bool value);
 KCL_EXPORT bool diagnosticOutputEnabled();
 
+typedef void (*KaMessageHandlerFunc)(const QString &msg);
+KCL_EXPORT void kaInstallMessageHandler(KaMessageHandlerFunc customFunc);
+
 KCL_EXPORT QString kaFormatFunctionSignature(const char *fileName, int line, const char *functionSignature, const QString &text = QString::null);
 KCL_EXPORT void kaDebugEnterMethod(const QString &name);
 KCL_EXPORT void kaDebugExitMethod(const QString &name);
