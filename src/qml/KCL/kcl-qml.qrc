@@ -38,5 +38,6 @@
         <file>ValueChangeWatcher.qml</file>
         <file>GroupedItemGrid.qml</file>
         <file>MouseEater.qml</file>
+        <file>private/GroupedItemGrid.js</file>
     </qresource>
 </RCC>
