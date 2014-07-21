@@ -293,13 +293,19 @@ Column {
             {
                 var item = Private.items[i];
 
-                if (itemVisible(item))
+                //console.log("item " + i + ": " + item + " -> " + typeof(item) + " -> " + ObjectUtils.isNull(item));
+
+                //if (item != null && typeof(item) != "undefined") // does not work because item is null (!) but comparison does evaluate to true and typeof(item) returns "object"
+                if (!ObjectUtils.isNull(item))
                 {
-                    newItems.push(item);
-                    newIds[item.itemId] = true;
+                    if (itemVisible(item))
+                    {
+                        newItems.push(item);
+                        newIds[item.itemId] = true;
+                    }
+                    else
+                        item.destroy();
                 }
-                else
-                    item.destroy();
             }
 
             if (logic.debug) console.log("updateLoadState cleanup AFTER: " + newItems.length);

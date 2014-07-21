@@ -24,3 +24,8 @@ bool ObjectUtils::inherits(QObject *target, const QString &className)
 {
     return target->inherits(className.toLatin1());
 }
+
+bool ObjectUtils::isNull(QObject *target)
+{
+    return target == NULL;
+}
