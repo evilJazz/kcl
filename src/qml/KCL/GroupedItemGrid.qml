@@ -232,6 +232,9 @@ Column {
 
             onContentYChanged: logic.deferredUpdateLoadState()
             onContentHeightChanged: logic.deferredUpdateLoadState()
+            onContentWidthChanged: logic.deferredUpdateLoadState()
+            onHeightChanged: logic.deferredUpdateLoadState()
+            onWidthChanged: logic.deferredUpdateLoadState()
         }
 
         property bool modelLoading: false
@@ -239,7 +242,7 @@ Column {
 
         function deferredUpdateLoadState()
         {
-            if (logic.deferredUpdateStarted || logic.modelLoading || root.height < 0 || root.flickable.contentHeight < 0) return;
+            if (logic.deferredUpdateStarted || logic.modelLoading || root.height < 0 || (!ObjectUtils.isNull(root.flickable) && root.flickable.contentHeight < 0)) return;
 
             if (logic.debug) console.log("deferredUpdateLoadState() !!! height: " + height + " contextY: " + contentY + " contentHeight: " + contentHeight);
 
@@ -254,6 +257,9 @@ Column {
 
         function itemVisible(item)
         {
+            if (ObjectUtils.isNull(flickable))
+                return true;
+
             var posInView = root.flickable.mapFromItem(item, 0, 0);
             var visible = posInView.y + item.height >= 0 && posInView.y <= root.flickable.height;
 
@@ -274,6 +280,9 @@ Column {
 
         function itemIndexVisible(itemGrid, itemIndex)
         {
+            if (ObjectUtils.isNull(flickable))
+                return true;
+
             var posInView = root.flickable.mapFromItem(itemGrid, 0, itemPosY(itemIndex));
             var visible = posInView.y + root.fullCellHeight >= 0 && posInView.y <= root.flickable.height;
 

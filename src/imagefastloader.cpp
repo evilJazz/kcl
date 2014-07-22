@@ -35,6 +35,8 @@
 #include <QCryptographicHash>
 
 #include "KCL/filesystemutils.h"
+
+#undef DEBUG
 #include "KCL/debug.h"
 
 #define CBCI_MARKER "CBCIV3"

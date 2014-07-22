@@ -5,6 +5,8 @@
 #include <QTimer>
 
 #include "KCL/backgroundtasks.h"
+
+#undef DEBUG
 #include "KCL/debug.h"
 
 /* Task */
