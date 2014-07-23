@@ -22,6 +22,8 @@ Column {
     property int fullCellWidth: cellWidth + spacing
     property int fullCellHeight: cellHeight + spacing
 
+    property int cacheBuffer: fullCellHeight * 8
+
     property alias model: groupRepeater.model
 
     // group object is attached via "groupModelData" property
@@ -34,6 +36,8 @@ Column {
     signal clicked()
 
     property Flickable flickable
+
+    onHeightChanged: logic.deferredUpdateLoadState()
 
     function groupIndexFromItemId(itemId)
     {
@@ -261,7 +265,7 @@ Column {
                 return true;
 
             var posInView = root.flickable.mapFromItem(item, 0, 0);
-            var visible = posInView.y + item.height >= 0 && posInView.y <= root.flickable.height;
+            var visible = posInView.y + item.height >= -root.cacheBuffer && posInView.y <= root.flickable.height + root.cacheBuffer;
 
             //if (logic.debug) console.log(item + " -> " + JSON.stringify(posInView) + " visible: " + visible);
 
@@ -284,7 +288,7 @@ Column {
                 return true;
 
             var posInView = root.flickable.mapFromItem(itemGrid, 0, itemPosY(itemIndex));
-            var visible = posInView.y + root.fullCellHeight >= 0 && posInView.y <= root.flickable.height;
+            var visible = posInView.y + root.fullCellHeight >= -root.cacheBuffer && posInView.y <= root.flickable.height + root.cacheBuffer;
 
             //if (logic.debug) console.log(itemIndex + " -> " + JSON.stringify(posInView) + " visible: " + visible);
 
