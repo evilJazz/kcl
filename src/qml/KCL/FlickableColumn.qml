@@ -12,10 +12,12 @@ Flickable {
 
     property int decoratorWidth: 0
     property alias column: column
+    property alias mouseEater: mouseEater
 
     interactive: height <= contentHeight
 
     MouseEater {
+        id: mouseEater
         width: parent.width - decoratorWidth
         height: Math.max(column.implicitHeight, flicker.height)
 
