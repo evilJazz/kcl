@@ -14,8 +14,12 @@ QtObjectWithChildren {
 
     property bool valid: leftValid && rightValid
 
+    property bool enabled: true
+
     function copyLeftToRight()
     {
+        if (!entangler.enabled) return;
+
         if (entangler._settingValue) return;
         if (entangler.valid)
         {
@@ -36,6 +40,8 @@ QtObjectWithChildren {
 
     function copyRightToLeft()
     {
+        if (!entangler.enabled) return;
+
         if (entangler._settingValue) return;
         if (entangler.valid)
         {
@@ -70,11 +76,13 @@ QtObjectWithChildren {
 
     ValueChangeWatcher {
         id: left
+        enabled: entangler.enabled
         onValueChanged: entangler.copyLeftToRight()
     }
 
     ValueChangeWatcher {
         id: right
+        enabled: entangler.enabled
         onValueChanged: entangler.copyRightToLeft()
     }
 

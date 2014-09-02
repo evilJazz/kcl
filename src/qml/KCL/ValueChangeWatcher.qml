@@ -3,6 +3,8 @@ import QtQuick 1.0
 QtObject {
     id: watcher
 
+    property bool enabled: true
+
     property QtObject target
     property string propertyName
 
@@ -57,6 +59,7 @@ QtObject {
 
     function _boundValueChanged()
     {
+        if (!enabled) return;
         if (_settingValue) return;
 
         var newValue = _boundTarget[_boundPropertyName];
