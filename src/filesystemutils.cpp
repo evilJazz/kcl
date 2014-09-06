@@ -34,6 +34,8 @@
 #include <QDesktopServices>
 #endif
 
+#include <unistd.h>
+
 FileSystemUtils::FileSystemUtils(QObject *parent) :
     QObject(parent)
 {
@@ -210,6 +212,11 @@ bool FileSystemUtils::removeDirectoryRecursively(const QString &dirName)
     }
 
     return result;
+}
+
+void FileSystemUtils::syncToDisk()
+{
+    sync();
 }
 
 QString FileSystemUtils::homeLocation()

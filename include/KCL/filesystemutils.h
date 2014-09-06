@@ -78,6 +78,8 @@ public:
     Q_INVOKABLE static bool forceDirectory(const QString &dirName);
     Q_INVOKABLE static bool removeDirectoryRecursively(const QString &dirName);
 
+    Q_INVOKABLE static void syncToDisk();
+
     static QString homeLocation();
     static QString documentsLocation();    
     static QString desktopLocation();
