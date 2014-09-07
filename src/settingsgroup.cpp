@@ -22,6 +22,7 @@
  ***************************************************************************/
 
 #include "KCL/settingsgroup.h"
+#include "KCL/filesystemutils.h"
 
 #include <QVariant>
 #include <QMetaProperty>
@@ -36,6 +37,7 @@
 
 static QString *globalIniFilename = NULL;
 static QSettings *globalSettings_ = NULL;
+static bool fullSyncEnabled_ = false;
 
 QString getGlobalIniFilenameSingleton()
 {
@@ -224,6 +226,16 @@ QString SettingsGroup::globalIniFilename()
     return getGlobalIniFilenameSingleton();
 }
 
+void SettingsGroup::setFullSyncEnabled(bool value)
+{
+    fullSyncEnabled_ = value;
+}
+
+bool SettingsGroup::fullSyncEnabled()
+{
+    return fullSyncEnabled_;
+}
+
 #ifdef KCL_QTQUICK2
 QQmlListProperty<SettingsGroup> SettingsGroup::groups()
 {
@@ -264,6 +276,9 @@ void SettingsGroup::save()
         group->save();
 
     settings->sync();
+
+    if (fullSyncEnabled_)
+        FileSystemUtils::syncToDisk();
 
     emit saved();
 }

@@ -87,6 +87,9 @@ public:
     static void setGlobalIniFilename(const QString fileName);
     static QString globalIniFilename();
 
+    static void setFullSyncEnabled(bool value);
+    static bool fullSyncEnabled();
+
 #ifdef KCL_QTQUICK2
     QQmlListProperty<SettingsGroup> groups();
 #else
