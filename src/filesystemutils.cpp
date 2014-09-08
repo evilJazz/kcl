@@ -216,7 +216,20 @@ bool FileSystemUtils::removeDirectoryRecursively(const QString &dirName)
 
 void FileSystemUtils::syncToDisk()
 {
+#ifdef Q_OS_UNIX
     sync();
+#else
+    qWarning("FileSystemUtils::syncToDisk() is not implemented for this OS.");
+#endif
+}
+
+bool FileSystemUtils::syncFileToDisk(const QString &fileName)
+{
+    QFile file(fileName);
+    if (file.open(QIODevice::ReadWrite))
+        return file.flush();
+    else
+        return false;
 }
 
 QString FileSystemUtils::homeLocation()
