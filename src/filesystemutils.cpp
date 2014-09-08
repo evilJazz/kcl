@@ -223,15 +223,6 @@ void FileSystemUtils::syncToDisk()
 #endif
 }
 
-bool FileSystemUtils::syncFileToDisk(const QString &fileName)
-{
-    QFile file(fileName);
-    if (file.open(QIODevice::ReadWrite))
-        return file.flush();
-    else
-        return false;
-}
-
 QString FileSystemUtils::homeLocation()
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
