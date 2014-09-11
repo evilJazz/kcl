@@ -5,15 +5,26 @@ ColorUtils::ColorUtils(QObject *parent) :
 {
 }
 
-QVariantMap ColorUtils::colorComponents(const QColor &color)
+QVariantMap ColorUtils::colorComponents(const QColor &color, bool asFloat)
 {
     QVariantMap result;
 
     result.insert("isValid", color.isValid());
-    result.insert("a", color.alpha());
-    result.insert("r", color.red());
-    result.insert("g", color.green());
-    result.insert("b", color.blue());
+
+    if (asFloat)
+    {
+        result.insert("a", color.alphaF());
+        result.insert("r", color.redF());
+        result.insert("g", color.greenF());
+        result.insert("b", color.blueF());
+    }
+    else
+    {
+        result.insert("a", color.alpha());
+        result.insert("r", color.red());
+        result.insert("g", color.green());
+        result.insert("b", color.blue());
+    }
 
     return result;
 }
@@ -36,4 +47,16 @@ QColor ColorUtils::parseColor(const QString &colorString)
     }
     else
         return QColor(colorString);
+}
+
+QColor ColorUtils::setAlpha(const QColor &color, QVariant alpha)
+{
+    QColor copy = color;
+
+    if (alpha.type() == QVariant::Double)
+        copy.setAlphaF(alpha.toDouble());
+    else
+        copy.setAlpha(alpha.toInt());
+
+    return copy;
 }

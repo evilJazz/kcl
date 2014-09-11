@@ -18,9 +18,10 @@ class KCL_EXPORT ColorUtils : public QObject
 public:
     explicit ColorUtils(QObject *parent = 0);
 
-    Q_INVOKABLE static QVariantMap colorComponents(const QColor &color);
+    Q_INVOKABLE static QVariantMap colorComponents(const QColor &color, bool asFloat = false);
     Q_INVOKABLE static QString colorName(const QColor &color);
     Q_INVOKABLE static QColor parseColor(const QString &colorString);
+    Q_INVOKABLE static QColor setAlpha(const QColor &color, QVariant alpha);
 
 signals:
 
