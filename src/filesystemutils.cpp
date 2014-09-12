@@ -214,6 +214,11 @@ bool FileSystemUtils::removeDirectoryRecursively(const QString &dirName)
     return result;
 }
 
+bool FileSystemUtils::removeFile(const QString &fileName)
+{
+    return QFile::remove(fileName);
+}
+
 void FileSystemUtils::syncToDisk()
 {
 #ifdef Q_OS_UNIX
