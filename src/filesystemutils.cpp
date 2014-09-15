@@ -221,7 +221,7 @@ bool FileSystemUtils::removeFile(const QString &fileName)
 
 void FileSystemUtils::syncToDisk()
 {
-#ifdef Q_OS_UNIX
+#ifdef Q_OS_LINUX
     sync();
 #else
     qWarning("FileSystemUtils::syncToDisk() is not implemented for this OS.");
