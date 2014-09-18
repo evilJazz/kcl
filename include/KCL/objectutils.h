@@ -4,6 +4,7 @@
 #include "KCL/kcl_global.h"
 
 #include <QObject>
+#include <QVariant>
 
 class KCL_EXPORT ObjectUtils : public QObject
 {
@@ -18,10 +19,13 @@ public:
     Q_INVOKABLE static bool sameReference(QObject *object1, QObject *object2);
     Q_INVOKABLE static bool inherits(QObject *target, const QString &className);
 
-signals:
+    Q_INVOKABLE static QObject *objectify(const QVariant &object);
 
-public slots:
+    Q_INVOKABLE static QString objectAsString(QObject *object);
+    Q_INVOKABLE static void dumpObjectTree(QObject *target);
 
+private:
+    static void dumpObjectTreeRecursive(int level, QObject *object);
 };
 
 #endif // OBJECTUTILS_H

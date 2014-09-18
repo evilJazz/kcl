@@ -110,9 +110,9 @@ void kaDebug(const QString &msg)
     if (diagnosticOutputEnabled_)
     {
         if (customMessageHandler)
-            customMessageHandler(QString().sprintf("[%p]%*s%s", (void *)QThread::currentThreadId(), (indentlevel == -1 ? 0 : indentlevel * 3 + 3), "", (const char*)msg.toUtf8()));
+            customMessageHandler(QString().sprintf("[%p]%*s%s", (void *)QThread::currentThread(), (indentlevel == -1 ? 0 : indentlevel * 3 + 3), "", (const char*)msg.toUtf8()));
         else
-            qDebug("[%p]%*s%s", (void *)QThread::currentThreadId(), (indentlevel == -1 ? 0 : indentlevel * 3 + 3), "", (const char*)msg.toUtf8());
+            qDebug("[%p]%*s%s", (void *)QThread::currentThread(), (indentlevel == -1 ? 0 : indentlevel * 3 + 3), "", (const char*)msg.toUtf8());
     }
 }
 
