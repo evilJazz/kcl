@@ -114,8 +114,6 @@ kcl_qtquick1 {
     QT += script
 
     DEFINES -= KCL_QTQUICK2
-
-    kclConditionalAddModule(declarativedebug)
 }
 
 kcl_qtquick1 | kcl_qtquick2 {
@@ -127,6 +125,7 @@ kcl_qtquick1 | kcl_qtquick2 {
     kclConditionalAddModule(cursorarea)
     kclConditionalAddModule(imagerendersurface)
     kclConditionalAddModule(sceneutils)
+    kclConditionalAddModule(declarativedebug)
 
     OTHER_FILES += $$files($$KCL_SRC_PATH/qml/KCL/*, true)
 

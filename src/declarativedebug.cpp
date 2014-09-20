@@ -2,13 +2,16 @@
 
 #include "KCL/debug.h"
 
-#include <QDeclarativeEngine>
-
-#include <QtScript/QScriptEngine>
-#include <QtScript/QScriptContext>
-#include <QtScript/QScriptContextInfo>
-
-#include "qdeclarativedebughelper_p.h"
+#ifdef KCL_QTQUICK2
+    #include <QQmlEngine>
+    #define QDeclarativeEngine QQmlEngine
+#else
+    #include <QDeclarativeEngine>
+    #include <QtScript/QScriptEngine>
+    #include <QtScript/QScriptContext>
+    #include <QtScript/QScriptContextInfo>
+    #include "qdeclarativedebughelper_p.h"
+#endif
 
 const QString cIdentifier("QML/JS");
 
@@ -16,13 +19,34 @@ DeclarativeDebug::DeclarativeDebug(QDeclarativeEngine *engine) :
     QObject(engine),
     engine_(engine)
 {
+#ifndef KCL_QTQUICK2
     scriptEngine_ = QDeclarativeDebugHelper::getScriptEngine(engine_);
+#endif
 }
 
 DeclarativeDebug::~DeclarativeDebug()
 {
 }
 
+#ifdef KCL_QTQUICK2
+// Dummies for now, till we can get access to the current stack frame via QV4::ExecutionEngine and QV4::CallContext
+
+void DeclarativeDebug::enterMethod(const QString &text)
+{
+    if (diagnosticOutputEnabled())
+    {
+        kaDebugEnterMethod(QString(cIdentifier + ": <unknown>").toUtf8().constData(), 0, QString("<unknown method>").toUtf8().constData(), text);
+    }
+}
+
+void DeclarativeDebug::exitMethod(const QString &text)
+{
+    if (diagnosticOutputEnabled())
+    {
+        kaDebugExitMethod(QString(cIdentifier + ": <unknown>").toUtf8().constData(), 0, QString("<unknown method>").toUtf8().constData(), text);
+    }
+}
+#else
 QString DeclarativeDebug::getFunctionSignature(QScriptContextInfo *info)
 {
     return info->functionName() + "(" + info->functionParameterNames().join(", ") + ")";
@@ -53,6 +77,7 @@ void DeclarativeDebug::exitMethod(const QString &text)
         }
     }
 }
+#endif
 
 void DeclarativeDebug::print(const QString &text)
 {

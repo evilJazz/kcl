@@ -30,7 +30,7 @@
 
 #include <QObject>
 #include <QString>
-#include <QTime>
+#include <QElapsedTimer>
 
 #include <QtGlobal>
 
@@ -42,6 +42,9 @@
 
 KCL_EXPORT void setDiagnosticOutputEnabled(bool value);
 KCL_EXPORT bool diagnosticOutputEnabled();
+
+KCL_EXPORT void setShowMarkerAfter(int seconds);
+KCL_EXPORT int showMarkerAfter();
 
 typedef void (*KaMessageHandlerFunc)(const QString &msg);
 KCL_EXPORT void kaInstallMessageHandler(KaMessageHandlerFunc customFunc);
@@ -70,7 +73,7 @@ private:
     QString string_;
     bool silence_;
     bool profile_;
-    QTime *timer_;
+    QElapsedTimer *timer_;
 };
 
 #if defined(DEBUG) || defined(DIAGNOSTIC_OUTPUT)

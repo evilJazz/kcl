@@ -25,6 +25,7 @@
 
 #include <QHash>
 #include <QThread>
+#include <QMutex>
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -40,7 +41,20 @@
 #endif
 #endif
 
-static int indentlevel = -1;
+static int indentLevel_ = -1;
+static QElapsedTimer lastMsg_;
+static QMutex *lastMsgMutex_ = NULL;
+
+QMutex *getMutex()
+{
+    if (!lastMsgMutex_)
+    {
+        lastMsg_.restart();
+        lastMsgMutex_ = new QMutex(QMutex::Recursive);
+    }
+
+    return lastMsgMutex_;
+}
 
 static KaMessageHandlerFunc customMessageHandler = NULL;
 
@@ -65,6 +79,19 @@ bool diagnosticOutputEnabled()
     return diagnosticOutputEnabled_;
 }
 
+static qint64 showMarkerAfterMSecs_ = 5000;
+
+void setShowMarkerAfter(int msecs)
+{
+    showMarkerAfterMSecs_ = msecs;
+    lastMsg_.restart();
+}
+
+int showMarkerAfter()
+{
+    return showMarkerAfterMSecs_;
+}
+
 QString kaFormatFunctionSignature(const char *fileName, int line, const char *functionSignature, const QString &text)
 {
     QString result = QString().sprintf("[%s:%d] : %s", fileName, line, functionSignature);
@@ -79,8 +106,8 @@ void kaDebugEnterMethod(const QString &name)
 {
     if (diagnosticOutputEnabled_)
     {
-        kaDebug(">> " + name);
-        ++indentlevel;
+        kaDebug("-> " + name);
+        ++indentLevel_;
     }
 }
 
@@ -88,8 +115,8 @@ void kaDebugExitMethod(const QString &name)
 {
     if (diagnosticOutputEnabled_)
     {
-        --indentlevel;
-        kaDebug("<< " + name);
+        --indentLevel_;
+        kaDebug("<- " + name);
     }
 }
 
@@ -109,16 +136,30 @@ void kaDebug(const QString &msg)
 {
     if (diagnosticOutputEnabled_)
     {
+        QMutexLocker l(getMutex());
+
+        if (showMarkerAfterMSecs_ > 0)
+        {
+            qint64 diff = lastMsg_.elapsed();
+            if (lastMsg_.isValid() && diff > showMarkerAfterMSecs_)
+            {
+                lastMsg_.restart();
+                kaDebug(QString("============================= last message was %1 ms ago. =============================").arg(diff));
+            }
+            else
+                lastMsg_.restart();
+        }
+
         if (customMessageHandler)
-            customMessageHandler(QString().sprintf("[%p]%*s%s", (void *)QThread::currentThread(), (indentlevel == -1 ? 0 : indentlevel * 3 + 3), "", (const char*)msg.toUtf8()));
+            customMessageHandler(QString().sprintf("[%10p] %*s%s", (void *)QThread::currentThread(), (indentLevel_ == -1 ? 0 : indentLevel_ * 3 + 3), "", (const char*)msg.toUtf8()));
         else
-            qDebug("[%p]%*s%s", (void *)QThread::currentThread(), (indentlevel == -1 ? 0 : indentlevel * 3 + 3), "", (const char*)msg.toUtf8());
+            qDebug("[%10p] %*s%s", (void *)QThread::currentThread(), (indentLevel_ == -1 ? 0 : indentLevel_ * 3 + 3), "", (const char*)msg.toUtf8());
     }
 }
 
 void kaFatal(const QString &msg)
 {
-    qFatal("FATAL: %*s%s", (indentlevel == -1 ? 0 : indentlevel * 3 + 3), "", (const char*)msg.toUtf8());
+    qFatal("FATAL: %*s%s", (indentLevel_ == -1 ? 0 : indentLevel_ * 3 + 3), "", (const char*)msg.toUtf8());
 }
 
 void kaPrintMemStat()
@@ -175,7 +216,7 @@ KaDebugGuard::KaDebugGuard(const char *fileName, int line, const char *functionS
 
     if (timed)
     {
-        timer_ = new QTime();
+        timer_ = new QElapsedTimer();
         timer_->start();
     }
 
