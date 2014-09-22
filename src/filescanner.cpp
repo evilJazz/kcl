@@ -26,6 +26,7 @@
 #include <QThread>
 #include <QThreadPool>
 #include <QDirIterator>
+#include <QDateTime>
 
 #include "KCL/debug.h"
 
