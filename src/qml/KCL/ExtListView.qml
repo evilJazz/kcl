@@ -6,6 +6,8 @@ ListView {
     property int heightOfSectionDelegate: 70
     property int heightOfDelegate: 50
 
+    //pixelAligned: true //@QtQuick2
+
     function firstVisibleItem()
     {
         if (count == 0)
