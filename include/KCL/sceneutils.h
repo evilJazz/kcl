@@ -38,15 +38,23 @@ public:
 #ifdef KCL_QTQUICK2
     Q_INVOKABLE static QVariantList getAllItemsInScene(QQuickItem *item, qreal sceneX, qreal sceneY);
     Q_INVOKABLE static QVariantList getItemsBelow(QQuickItem *item, qreal sceneX, qreal sceneY);
-    Q_INVOKABLE static QVariant takeImageFromScene(QQuickItem *sceneItem);
+
+    Q_INVOKABLE static void takeItemFromScene(QQuickItem *item);
+    Q_INVOKABLE static void reparentItem(QQuickItem *item, QQuickItem *newParent);
 
     Q_INVOKABLE static QVariant mappedBoundingRect(QQuickItem *targetItem, QQuickItem *sourceItem, const QRect &rect = QRect());
+
+    Q_INVOKABLE static QVariant takeImageFromScene(QQuickItem *sceneItem);
 #else
     Q_INVOKABLE static QVariantList getAllItemsInScene(QDeclarativeItem *item, qreal sceneX, qreal sceneY);
     Q_INVOKABLE static QVariantList getItemsBelow(QDeclarativeItem *item, qreal sceneX, qreal sceneY);
-    Q_INVOKABLE static QVariant takeImageFromScene(QDeclarativeItem *sceneItem);
+
+    Q_INVOKABLE static void takeItemFromScene(QDeclarativeItem *item);
+    Q_INVOKABLE static void reparentItem(QDeclarativeItem *item, QDeclarativeItem *newParent);
 
     Q_INVOKABLE static QVariant mappedBoundingRect(QDeclarativeItem *targetItem, QDeclarativeItem *sourceItem, const QRect &rect = QRect());
+
+    Q_INVOKABLE static QVariant takeImageFromScene(QDeclarativeItem *sceneItem);
 #endif
 };
 

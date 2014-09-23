@@ -144,6 +144,17 @@ QVariantList SceneUtils::getItemsBelow(QQuickItem *item, qreal sceneX, qreal sce
     return result;
 }
 
+void SceneUtils::takeItemFromScene(QQuickItem *item)
+{
+    reparentItem(item, NULL);
+}
+
+void SceneUtils::reparentItem(QQuickItem *item, QQuickItem *newParent)
+{
+    if (item)
+        item->setParentItem(newParent);
+}
+
 QVariant SceneUtils::takeImageFromScene(QQuickItem *sceneItem)
 {
     if (!sceneItem || !sceneItem->window())
@@ -191,6 +202,17 @@ QVariantList SceneUtils::getItemsBelow(QDeclarativeItem *item, qreal sceneX, qre
     }
 
     return result;
+}
+
+void SceneUtils::takeItemFromScene(QDeclarativeItem *item)
+{
+    reparentItem(item, NULL);
+}
+
+void SceneUtils::reparentItem(QDeclarativeItem *item, QDeclarativeItem *newParent)
+{
+    if (item)
+        item->setParentItem(newParent);
 }
 
 QVariant SceneUtils::takeImageFromScene(QDeclarativeItem *sceneItem)
