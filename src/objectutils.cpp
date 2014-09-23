@@ -61,6 +61,10 @@ void ObjectUtils::dumpObjectTreeRecursive(int level, QObject *object)
                 dumpObjectTreeRecursive(level + 1, children.at(i));
         }
     }
+    else if (level == 0)
+    {
+        DPRINTF("%s", objectAsString(object).toLatin1().constData());
+    }
 }
 
 bool ObjectUtils::isNull(QObject *target)
