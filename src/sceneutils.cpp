@@ -146,6 +146,8 @@ QVariantList SceneUtils::getItemsBelow(QQuickItem *item, qreal sceneX, qreal sce
 
 void SceneUtils::takeItemFromScene(QQuickItem *item)
 {
+    // We can't actually take the item from the scene
+    // It will be moved to the parentless-item list of the associated QQuickWindow instead...
     reparentItem(item, NULL);
 }
 
@@ -206,7 +208,10 @@ QVariantList SceneUtils::getItemsBelow(QDeclarativeItem *item, qreal sceneX, qre
 
 void SceneUtils::takeItemFromScene(QDeclarativeItem *item)
 {
-    reparentItem(item, NULL);
+    if (item && item->scene())
+        item->scene()->removeItem(item);
+    else
+        reparentItem(item, NULL);
 }
 
 void SceneUtils::reparentItem(QDeclarativeItem *item, QDeclarativeItem *newParent)
