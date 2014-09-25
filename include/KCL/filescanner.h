@@ -61,6 +61,7 @@ class KCL_EXPORT FileScanner : public QObject
     Q_PROPERTY(bool returnHashSums READ returnHashSums WRITE setReturnHashSums NOTIFY returnHashSumsChanged)
     Q_PROPERTY(int maxFileSizeForHashSums READ maxFileSizeForHashSums WRITE setMaxFileSizeForHashSums NOTIFY maxFileSizeForHashSumsChanged)
     Q_PROPERTY(bool useWorkerThread READ useWorkerThread WRITE setUseWorkerThread NOTIFY useWorkerThreadChanged)
+    Q_PROPERTY(bool lowPriorityScanning READ lowPriorityScanning WRITE setLowPriorityScanning NOTIFY lowPriorityScanningChanged)
     Q_PROPERTY(bool running READ running NOTIFY resultsAvailable)
 public:
     explicit FileScanner(QObject *parent = 0);
@@ -88,6 +89,9 @@ public:
     void setUseWorkerThread(bool value);
     bool useWorkerThread() const { return useWorkerThread_; }
 
+    void setLowPriorityScanning(bool value);
+    bool lowPriorityScanning() const { return lowPriorityScanning_; }
+
     bool running() const { return runnable_ != NULL; }
 
     Q_INVOKABLE void stop();
@@ -101,6 +105,7 @@ signals:
     void returnHashSumsChanged();
     void maxFileSizeForHashSumsChanged();
     void useWorkerThreadChanged();
+    void lowPriorityScanningChanged();
 
 private slots:
     void handleRunnableResultsAvailable(const QVariantList &list);
@@ -113,6 +118,7 @@ private:
     bool returnHashSums_;
     int maxFileSizeForHashSums_;
     bool useWorkerThread_;
+    bool lowPriorityScanning_;
 
     bool stop_;
 

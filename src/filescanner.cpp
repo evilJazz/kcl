@@ -32,6 +32,8 @@
 
 #include "KCL/filesystemutils.h"
 
+#include <QCoreApplication>
+
 /* FileScannerRunnable */
 
 FileScannerRunnable::FileScannerRunnable(FileScanner *fileScanner) :
@@ -48,6 +50,11 @@ void FileScannerRunnable::run()
 {
     DGUARDMETHODTIMED;
     //moveToThread(QThread::currentThread());
+
+    QThread::Priority oldPrio = QThread::currentThread()->priority();
+
+    if (fileScanner_->lowPriorityScanning() && QThread::currentThread() != qApp->thread())
+        QThread::currentThread()->setPriority(QThread::LowestPriority);
 
     // Prepare...
     QStringList filterStrings = fileScanner_->filters();
@@ -115,11 +122,17 @@ void FileScannerRunnable::run()
                 else
                     results.append(prefix + currentFilename);
             }
+
+            if (fileScanner_->lowPriorityScanning())
+                QThread::yieldCurrentThread();
         }
 
         if (fileScanner_->stopped())
             break;
     }
+
+    if (QThread::currentThread()->priority() != oldPrio)
+        QThread::currentThread()->setPriority(oldPrio); // Set old prio that was set by QThreadPool
 
     emit resultsAvailable(results);
 }
@@ -132,6 +145,7 @@ FileScanner::FileScanner(QObject *parent) :
     returnHashSums_(false),
     maxFileSizeForHashSums_(30 * 1024 * 1024),
     useWorkerThread_(true),
+    lowPriorityScanning_(false),
     stop_(false),
     runnable_(NULL)
 {
@@ -220,6 +234,15 @@ void FileScanner::setUseWorkerThread(bool value)
     {
         useWorkerThread_ = value;
         emit useWorkerThreadChanged();
+    }
+}
+
+void FileScanner::setLowPriorityScanning(bool value)
+{
+    if (value != lowPriorityScanning_)
+    {
+        lowPriorityScanning_ = value;
+        emit lowPriorityScanningChanged();
     }
 }
 
