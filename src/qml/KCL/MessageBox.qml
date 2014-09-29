@@ -20,7 +20,7 @@ QtObject {
         DeferredExecution.executeIn(1, function ()
         {
             if (type == MessageBox.Question)
-                clickedButton = NativeDialogs.critical(title, text, buttons, defaultButton);
+                clickedButton = NativeDialogs.question(title, text, buttons, defaultButton);
             else if (type == MessageBox.Information)
                 clickedButton = NativeDialogs.information(title, text, buttons, defaultButton);
             else if (type == MessageBox.Warning)
