@@ -57,7 +57,7 @@ signals:
     void autoDeleteChanged();
 
 private slots:
-    void fileDownloaded(QNetworkReply* reply);
+    void fileDownloaded();
 
 private:
     QNetworkAccessManager *manager_;

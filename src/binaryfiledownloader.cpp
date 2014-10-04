@@ -51,25 +51,35 @@ void BinaryFileDownloader::download(QString url)
 {
     QNetworkRequest request(QUrl::fromEncoded(url.toUtf8()));
     //request.setRawHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:7.0.1) Gecko/20100101 Firefox/7.0.1");
-    manager()->get(request);
+    QNetworkReply *reply = manager()->get(request);
+    connect(reply, SIGNAL(finished()), this, SLOT(fileDownloaded()));
 }
 
-void BinaryFileDownloader::fileDownloaded(QNetworkReply* reply)
+void BinaryFileDownloader::fileDownloaded()
 {
-    //qDebug("reply->url(): %s", (const char *)reply->url().toString().toUtf8());
-    //qDebug("reply->error(): %d", reply->error());
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
 
-    if (reply->error() != 200 && reply->error() != 0)
+    if (reply)
     {
-        errorCode_ = reply->error();
-        errorText_ = reply->errorString();
-        emit error(errorCode_, errorText_);
+        //qDebug("reply->url(): %s", (const char *)reply->url().toString().toUtf8());
+        //qDebug("statuscode: %d", reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt());
+        //qDebug("bytesAvailable: %d", reply->bytesAvailable());
+        //qDebug("reply->error(): %d", reply->error());
+
+        if (reply->error() != QNetworkReply::NoError)
+        {
+            errorCode_ = reply->error();
+            errorText_ = reply->errorString();
+            emit error(errorCode_, errorText_);
+        }
+        else
+        {
+            downloadedData_ = reply->readAll();
+            emit downloaded(downloadedData_);
+        }
     }
     else
-    {
-        downloadedData_ = reply->readAll();
-        emit downloaded(downloadedData_);
-    }
+        emit error(-1, "Invalid reply received.");
 
     if (autoDelete_)
         deleteLater();
@@ -86,7 +96,7 @@ QNetworkAccessManager *BinaryFileDownloader::manager()
         else
             manager_ = new QNetworkAccessManager(this);
 
-        connect(manager_, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloaded(QNetworkReply*)));
+        //connect(manager_, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloaded(QNetworkReply*)));
     }
 
     return manager_;
