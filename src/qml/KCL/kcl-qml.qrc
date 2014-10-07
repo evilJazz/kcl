@@ -39,5 +39,6 @@
         <file>GroupedItemGrid.qml</file>
         <file>MouseEater.qml</file>
         <file>private/GroupedItemGrid.js</file>
+        <file>PopUpOverlay.qml</file>
     </qresource>
 </RCC>

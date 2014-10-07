@@ -26,9 +26,12 @@ Fader {
 
     property alias frame: frame
     property alias item: loader.item
+    property bool looseItem: false // This can only be set on instantiation because it influences the Loader's implicit size which can not be reset
 
     onOpenedChanged: updateState()
     onSourceChanged: updateState()
+
+    signal backgroundClicked()
 
     onDoneChanged:
     {
@@ -112,16 +115,18 @@ Fader {
 
     MouseEater {
         anchors.fill: parent
+        onClicked: overlay.backgroundClicked()
     }
 
     Item {
         id: frame
         anchors.fill: parent
-        anchors.margins: 30
+        anchors.margins: !overlay.looseItem ? 30 : 0
 
         Loader {
             id: loader
-            anchors.fill: parent
+            anchors.fill: !overlay.looseItem ? parent : undefined
+
             onItemChanged:
             {
                 if (item !== null)

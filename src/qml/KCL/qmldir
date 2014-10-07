@@ -28,6 +28,7 @@ BidirectionalBinding 1.0 BidirectionalBinding.qml
 
 Fader 1.0 Fader.qml
 MessageOverlay 1.0 MessageOverlay.qml
+PopUpOverlay 1.0 PopUpOverlay.qml
 
 MessageBox 1.0 MessageBox.qml
 FileDialog 1.0 FileDialog.qml
