@@ -140,7 +140,7 @@ QUrl FileSystemUtils::findNextParent(const QUrl &folder)
 
     do
     {
-        index = path.lastIndexOf(QDir::separator());
+        index = path.lastIndexOf(QChar('/'));
 
         if (index == -1)
             return QUrl();
