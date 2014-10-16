@@ -29,6 +29,7 @@
 #include <QObject>
 #include <QUrl>
 #include <QVariantMap>
+#include <QDateTime>
 
 class KCL_EXPORT FileSystemUtils : public QObject
 {
@@ -68,6 +69,9 @@ public:
     Q_INVOKABLE static QString localPathFromUrl(const QUrl &url);
 
     Q_INVOKABLE static QString pathAppend(const QString &path1, const QString &path2);
+
+    Q_INVOKABLE static QDateTime lastModified(const QString &path);
+    Q_INVOKABLE static QUrl findNextParent(const QUrl &folder);
 
     Q_INVOKABLE static QString formatFileSize(long long fileSize);
 

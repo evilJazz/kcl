@@ -128,6 +128,30 @@ QString FileSystemUtils::pathAppend(const QString &path1, const QString &path2)
         return path1 + "/" + path2;
 }
 
+QDateTime FileSystemUtils::lastModified(const QString &path)
+{
+    return QFileInfo(path).lastModified();
+}
+
+QUrl FileSystemUtils::findNextParent(const QUrl &folder)
+{
+    QString path = folder.toLocalFile();
+    int index;
+
+    do
+    {
+        index = path.lastIndexOf(QDir::separator());
+
+        if (index == -1)
+            return QUrl();
+
+        path = path.left(index);
+    }
+    while (!QDir(path).exists());
+
+    return QUrl::fromLocalFile(path);
+}
+
 QString FileSystemUtils::formatFileSize(long long fileSize)
 {
     QString result;
