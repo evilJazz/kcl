@@ -133,23 +133,28 @@ QDateTime FileSystemUtils::lastModified(const QString &path)
     return QFileInfo(path).lastModified();
 }
 
-QUrl FileSystemUtils::findNextParent(const QUrl &folder)
+QString FileSystemUtils::findNextParent(const QString &path)
 {
-    QString path = folder.toLocalFile();
+    QString parent = path;
+    QChar sep('/');
+
+    if (parent.endsWith(sep))
+        parent = parent.left(parent.size() - 1);
+
     int index;
 
     do
     {
-        index = path.lastIndexOf(QChar('/'));
+        index = parent.lastIndexOf(sep);
 
         if (index == -1)
-            return QUrl();
+            return QString();
 
-        path = path.left(index);
+        parent = parent.left(index);
     }
-    while (!QDir(path).exists());
+    while (!QDir(parent).exists());
 
-    return QUrl::fromLocalFile(path);
+    return parent;
 }
 
 QString FileSystemUtils::formatFileSize(long long fileSize)

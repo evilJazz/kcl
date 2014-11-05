@@ -71,7 +71,7 @@ public:
     Q_INVOKABLE static QString pathAppend(const QString &path1, const QString &path2);
 
     Q_INVOKABLE static QDateTime lastModified(const QString &path);
-    Q_INVOKABLE static QUrl findNextParent(const QUrl &folder);
+    Q_INVOKABLE static QString findNextParent(const QString &path);
 
     Q_INVOKABLE static QString formatFileSize(long long fileSize);
 
