@@ -58,6 +58,7 @@ QVariantMap PerformanceDataDetail::asVariant()
 /* PerformanceDataAspect */
 
 PerformanceDataAspect::PerformanceDataAspect(PerformanceData *parent, const QString &identifier) :
+    QObject(parent),
     parent_(parent),
     identifier_(identifier),
     startTimeStamp_(0),
@@ -145,6 +146,7 @@ QVariantMap PerformanceDataAspect::asVariant()
 /* PerformanceData */
 
 PerformanceData::PerformanceData(PerformanceDataManager *parent, const QString &name) :
+    QObject(parent),
     parent_(parent),
     name_(name)
 {
