@@ -23,6 +23,7 @@
 
 #include "KCL/performancedatamanager.h"
 #include <QDateTime>
+#include <QCoreApplication>
 
 #undef DEBUG
 #include "KCL/debug.h"
@@ -231,7 +232,7 @@ static PerformanceDataManager *instance = NULL;
 PerformanceDataManager &PerformanceDataManager::singleton()
 {
     if (!instance)
-        instance = new PerformanceDataManager();
+        instance = new PerformanceDataManager(qApp);
 
     return *instance;
 }

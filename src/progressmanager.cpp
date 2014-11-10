@@ -193,7 +193,7 @@ ProgressManager::~ProgressManager()
 ProgressManager &ProgressManager::singleton()
 {
     if (!progressMan)
-        progressMan = new ProgressManager();
+        progressMan = new ProgressManager(qApp);
 
     return *progressMan;
 }

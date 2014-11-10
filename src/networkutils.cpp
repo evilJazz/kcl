@@ -4,6 +4,9 @@
 #include <QThreadPool>
 #include <QTimer>
 
+#define DIAGNOSTIC_OUTPUT
+#include "KCL/debug.h"
+
 /* NetworkUtils */
 
 NetworkUtils::NetworkUtils(QObject *parent) :
@@ -11,6 +14,7 @@ NetworkUtils::NetworkUtils(QObject *parent) :
     network_(NULL),
     session_(NULL)
 {
+    DGUARDMETHODTIMED;
     PERFDATA_STARTDETAIL(cStartUp, "QNetworkConfigurationManager", "runtime");
 
     //network_ = new QNetworkConfigurationManager(this);
@@ -27,6 +31,7 @@ NetworkUtils::NetworkUtils(QObject *parent) :
 
 void NetworkUtils::deferredInitializeNetwork()
 {
+    DGUARDMETHODTIMED;
     network_ = new QNetworkConfigurationManager(this);
     connectToNetworkConfigurationManager();
     QTimer::singleShot(2000, this, SLOT(deferredUpdateNetworkConfigurations()));
@@ -34,6 +39,7 @@ void NetworkUtils::deferredInitializeNetwork()
 
 void NetworkUtils::networkConfigurationManagerDone(QNetworkConfigurationManager *result)
 {
+    DGUARDMETHODTIMED;
     network_ = result;
     connectToNetworkConfigurationManager();
     QTimer::singleShot(2000, this, SLOT(deferredUpdateNetworkConfigurations()));
@@ -47,6 +53,7 @@ void NetworkUtils::connectToNetworkConfigurationManager()
 
 void NetworkUtils::deferredUpdateNetworkConfigurations()
 {
+    DGUARDMETHODTIMED;
     network_->updateConfigurations();
 }
 
@@ -58,6 +65,7 @@ void NetworkUtils::handleNetworkUpdateCompleted()
 
 void NetworkUtils::newNetworkSession()
 {
+    DGUARDMETHODTIMED;
     if (!network_)
         return;
 
@@ -86,6 +94,7 @@ bool NetworkUtils::connectedToCell()
 
 bool NetworkUtils::attemptToOpenNetworkSession(int msecs)
 {
+    DGUARDMETHODTIMED;
     if (!session_)
         newNetworkSession();
 
