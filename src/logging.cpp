@@ -196,7 +196,10 @@ void Logging::customMessageHandler(QtMsgType type, const char *msg)
     if (logFile_)
     {
         if (logFile_->isOpen() && logFile_->isWritable())
+        {
             logFile_->write(message.toUtf8() + "\n");
+            logFile_->flush();
+        }
     }
 
 #ifdef KCL_WIDGETS

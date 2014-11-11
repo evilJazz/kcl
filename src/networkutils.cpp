@@ -47,14 +47,18 @@ void NetworkUtils::networkConfigurationManagerDone(QNetworkConfigurationManager 
 
 void NetworkUtils::connectToNetworkConfigurationManager()
 {
-    connect(network_, SIGNAL(onlineStateChanged(bool)), this, SIGNAL(onlineStateChanged()));
-    connect(network_, SIGNAL(updateCompleted()), this, SLOT(handleNetworkUpdateCompleted()));
+    if (network_)
+    {
+        connect(network_, SIGNAL(onlineStateChanged(bool)), this, SIGNAL(onlineStateChanged()));
+        connect(network_, SIGNAL(updateCompleted()), this, SLOT(handleNetworkUpdateCompleted()));
+    }
 }
 
 void NetworkUtils::deferredUpdateNetworkConfigurations()
 {
     DGUARDMETHODTIMED;
-    network_->updateConfigurations();
+    if (network_)
+        network_->updateConfigurations();
 }
 
 void NetworkUtils::handleNetworkUpdateCompleted()
