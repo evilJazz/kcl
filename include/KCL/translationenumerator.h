@@ -11,14 +11,14 @@ class KCL_EXPORT TranslationEnumerator : public QObject
     Q_OBJECT
     Q_PROPERTY(QVariantList availableTranslations READ availableTranslations NOTIFY availableTranslationsChanged)
 public:
-    explicit TranslationEnumerator(const QString translationPath = ":/i18n", QObject *parent = 0);
+    explicit TranslationEnumerator(const QStringList &translationPaths, QObject *parent = 0);
 
     QVariantList availableTranslations() const { return availableTranslations_; }
 
     Q_INVOKABLE void updateList();
 
-    const QString translationPath() const { return translationPath_; }
-    void setTranslationPath(const QString &translationPath) { translationPath_ = translationPath; }
+    const QStringList translationPaths() const { return translationPaths_; }
+    void setTranslationPaths(const QStringList &translationPaths) { translationPaths_ = translationPaths; }
 
 signals:
     void availableTranslationsChanged();
@@ -26,7 +26,7 @@ signals:
 public slots:
 
 private:
-    QString translationPath_;
+    QStringList translationPaths_;
     QVariantList availableTranslations_;
 };
 

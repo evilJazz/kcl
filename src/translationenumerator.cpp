@@ -5,9 +5,9 @@
 
 #include "KCL/debug.h"
 
-TranslationEnumerator::TranslationEnumerator(const QString translationPath, QObject *parent) :
+TranslationEnumerator::TranslationEnumerator(const QStringList &translationPaths, QObject *parent) :
     QObject(parent),
-    translationPath_(translationPath)
+    translationPaths_(translationPaths)
 {
 }
 
@@ -15,36 +15,39 @@ void TranslationEnumerator::updateList()
 {
     availableTranslations_.clear();
 
-    QDir dir(translationPath_);
-    QStringList fileNames = dir.entryList(QStringList("*.qm"), QDir::Files, QDir::Name);
-
-    foreach (QString qmFile, fileNames)
+    foreach (QString translationPath, translationPaths_)
     {
-        QString languageAbbr = QString::null;
-        QRegExp re("[_-]([a-z]{2,2})([_-][A-Z]{2,3}){0,1}.qm$");
+        QDir dir(translationPath);
+        QStringList fileNames = dir.entryList(QStringList("*.qm"), QDir::Files, QDir::Name);
 
-        if (re.indexIn(qmFile) > -1)
+        foreach (QString qmFile, fileNames)
         {
-            QVariantMap translation;
-            translation.insert("qmFile", dir.filePath(qmFile));
+            QString languageAbbr = QString::null;
+            QRegExp re("[_-]([a-z]{2,2})([_-][A-Z]{2,3}){0,1}.qm$");
 
-            QStringList caps = re.capturedTexts();
+            if (re.indexIn(qmFile) > -1)
+            {
+                QVariantMap translation;
+                translation.insert("qmFile", dir.filePath(qmFile));
 
-            languageAbbr = caps.at(1);
-            languageAbbr += caps.at(2);
+                QStringList caps = re.capturedTexts();
 
-            translation.insert("languageAbbr", languageAbbr);
+                languageAbbr = caps.at(1);
+                languageAbbr += caps.at(2);
 
-            QLocale locale = QLocale(languageAbbr);
-            translation.insert("languageName", QLocale::languageToString(locale.language()));
-            //translation.insert("languageNativeName", locale.nativeLanguageName());
+                translation.insert("languageAbbr", languageAbbr);
 
-            DPRINTF("languageAbbrev: %s, languageName: %s",
-                translation["languageAbbrev"].toString().toUtf8().constData(),
-                translation["languageName"].toString().toUtf8().constData()
-            );
+                QLocale locale = QLocale(languageAbbr);
+                translation.insert("languageName", QLocale::languageToString(locale.language()));
+                //translation.insert("languageNativeName", locale.nativeLanguageName());
 
-            availableTranslations_.append(translation);
+                DPRINTF("languageAbbrev: %s, languageName: %s",
+                    translation["languageAbbrev"].toString().toUtf8().constData(),
+                    translation["languageName"].toString().toUtf8().constData()
+                );
+
+                availableTranslations_.append(translation);
+            }
         }
     }
 
