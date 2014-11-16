@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QVariant>
+#include <QStringList>
 
 class KCL_EXPORT TranslationEnumerator : public QObject
 {
