@@ -36,7 +36,15 @@ QString ColorUtils::colorName(const QColor &color)
 
 QColor ColorUtils::parseColor(const QString &colorString)
 {
-    if (colorString.startsWith("#") && colorString.length() == 9)
+    if (colorString.startsWith("#") && colorString.length() == 7)
+    {
+        int red = ("0x" + colorString.mid(1, 2)).toUShort(0, 16);
+        int green = ("0x" + colorString.mid(3, 2)).toUShort(0, 16);
+        int blue = ("0x" + colorString.mid(5, 2)).toUShort(0, 16);
+
+        return QColor(red, green, blue);
+    }
+    else if (colorString.startsWith("#") && colorString.length() == 9)
     {
         int alpha = ("0x" + colorString.mid(1, 2)).toUShort(0, 16);
         int red = ("0x" + colorString.mid(3, 2)).toUShort(0, 16);
