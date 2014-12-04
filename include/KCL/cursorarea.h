@@ -42,6 +42,9 @@ class KCL_EXPORT CursorArea :
     Q_OBJECT
     Q_ENUMS(Cursor)
     Q_PROPERTY(Cursor cursor READ cursor WRITE setCursor NOTIFY cursorChanged)
+    Q_PROPERTY(QDeclarativeComponent* delegate READ delegate WRITE setDelegate NOTIFY delegateChanged)
+    Q_PROPERTY(int hotX READ hotX WRITE setHotX NOTIFY hotXChanged)
+    Q_PROPERTY(int hotY READ hotY WRITE setHotY NOTIFY hotYChanged)
 public:
 #ifdef KCL_QTQUICK2
     explicit CursorArea(QQuickItem *parent = 0);
@@ -65,11 +68,32 @@ public:
     Cursor cursor() const { return cursor_; }
     void setCursor(Cursor cursor);
 
+    Q_INVOKABLE void setOnDesktop();
+    Q_INVOKABLE void restoreOnDesktop();
+
+    QDeclarativeComponent *delegate() const;
+    void setDelegate(QDeclarativeComponent* delegate);
+
+    int hotX() const { return hotX_; }
+    int hotY() const { return hotY_; }
+
+    int setHotX(int newValue);
+    int setHotY(int newValue);
+
 signals:
     void cursorChanged();
+    void delegateChanged();
+    void hotXChanged();
+    void hotYChanged();
 
 private:
     Cursor cursor_;
+
+    QDeclarativeComponent *delegate_;
+    int hotX_;
+    int hotY_;
+
+    QCursor createCustomCursor();
 };
 
 #endif // CURSORAREA_H

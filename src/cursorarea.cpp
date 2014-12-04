@@ -30,7 +30,10 @@
 
 CursorArea::CursorArea(QDeclarativeItem *parent) :
     QDeclarativeItem(parent),
-    cursor_(DefaultCursor)
+    cursor_(DefaultCursor),
+    delegate_(NULL),
+    hotX_(0),
+    hotY_(0)
 {
 }
 
@@ -76,5 +79,79 @@ void CursorArea::setCursor(Cursor cursor)
 
         cursor_ = cursor;
         emit cursorChanged();
+    }
+}
+
+#include <QGuiApplication>
+#include <QCursor>
+#include <QGraphicsScene>
+#include <QPainter>
+
+QCursor CursorArea::createCustomCursor()
+{
+    QCursor result;
+
+    if (delegate_)
+    {
+        QDeclarativeItem* item = qobject_cast<QDeclarativeItem *>(delegate_->create());
+
+        QGraphicsScene scene;
+        scene.addItem(item);
+
+        QPixmap pixmap(scene.sceneRect().width(), scene.sceneRect().height());
+        pixmap.fill(Qt::transparent);
+
+        QPainter painter(&pixmap);
+        painter.setRenderHint(QPainter::Antialiasing);
+        scene.render(&painter);
+
+        result = QCursor(pixmap, hotX_, hotY_);
+    }
+    else
+        result = QDeclarativeItem::cursor();
+
+    return result;
+}
+
+void CursorArea::setOnDesktop()
+{
+    QCursor cursor = createCustomCursor();
+    QGuiApplication::setOverrideCursor(cursor);
+}
+
+void CursorArea::restoreOnDesktop()
+{
+    QGuiApplication::restoreOverrideCursor();
+}
+
+QDeclarativeComponent *CursorArea::delegate() const
+{
+    return delegate_;
+}
+
+void CursorArea::setDelegate(QDeclarativeComponent *delegate)
+{
+    if (delegate_ != delegate)
+    {
+        delegate_ = delegate;
+        emit delegateChanged();
+    }
+}
+
+int CursorArea::setHotX(int newValue)
+{
+    if (hotX_ != newValue)
+    {
+        hotX_ = newValue;
+        emit hotXChanged();
+    }
+}
+
+int CursorArea::setHotY(int newValue)
+{
+    if (hotY_ != newValue)
+    {
+        hotY_ = newValue;
+        emit hotYChanged();
     }
 }
