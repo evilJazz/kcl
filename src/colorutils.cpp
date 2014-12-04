@@ -1,5 +1,14 @@
 #include "KCL/colorutils.h"
 
+#ifdef KCL_WIDGETS
+#include <QPixmap>
+#include <QImage>
+#include <QScreen>
+#include <QGuiApplication>
+#include <QApplication>
+#include <QDesktopWidget>
+#endif
+
 ColorUtils::ColorUtils(QObject *parent) :
     QObject(parent)
 {
@@ -67,4 +76,22 @@ QColor ColorUtils::setAlpha(const QColor &color, QVariant alpha)
         copy.setAlpha(alpha.toInt());
 
     return copy;
+}
+
+QColor ColorUtils::grabColorFromScreen(const QPoint &screenPos)
+{
+#ifdef KCL_WIDGETS
+    QPoint p = screenPos;
+    if (p == QPoint(INT_MAX, INT_MAX))
+        p = QCursor::pos();
+
+    const QDesktopWidget *desktop = QApplication::desktop();
+    const QPixmap pixmap = QGuiApplication::screens().at(desktop->screenNumber())->grabWindow(desktop->winId(), p.x(), p.y(), 1, 1);
+    QImage i = pixmap.toImage();
+
+    return i.pixel(0, 0);
+#else
+    qWarning("ColorUtils::grabColorFromScreen is not implemented.");
+    return QColor();
+#endif
 }

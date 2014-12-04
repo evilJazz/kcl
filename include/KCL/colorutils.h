@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QVariant>
 #include <QColor>
+#include <QPoint>
 
 #ifdef Q_OS_SYMBIAN
 // Workaround to avoid naming clash with Symbian RTL
@@ -22,6 +23,8 @@ public:
     Q_INVOKABLE static QString colorName(const QColor &color);
     Q_INVOKABLE static QColor parseColor(const QString &colorString);
     Q_INVOKABLE static QColor setAlpha(const QColor &color, QVariant alpha);
+
+    Q_INVOKABLE static QColor grabColorFromScreen(const QPoint &screenPos = QPoint(INT_MAX, INT_MAX));
 
 signals:
 
