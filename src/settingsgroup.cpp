@@ -117,6 +117,7 @@ bool SettingsGroup::shallSkipProperty(const QString &propName)
            propName == "fullGroupName" ||
            propName == "autoLoad" ||
            propName == "autoSave" ||
+           propName == "saveDefaults" ||
            propName == "groups";
 }
 
