@@ -250,10 +250,10 @@ Column {
 
             if (logic.debug) console.log("deferredUpdateLoadState() !!! height: " + height + " contextY: " + contentY + " contentHeight: " + contentHeight);
 
-            deferredUpdateStarted = true;
+            logic.deferredUpdateStarted = true;
             DeferredExecution.invoke(function ()
             {
-                deferredUpdateStarted = false;
+                logic.deferredUpdateStarted = false;
                 logic.updateLoadState();
             },
             "deferredUpdateLoadState");
