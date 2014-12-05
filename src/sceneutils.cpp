@@ -165,6 +165,11 @@ QVariant SceneUtils::takeImageFromScene(QQuickItem *sceneItem)
     return sceneItem->window()->grabWindow().convertToFormat(QImage::Format_ARGB32);
 }
 
+void SceneUtils::forceUpdate(QQuickItem *item)
+{
+    item->update();
+}
+
 #else
 
 QVariantList SceneUtils::getAllItemsInScene(QDeclarativeItem *item, qreal sceneX, qreal sceneY)
@@ -238,6 +243,11 @@ QVariant SceneUtils::takeImageFromScene(QDeclarativeItem *sceneItem)
     sceneItem->scene()->render(&p, QRectF(image.rect()), QRectF(QPointF(0, 0), QSizeF(size)));
 
     return image;
+}
+
+void SceneUtils::forceUpdate(QDeclarativeItem *item)
+{
+    item->update();
 }
 
 #endif
