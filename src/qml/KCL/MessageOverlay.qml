@@ -7,6 +7,12 @@ MouseEater {
     anchors.fill: parent
     z: 10000
 
+    Component.onCompleted:
+    {
+        if (autoOpen)
+            overlayRoot.open();
+    }
+
     property alias fadeAnimation: overlay.fadeAnimation
     property alias fadeEnabled: overlay.fadeEnabled
     property alias faderEnabled: overlay.fadeEnabled // TODO: Get rid of it
@@ -23,6 +29,11 @@ MouseEater {
 
     property alias opened: overlay.opened
     property alias done: overlay.done
+    onDoneChanged:
+    {
+        if (done)
+            overlayRoot.close();
+    }
 
     property alias frame: frame
     property alias item: loader.item
@@ -101,12 +112,6 @@ MouseEater {
         onOpenedChanged: updateState()
         onSourceChanged: updateState()
 
-        onDoneChanged:
-        {
-            if (done)
-                overlayRoot.close();
-        }
-
         onFadedIn:
         {
             opened = true;
@@ -124,12 +129,6 @@ MouseEater {
 
         onFadingIn: overlayRoot.fadingIn()
         onFadingOut: overlayRoot.fadingOut()
-
-        Component.onCompleted:
-        {
-            if (autoOpen)
-                overlayRoot.open();
-        }
 
         Timer {
             id: fadeTimer
