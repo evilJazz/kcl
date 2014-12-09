@@ -24,7 +24,7 @@ MouseEater {
     property alias params: overlay.params
     property alias embedded: overlay.embedded
 
-    property alias autoOpen: overlay.params
+    property alias autoOpen: overlay.autoOpen
     property alias destroyOnDone: overlay.destroyOnDone
 
     property alias opened: overlay.opened
