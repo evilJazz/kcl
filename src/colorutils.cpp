@@ -4,9 +4,11 @@
 #include <QPixmap>
 #include <QImage>
 #include <QScreen>
-#include <QGuiApplication>
 #include <QApplication>
 #include <QDesktopWidget>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#include <QGuiApplication>
+#endif
 #endif
 
 ColorUtils::ColorUtils(QObject *parent) :
@@ -86,8 +88,14 @@ QColor ColorUtils::grabColorFromScreen(const QPoint &screenPos)
         p = QCursor::pos();
 
     const QDesktopWidget *desktop = QApplication::desktop();
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     const QPixmap pixmap = QGuiApplication::screens().at(desktop->screenNumber())->grabWindow(desktop->winId(), p.x(), p.y(), 1, 1);
     QImage i = pixmap.toImage();
+#else
+    const QPixmap pixmap = QPixmap::grabWindow(desktop->winId(), p.x(), p.y(), 1, 1);
+    QImage i = pixmap.toImage();
+#endif
 
     return i.pixel(0, 0);
 #else

@@ -82,7 +82,11 @@ void CursorArea::setCursor(Cursor cursor)
     }
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QGuiApplication>
+#else
+#include <QApplication>
+#endif
 #include <QCursor>
 #include <QGraphicsScene>
 #include <QPainter>
@@ -116,12 +120,20 @@ QCursor CursorArea::createCustomCursor()
 void CursorArea::setOnDesktop()
 {
     QCursor cursor = createCustomCursor();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QGuiApplication::setOverrideCursor(cursor);
+#else
+    QApplication::setOverrideCursor(cursor);
+#endif
 }
 
 void CursorArea::restoreOnDesktop()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QGuiApplication::restoreOverrideCursor();
+#else
+    QApplication::restoreOverrideCursor();
+#endif
 }
 
 QDeclarativeComponent *CursorArea::delegate() const
