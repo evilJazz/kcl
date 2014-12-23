@@ -26,6 +26,7 @@
 #include <QHash>
 #include <QThread>
 #include <QMutex>
+#include <QCoreApplication>
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -151,9 +152,9 @@ void kaDebug(const QString &msg)
         }
 
         if (customMessageHandler)
-            customMessageHandler(QString().sprintf("[%10p] %*s%s", (void *)QThread::currentThread(), (indentLevel_ == -1 ? 0 : indentLevel_ * 3 + 3), "", (const char*)msg.toUtf8()));
+            customMessageHandler(QString().sprintf("[%s%10p] %*s%s", qApp->thread() == QThread::currentThread() ? "M" : "T", (void *)QThread::currentThread(), (indentLevel_ == -1 ? 0 : indentLevel_ * 3 + 3), "", (const char*)msg.toUtf8()));
         else
-            qDebug("[%10p] %*s%s", (void *)QThread::currentThread(), (indentLevel_ == -1 ? 0 : indentLevel_ * 3 + 3), "", (const char*)msg.toUtf8());
+            qDebug("[%s%10p] %*s%s", qApp->thread() == QThread::currentThread() ? "M" : "T", (void *)QThread::currentThread(), (indentLevel_ == -1 ? 0 : indentLevel_ * 3 + 3), "", (const char*)msg.toUtf8());
     }
 }
 
