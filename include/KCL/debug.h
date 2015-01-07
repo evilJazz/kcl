@@ -115,7 +115,7 @@ private:
 #define DPRINTF(...) DOP(kaDebug(QString().sprintf(__VA_ARGS__)))
 #define DHPRINTF(...) DHOP(DPRINTF(__VA_ARGS__))
 
-#define DTIMERINIT(timername) DOP(QTime timername; timername.start())
+#define DTIMERINIT(timername) DOP(QElapsedTimer timername; timername.start())
 #define DTIMERSTART(timername) DOP(timername.start())
 #define DTIMERPRINT(timername, description) DOP(kaDebug(QString().sprintf("[Timing] %-30s: %5d ms", description, timername.elapsed())))
 
