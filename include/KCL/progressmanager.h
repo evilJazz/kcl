@@ -139,24 +139,49 @@ private:
 class KCL_EXPORT ProgressActivityGuard
 {
 public:
-    ProgressActivityGuard(int subSteps = 0, const QString &name = "Activity") :
-        subSteps_(subSteps), theGreatOptimizationPreventer_(name)
+    explicit ProgressActivityGuard(int subSteps = 0, const QString &name = "Activity") :
+        subSteps_(subSteps), theGreatOptimizationPreventer_(name), done_(false)
     {
         globalProgressManager.beginActivity(name, subSteps);
     }
 
-    virtual ~ProgressActivityGuard()
+    ~ProgressActivityGuard()
     {
         globalProgressManager.endActivity();
     }
 
+    inline void setBias(int subStep, qreal bias) { globalProgressManager.setActivityBias(subStep, bias); }
+    inline void update(const QString &progressText, int progressValue, int progressTotal) { globalProgressManager.updateActivity(progressText, progressValue, progressTotal); }
+    inline void update(int progressValue, int progressTotal) { globalProgressManager.updateActivity(progressValue, progressTotal); }
+
+    inline ProgressContext *context() { return globalProgressManager.currentContext(); }
+    inline ProgressContext *topLevelContext() { return globalProgressManager.topLevelContext(); }
+
+    inline bool done() { return done_; }
+    inline void stop() { done_ = true; }
+
 private:
     int subSteps_;
     QString theGreatOptimizationPreventer_;
+    bool done_;
 };
 
 #define ScopedActivity() volatile ProgressActivityGuard scopedActivity(0, "Activity")
 #define ScopedActivityWithSubSteps(subSteps) volatile ProgressActivityGuard scopedActivityWithSubSteps(subSteps, "Activity")
 #define NamedScopedActivityWithSubSteps(name, subSteps) volatile ProgressActivityGuard name(subSteps, "Activity")
+
+// Syntactical sugar
+#define activity(...) for (ProgressActivityGuard activity(__VA_ARGS__); !activity.done(); activity.stop())
+
+/* USAGE:
+
+activity (0) // no sub step
+{
+    // Your code...
+    activity.update(50, 100); // set progress to 50%
+    // Your code...
+}
+
+*/
 
 #endif // PROGRESSMANAGER_H
