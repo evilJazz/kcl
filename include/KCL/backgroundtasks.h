@@ -52,7 +52,7 @@ class KCL_EXPORT TaskProcessingController : public QObject
 {
     Q_OBJECT
 public:
-    TaskProcessingController(QObject *parent = 0);
+    TaskProcessingController(QObject *parent = 0, bool useGlobalThreadPool = false);
 	virtual ~TaskProcessingController();
 	
     void addTask(Task *task);

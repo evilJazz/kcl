@@ -64,13 +64,18 @@ void EventLoopTask::quit()
 
 /* TaskProcessingController */
 
-TaskProcessingController::TaskProcessingController(QObject *parent)
+TaskProcessingController::TaskProcessingController(QObject *parent, bool useGlobalThreadPool)
     :	QObject(parent)
 {
     DGUARDMETHODTIMED;
 
-    pool_ = new QThreadPool(this);
-    pool_->setMaxThreadCount(QThread::idealThreadCount() * 2);
+    if (useGlobalThreadPool)
+        pool_ = QThreadPool::globalInstance();
+    else
+    {
+        pool_ = new QThreadPool(this);
+        pool_->setMaxThreadCount(QThread::idealThreadCount() * 2);
+    }
 }
 
 TaskProcessingController::~TaskProcessingController()
