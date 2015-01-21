@@ -165,7 +165,7 @@ ProgressContext *ProgressContext::endActivity(ProgressContext *activity)
 {
     DASSERT(subSteps_.contains(activity), "Can not end an activity that is not in this group. Unpaired beginActivity <-> endActivity !!!");
 
-    if (!isGroup())
+    if (!activity->isGroup())
         activity->setProgressValue(activity->progressTotal());
 
     //if (subSteps_.count() == expectedSubSteps_)
