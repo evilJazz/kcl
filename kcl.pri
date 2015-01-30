@@ -8,7 +8,7 @@ QT += network
 contains(QT_VERSION, ^4\\..*) {
     CONFIG += kcl_qt4
 
-    contains(QT, declarative): CONFIG += kcl_qtquick1
+    contains(QT, declarative): CONFIG += kcl_qtquick1 kcl_declarative
     contains(QT, gui): CONFIG += kcl_widgets
 
     message("KCL: Configuring for Qt 4, actual version: $${QT_VERSION}")
@@ -19,11 +19,11 @@ contains(QT_VERSION, ^5\\..*) {
     QT += concurrent
 
     contains(QT, quick) {
-        CONFIG += kcl_qtquick2
+        CONFIG += kcl_qtquick2 kcl_declarative
         DEFINES += KCL_QTQUICK2
     }
 
-    contains(QT, declarative): CONFIG += kcl_qtquick1
+    contains(QT, declarative): CONFIG += kcl_qtquick1 kcl_declarative
     contains(QT, widgets): CONFIG += kcl_widgets
 
     message("KCL: Configuring for Qt 5, actual version: $${QT_VERSION}")
@@ -78,13 +78,11 @@ defineTest(kclConditionalAddModule) {
 INCLUDEPATH += $$KCL_INC_PATH
 HEADERS     += $$KCL_INC_PATH/KCL/kcl_global.h
 
-kclConditionalAddModule(binaryfiledownloader)
 kclConditionalAddModule(filescanner)
 kclConditionalAddModule(filesystemutils)
 kclConditionalAddModule(history)
 kclConditionalAddModule(progressmanager)
 kclConditionalAddModule(performancedatamanager)
-kclConditionalAddModule(keyeventfilter)
 kclConditionalAddModule(imagefastloader)
 kclConditionalAddModule(logging)
 kclConditionalAddModule(debug)
@@ -98,7 +96,6 @@ kclConditionalAddModule(graphicsutils)
 kclConditionalAddModule(imageutils)
 kclConditionalAddModule(objectutils)
 kclConditionalAddModule(datetimeutils)
-kclConditionalAddModule(base64imageprovider)
 
 kcl_widgets {
     message("KCL: Configuring with Widgets support")
@@ -116,8 +113,7 @@ kcl_qtquick1 {
     DEFINES -= KCL_QTQUICK2
 }
 
-kcl_qtquick1 | kcl_qtquick2 {
-
+kcl_declarative {
     HEADERS += $$KCL_INC_PATH/kclplugin.h
     SOURCES += $$KCL_SRC_PATH/kclplugin.cpp
 
@@ -126,6 +122,9 @@ kcl_qtquick1 | kcl_qtquick2 {
     kclConditionalAddModule(imagerendersurface)
     kclConditionalAddModule(sceneutils)
     kclConditionalAddModule(declarativedebug)
+    kclConditionalAddModule(binaryfiledownloader)
+    kclConditionalAddModule(keyeventfilter)
+    kclConditionalAddModule(base64imageprovider)
 
     OTHER_FILES += $$files($$KCL_SRC_PATH/qml/KCL/*, true)
 
