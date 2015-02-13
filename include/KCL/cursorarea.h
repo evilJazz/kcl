@@ -28,6 +28,7 @@
 
 #ifdef KCL_QTQUICK2
     #include <QQuickItem>
+    #include <QQmlComponent>
 #else
     #include <QDeclarativeItem>
 #endif
@@ -42,7 +43,11 @@ class KCL_EXPORT CursorArea :
     Q_OBJECT
     Q_ENUMS(Cursor)
     Q_PROPERTY(Cursor cursor READ cursor WRITE setCursor NOTIFY cursorChanged)
-    Q_PROPERTY(QDeclarativeComponent* delegate READ delegate WRITE setDelegate NOTIFY delegateChanged)
+#ifdef KCL_QTQUICK2
+    Q_PROPERTY(QQmlComponent *delegate READ delegate WRITE setDelegate NOTIFY delegateChanged)
+#else
+    Q_PROPERTY(QDeclarativeComponent *delegate READ delegate WRITE setDelegate NOTIFY delegateChanged)
+#endif
     Q_PROPERTY(int hotX READ hotX WRITE setHotX NOTIFY hotXChanged)
     Q_PROPERTY(int hotY READ hotY WRITE setHotY NOTIFY hotYChanged)
 public:
@@ -71,8 +76,13 @@ public:
     Q_INVOKABLE void setOnDesktop();
     Q_INVOKABLE void restoreOnDesktop();
 
+#ifdef KCL_QTQUICK2
+    QQmlComponent *delegate() const;
+    void setDelegate(QQmlComponent *delegate);
+#else
     QDeclarativeComponent *delegate() const;
-    void setDelegate(QDeclarativeComponent* delegate);
+    void setDelegate(QDeclarativeComponent *delegate);
+#endif
 
     int hotX() const { return hotX_; }
     int hotY() const { return hotY_; }
@@ -89,7 +99,11 @@ signals:
 private:
     Cursor cursor_;
 
+#ifdef KCL_QTQUICK2
+    QQmlComponent *delegate_;
+#else
     QDeclarativeComponent *delegate_;
+#endif
     int hotX_;
     int hotY_;
 

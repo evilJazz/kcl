@@ -88,8 +88,57 @@ void CursorArea::setCursor(Cursor cursor)
 #include <QApplication>
 #endif
 #include <QCursor>
-#include <QGraphicsScene>
 #include <QPainter>
+
+#ifdef KCL_QTQUICK2
+
+#include <QQuickWindow>
+
+QCursor CursorArea::createCustomCursor()
+{
+    QCursor result;
+
+    if (delegate_)
+    {
+        QQuickWindow *window = new QQuickWindow();
+        QQuickItem *item = qobject_cast<QQuickItem *>(delegate_->create());
+
+        window->resize(item->width(), item->height());
+        item->setParent(window);
+        item->setParentItem(window->contentItem());
+
+        qDebug() << window->width() << window->height();
+
+        QImage image = window->grabWindow();
+        QPixmap pixmap = QPixmap::fromImage(image);
+
+        result = QCursor(pixmap, hotX_, hotY_);
+
+        delete window;
+    }
+    else
+        result = QQuickItem::cursor();
+
+    return result;
+}
+
+QQmlComponent *CursorArea::delegate() const
+{
+    return delegate_;
+}
+
+void CursorArea::setDelegate(QQmlComponent *delegate)
+{
+    if (delegate_ != delegate)
+    {
+        delegate_ = delegate;
+        emit delegateChanged();
+    }
+}
+
+#else
+
+#include <QGraphicsScene>
 
 QCursor CursorArea::createCustomCursor()
 {
@@ -100,7 +149,7 @@ QCursor CursorArea::createCustomCursor()
         QDeclarativeItem* item = qobject_cast<QDeclarativeItem *>(delegate_->create());
 
         QGraphicsScene scene;
-        scene.addItem(item);
+        scene.addItem(item); // takes ownership
 
         QPixmap pixmap(scene.sceneRect().width(), scene.sceneRect().height());
         pixmap.fill(Qt::transparent);
@@ -116,6 +165,7 @@ QCursor CursorArea::createCustomCursor()
 
     return result;
 }
+
 
 void CursorArea::setOnDesktop()
 {
@@ -149,6 +199,8 @@ void CursorArea::setDelegate(QDeclarativeComponent *delegate)
         emit delegateChanged();
     }
 }
+
+#endif
 
 int CursorArea::setHotX(int newValue)
 {
