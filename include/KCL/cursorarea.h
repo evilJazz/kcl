@@ -87,8 +87,8 @@ public:
     int hotX() const { return hotX_; }
     int hotY() const { return hotY_; }
 
-    int setHotX(int newValue);
-    int setHotY(int newValue);
+    void setHotX(int newValue);
+    void setHotY(int newValue);
 
 signals:
     void cursorChanged();

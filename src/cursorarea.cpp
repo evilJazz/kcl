@@ -202,7 +202,7 @@ void CursorArea::setDelegate(QDeclarativeComponent *delegate)
 
 #endif
 
-int CursorArea::setHotX(int newValue)
+void CursorArea::setHotX(int newValue)
 {
     if (hotX_ != newValue)
     {
@@ -211,7 +211,7 @@ int CursorArea::setHotX(int newValue)
     }
 }
 
-int CursorArea::setHotY(int newValue)
+void CursorArea::setHotY(int newValue)
 {
     if (hotY_ != newValue)
     {
