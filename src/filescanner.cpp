@@ -149,14 +149,18 @@ FileScanner::FileScanner(QObject *parent) :
     stop_(false),
     runnable_(NULL)
 {
+    DGUARDMETHODTIMED;
 }
 
 FileScanner::~FileScanner()
 {
+    DGUARDMETHODTIMED;
+
     if (running())
         stop();
 
-    QThreadPool::globalInstance()->waitForDone();
+    if (useWorkerThread_ && running())
+        QThreadPool::globalInstance()->waitForDone();
 }
 
 bool FileScanner::startScan()
@@ -177,7 +181,8 @@ bool FileScanner::startScan()
     {
         runnable_->run();
         // runnable_ is reset in handleRunnableResultsAvailable slot...
-        delete runnableInstance; // in any case we need to delete the runnable manually!!
+        delete runnable_; // in any case we need to delete the runnable manually!!
+        runnable_ = NULL;
     }
 
     return true;
@@ -253,6 +258,7 @@ void FileScanner::stop()
 
 void FileScanner::handleRunnableResultsAvailable(const QVariantList &list)
 {
+    DGUARDMETHODTIMED;
     runnable_ = NULL;
     stop_ = false;
     results_ = list;
