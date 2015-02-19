@@ -248,6 +248,16 @@ bool FileSystemUtils::removeFile(const QString &fileName)
     return QFile::remove(fileName);
 }
 
+bool FileSystemUtils::renameFile(const QString &oldFileName, const QString &newFileName)
+{
+    return QFile::rename(oldFileName, newFileName);
+}
+
+bool FileSystemUtils::copyFile(const QString &srcFileName, const QString &destFileName)
+{
+    return QFile::copy(srcFileName, destFileName);
+}
+
 void FileSystemUtils::syncToDisk()
 {
 #ifdef Q_OS_LINUX
