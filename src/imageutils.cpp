@@ -121,6 +121,62 @@ bool ImageUtils::applyAlpha(const QImage &srcImage, QImage &dstImage, unsigned i
     return true;
 }
 
+bool ImageUtils::hasAlphaValues(const QImage &srcImage, const QRect &srcRect)
+{
+    DGUARDMETHODTIMED;
+
+    if (!srcImage.hasAlphaChannel())
+        return false;
+
+    bool result = false;
+
+    QRect roi = srcRect.intersected(srcImage.rect());
+    if (roi.isEmpty())
+        roi = srcImage.rect();
+
+    int roiBottom = roi.top() + roi.height();
+    int roiRight = roi.left() + roi.width();
+
+    if (srcImage.format() == QImage::Format_ARGB32)
+    {
+        for (int y = roi.top(); y < roiBottom; ++y)
+        {
+            QRgb *s = (QRgb *)srcImage.constScanLine(y) + roi.left();
+
+            for (int x = roi.left(); x < roiRight; ++x)
+            {
+                const int alpha = qAlpha(*s);
+
+                if (alpha < 0xFF)
+                {
+                    result = true;
+                    break;
+                }
+
+                ++s;
+            }
+        }
+    }
+    else
+    {
+        for (int y = roi.top(); y < roiBottom; ++y)
+        {
+            for (int x = roi.left(); x < roiRight; ++x)
+            {
+                const int alpha = qAlpha(srcImage.pixel(x, y));
+
+                if (alpha < 0xFF)
+                {
+                    result = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    return result;
+}
+
 bool ImageUtils::imageFromVariant(const QVariant &image, QImage *result)
 {
     if (image.canConvert<QImage>())

@@ -21,6 +21,7 @@ public:
     static bool minAlpha(const QImage &srcImage, QImage &dstImage);
     static bool maskedTransfer(const QImage &srcImage, QImage &dstImage, unsigned int mask);
     static bool applyAlpha(const QImage &srcImage, QImage &dstImage, unsigned int alpha);
+    static bool hasAlphaValues(const QImage &srcImage, const QRect &srcRect = QRect());
 
     static bool imageFromVariant(const QVariant &image, QImage *result = NULL);
 
