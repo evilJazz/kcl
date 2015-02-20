@@ -44,7 +44,7 @@ bool ImageUtils::intensityToAlpha(const QImage &srcImage, QImage &dstImage)
 
     for (int y = 0; y < dstImage.height(); ++y)
     {
-        QRgb *s = (QRgb *)srcImage.scanLine(y);
+        QRgb *s = (QRgb *)srcImage.constScanLine(y);
         QRgb *d = (QRgb *)dstImage.scanLine(y);
 
         for (int x = 0; x < dstImage.width(); ++x)
@@ -64,7 +64,7 @@ bool ImageUtils::minAlpha(const QImage &srcImage, QImage &dstImage)
 
     for (int y = 0; y < dstImage.height(); ++y)
     {
-        QRgb *s = (QRgb *)srcImage.scanLine(y);
+        QRgb *s = (QRgb *)srcImage.constScanLine(y);
         QRgb *d = (QRgb *)dstImage.scanLine(y);
 
         for (int x = 0; x < dstImage.width(); ++x)
@@ -86,7 +86,7 @@ bool ImageUtils::maskedTransfer(const QImage &srcImage, QImage &dstImage, unsign
 
     for (int y = 0; y < dstImage.height(); ++y)
     {
-        QRgb *s = (QRgb *)srcImage.scanLine(y);
+        QRgb *s = (QRgb *)srcImage.constScanLine(y);
         QRgb *d = (QRgb *)dstImage.scanLine(y);
 
         for (int x = 0; x < dstImage.width(); ++x)
@@ -108,7 +108,7 @@ bool ImageUtils::applyAlpha(const QImage &srcImage, QImage &dstImage, unsigned i
 
     for (int y = 0; y < dstImage.height(); ++y)
     {
-        QRgb *s = (QRgb *)srcImage.scanLine(y);
+        QRgb *s = (QRgb *)srcImage.constScanLine(y);
         QRgb *d = (QRgb *)dstImage.scanLine(y);
 
         for (int x = 0; x < dstImage.width(); ++x)
