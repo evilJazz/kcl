@@ -20,7 +20,9 @@ Item {
     signal aboutToClose(variant item)
     signal closed(variant item)
 
-    function popUp()
+    property variant overlay: null
+
+    function _createOverlay()
     {
         var overlay = MessageOverlay.open(popUpParent, source != "" ? source : sourceComponent, {}, true, true);
         overlay.fadeEnabled = container.fadeEnabled;
@@ -30,15 +32,34 @@ Item {
         overlay.fadingIn.connect(function () { container.aboutToPopUp(overlay.item) });
         overlay.fadedIn.connect(function () { container.poppedUp(overlay.item) });
         overlay.fadingOut.connect(function () { container.aboutToClose(overlay.item) });
-        overlay.fadedOut.connect(function () { container.closed(overlay.item) });
+        overlay.fadedOut.connect(function () { container.closed(overlay.item); container.overlay = null; });
 
         overlay.backgroundClicked.connect(function () { overlay.done = true; });
-
-        overlay.open();
-        positionPopUp(overlay.item);
+        return overlay;
     }
 
-    function positionPopUp(item)
+    function popUp()
+    {
+        overlay = _createOverlay();
+        overlay.open();
+        _positionPopUp(overlay.item);
+    }
+
+    function popUpAtPos(x, y)
+    {
+        overlay = _createOverlay();
+        overlay.open();
+        overlay.item.x = x;
+        overlay.item.y = y;
+    }
+
+    function close()
+    {
+        if (overlay)
+            overlay.done = true;
+    }
+
+    function _positionPopUp(item)
     {
         var topPos = popUpParent.mapFromItem(itemToPopupAt, itemToPopupAt.width, 0);
         var bottomPos = popUpParent.mapFromItem(itemToPopupAt, itemToPopupAt.width, itemToPopupAt.height);
