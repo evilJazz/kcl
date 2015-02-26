@@ -28,6 +28,9 @@
 #include <QDirIterator>
 #include <QDateTime>
 
+#ifndef KCL_DEBUG
+#undef DEBUG
+#endif
 #include "KCL/debug.h"
 
 #include "KCL/filesystemutils.h"

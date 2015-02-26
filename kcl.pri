@@ -1,3 +1,6 @@
+# Enable if you want to debug KCL...
+#DEFINES += KCL_DEBUG
+
 contains(QT_VERSION, ^4\\.[0-6]\\..*) {
     message("KCL: Cannot build using Qt version $${QT_VERSION}.")
     error("Use at least Qt 4.7.")

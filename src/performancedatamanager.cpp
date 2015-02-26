@@ -25,7 +25,9 @@
 #include <QDateTime>
 #include <QCoreApplication>
 
+#ifndef KCL_DEBUG
 #undef DEBUG
+#endif
 #include "KCL/debug.h"
 
 /* PerformanceDataDetail */

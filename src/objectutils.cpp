@@ -50,9 +50,13 @@ void ObjectUtils::dumpObjectTreeRecursive(int level, QObject *object)
         buf.fill(' ', level * 4);
 
         if (level == 0)
+        {
             DPRINTF("%s%s parent: %s", buf.constData(), objectAsString(object).toLatin1().constData(), objectAsString(object->parent()).toLatin1().constData());
+        }
         else
+        {
             DPRINTF("%s%s", buf.constData(), objectAsString(object).toLatin1().constData());
+        }
 
         QObjectList children = object->children();
         if (!children.isEmpty())

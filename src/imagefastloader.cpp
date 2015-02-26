@@ -36,7 +36,9 @@
 
 #include "KCL/filesystemutils.h"
 
+#ifndef KCL_DEBUG
 #undef DEBUG
+#endif
 #include "KCL/debug.h"
 
 #define CBCI_MARKER "CBCIV3"

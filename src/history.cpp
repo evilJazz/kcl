@@ -23,7 +23,9 @@
 
 #include "KCL/history.h"
 
+#ifndef KCL_DEBUG
 #undef DEBUG
+#endif
 #include "KCL/debug.h"
 
 History::History(bool undoMode, QObject *parent) :

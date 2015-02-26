@@ -6,7 +6,9 @@
 
 #include "KCL/backgroundtasks.h"
 
+#ifndef KCL_DEBUG
 #undef DEBUG
+#endif
 #include "KCL/debug.h"
 
 /* Task */

@@ -1,4 +1,3 @@
-#include "KCL/debug.h"
 #include "KCL/backgroundtasks.h"
 #include "KCL/imagerendersurface.h"
 
@@ -21,6 +20,11 @@
     #include <QDeclarativeImageProvider>
     #define QDeclarativePaintedItem QDeclarativeItem
 #endif
+
+#ifndef KCL_DEBUG
+#undef DEBUG
+#endif
+#include "KCL/debug.h"
 
 static TaskProcessingController *instance = NULL;
 

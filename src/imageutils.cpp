@@ -3,6 +3,9 @@
 #include <QImage>
 #include <QImageReader>
 
+#ifndef KCL_DEBUG
+#undef DEBUG
+#endif
 #include "KCL/debug.h"
 
 ImageUtils::ImageUtils(QObject *parent) :
