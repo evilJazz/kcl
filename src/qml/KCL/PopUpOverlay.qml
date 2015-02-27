@@ -15,6 +15,7 @@ Item {
 
     property Item popUpParent: app
 
+    signal overlayCreated(variant item)
     signal aboutToPopUp(variant item)
     signal poppedUp(variant item)
     signal aboutToClose(variant item)
@@ -35,6 +36,9 @@ Item {
         overlay.fadedOut.connect(function () { container.closed(overlay.item); container.overlay = null; });
 
         overlay.backgroundClicked.connect(function () { overlay.done = true; });
+
+        overlayCreated(overlay.item);
+
         return overlay;
     }
 
@@ -42,15 +46,26 @@ Item {
     {
         overlay = _createOverlay();
         overlay.open();
-        _positionPopUp(overlay.item);
+        _positionPopUpTopOrBottom(overlay.item);
+    }
+
+    function popUpTopOrBottom()
+    {
+        popUp();
+    }
+
+    function popUpLeftOrRight()
+    {
+        overlay = _createOverlay();
+        overlay.open();
+        _positionPopUpLeftOrRight(overlay.item);
     }
 
     function popUpAtPos(x, y)
     {
         overlay = _createOverlay();
         overlay.open();
-        overlay.item.x = x;
-        overlay.item.y = y;
+        setBoundedPosition(overlay.item, x, y);
     }
 
     function close()
@@ -59,21 +74,79 @@ Item {
             overlay.done = true;
     }
 
-    function _positionPopUp(item)
+    function boundedPosition(item, x, y)
+    {
+        var popUpParentSize = popUpParent.mapFromItem(popUpParent, popUpParent.width, popUpParent.height);
+        var popUpParentWidth = popUpParentSize.x;
+        var popUpParentHeight = popUpParentSize.y;
+
+        var result = {};
+        result.x = x;
+        result.y = y;
+
+        if (x + item.width > popUpParentWidth)
+            result.x = popUpParentWidth - item.width;
+
+        if (y + item.height > popUpParentHeight)
+            result.y = popUpParentHeight - item.height;
+
+        return result;
+    }
+
+    function setBoundedPosition(item, x, y)
+    {
+        var pos = boundedPosition(item, x, y);
+        item.x = pos.x;
+        item.y = pos.y;
+    }
+
+    function _positionPopUpTopOrBottom(item)
     {
         var topPos = popUpParent.mapFromItem(itemToPopupAt, itemToPopupAt.width, 0);
         var bottomPos = popUpParent.mapFromItem(itemToPopupAt, itemToPopupAt.width, itemToPopupAt.height);
-        var popUpParentHeight = popUpParent.mapFromItem(popUpParent, 0, popUpParent.height).y;
 
-        if (bottomPos.y + item.height + 20 < popUpParentHeight)
+        var popUpParentSize = popUpParent.mapFromItem(popUpParent, popUpParent.width, popUpParent.height);
+        var popUpParentWidth = popUpParentSize.x;
+        var popUpParentHeight = popUpParentSize.y;
+
+        var x, y;
+
+        if (bottomPos.y + item.height < popUpParentHeight)
         {
-            item.x = bottomPos.x - item.width;
-            item.y = bottomPos.y;
+            x = bottomPos.x - item.width;
+            y = bottomPos.y;
         }
         else
         {
-            item.x = topPos.x - item.width;
-            item.y = topPos.y - item.height;
+            x = topPos.x - item.width;
+            y = topPos.y - item.height;
         }
+
+        setBoundedPosition(item, x, y);
+    }
+
+    function _positionPopUpLeftOrRight(item)
+    {
+        var topLeftPos = popUpParent.mapFromItem(itemToPopupAt, 0, 0);
+        var topRightPos = popUpParent.mapFromItem(itemToPopupAt, itemToPopupAt.width, 0);
+
+        var popUpParentSize = popUpParent.mapFromItem(popUpParent, popUpParent.width, popUpParent.height);
+        var popUpParentWidth = popUpParentSize.x;
+        var popUpParentHeight = popUpParentSize.y;
+
+        var x, y;
+
+        if (topRightPos.x + item.width < popUpParentWidth)
+        {
+            x = topRightPos.x;
+            y = topRightPos.y;
+        }
+        else
+        {
+            x = topLeftPos.x - item.width;
+            y = topLeftPos.y;
+        }
+
+        setBoundedPosition(item, x, y);
     }
 }
