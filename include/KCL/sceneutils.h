@@ -36,8 +36,8 @@ public:
 
 // Can't use the KCLDeclarativeItem macro here because moc does not understand it...
 #ifdef KCL_QTQUICK2
-    Q_INVOKABLE static QVariantList getAllItemsInScene(QQuickItem *item, qreal sceneX, qreal sceneY);
-    Q_INVOKABLE static QVariantList getItemsBelow(QQuickItem *item, qreal sceneX, qreal sceneY);
+    Q_INVOKABLE static QVariantList getAllItemsInScene(QQuickItem *item, qreal itemX, qreal itemY);
+    Q_INVOKABLE static QVariantList getItemsBelow(QQuickItem *item, qreal itemX, qreal itemY);
 
     Q_INVOKABLE static void takeItemFromScene(QQuickItem *item);
     Q_INVOKABLE static void reparentItem(QQuickItem *item, QQuickItem *newParent);
@@ -47,9 +47,12 @@ public:
     Q_INVOKABLE static QVariant takeImageFromScene(QQuickItem *sceneItem);
 
     Q_INVOKABLE static void forceUpdate(QQuickItem *item);
+
+    Q_INVOKABLE static void grabMouse(QQuickItem *item);
+    Q_INVOKABLE static void ungrabMouse(QQuickItem *item);
 #else
-    Q_INVOKABLE static QVariantList getAllItemsInScene(QDeclarativeItem *item, qreal sceneX, qreal sceneY);
-    Q_INVOKABLE static QVariantList getItemsBelow(QDeclarativeItem *item, qreal sceneX, qreal sceneY);
+    Q_INVOKABLE static QVariantList getAllItemsInScene(QDeclarativeItem *item, qreal itemX, qreal itemY);
+    Q_INVOKABLE static QVariantList getItemsBelow(QDeclarativeItem *item, qreal itemX, qreal itemY);
 
     Q_INVOKABLE static void takeItemFromScene(QDeclarativeItem *item);
     Q_INVOKABLE static void reparentItem(QDeclarativeItem *item, QDeclarativeItem *newParent);
@@ -59,6 +62,9 @@ public:
     Q_INVOKABLE static QVariant takeImageFromScene(QDeclarativeItem *sceneItem);
 
     Q_INVOKABLE static void forceUpdate(QDeclarativeItem *item);
+
+    Q_INVOKABLE static void grabMouse(QDeclarativeItem *item);
+    Q_INVOKABLE static void ungrabMouse(QDeclarativeItem *item);
 #endif
 };
 

@@ -61,6 +61,7 @@ isEmpty(kcl): kcl = \
     imagerendersurface \
     imageutils \
     sceneutils \
+    rawmousearea \
     datetimeutils \
     base64imageprovider
 
@@ -114,6 +115,8 @@ kcl_qtquick1 {
     QT += script
 
     DEFINES -= KCL_QTQUICK2
+
+    kclConditionalAddModule(rawmousearea)
 }
 
 kcl_declarative {

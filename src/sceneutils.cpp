@@ -101,12 +101,12 @@ QList<KCLGraphicsItem *> SceneUtils::getItemsAtPositionInItem(KCLGraphicsItem *i
 
 #ifdef KCL_QTQUICK2
 
-QVariantList SceneUtils::getAllItemsInScene(QQuickItem *item, qreal sceneX, qreal sceneY)
+QVariantList SceneUtils::getAllItemsInScene(QQuickItem *item, qreal itemX, qreal itemY)
 {
     QVariantList result;
 
     ScenePositionPaintOrderFilter filter;
-    filter.scenePoint = item->mapToScene(QPointF(sceneX, sceneY));
+    filter.scenePoint = item->mapToScene(QPointF(itemX, itemY));
 
     QList<QQuickItem *> itemList = SceneUtils::paintOrderChildItems(item->window()->contentItem(), true, &filter);
 
@@ -120,12 +120,12 @@ QVariantList SceneUtils::getAllItemsInScene(QQuickItem *item, qreal sceneX, qrea
     return result;
 }
 
-QVariantList SceneUtils::getItemsBelow(QQuickItem *item, qreal sceneX, qreal sceneY)
+QVariantList SceneUtils::getItemsBelow(QQuickItem *item, qreal itemX, qreal itemY)
 {
     QVariantList result;
 
     ScenePositionPaintOrderFilter filter;
-    filter.scenePoint = item->mapToScene(QPointF(sceneX, sceneY));
+    filter.scenePoint = item->mapToScene(QPointF(itemX, itemY));
 
     QList<QQuickItem *> itemList = SceneUtils::paintOrderChildItems(item->window()->contentItem(), true, &filter);
 
@@ -170,18 +170,28 @@ void SceneUtils::forceUpdate(QQuickItem *item)
     item->update();
 }
 
+void SceneUtils::grabMouse(QQuickItem *item)
+{
+    item->grabMouse();
+}
+
+void SceneUtils::ungrabMouse(QQuickItem *item)
+{
+    item->ungrabMouse();
+}
+
 #else
 
-QVariantList SceneUtils::getAllItemsInScene(QDeclarativeItem *item, qreal sceneX, qreal sceneY)
+QVariantList SceneUtils::getAllItemsInScene(QDeclarativeItem *item, qreal itemX, qreal itemY)
 {
-    QPointF scenePos = item->mapToScene(QPointF(sceneX, sceneY));
+    QPointF scenePos = item->mapToScene(QPointF(itemX, itemY));
 
     QVariantList result;
     QList<QGraphicsItem *> itemList = item->scene()->items(scenePos);
 
     for (int i = 0; i < itemList.count(); ++i)
     {
-        QObject *item = qgraphicsitem_cast<QDeclarativeItem *>(itemList.at(i));
+        QObject *item = qobject_cast<QDeclarativeItem *>(itemList.at(i));
         if (item)
             result.append(qVariantFromValue(item));
     }
@@ -189,9 +199,9 @@ QVariantList SceneUtils::getAllItemsInScene(QDeclarativeItem *item, qreal sceneX
     return result;
 }
 
-QVariantList SceneUtils::getItemsBelow(QDeclarativeItem *item, qreal sceneX, qreal sceneY)
+QVariantList SceneUtils::getItemsBelow(QDeclarativeItem *item, qreal itemX, qreal itemY)
 {
-    QPointF scenePos = item->mapToScene(QPointF(sceneX, sceneY));
+    QPointF scenePos = item->mapToScene(QPointF(itemX, itemY));
 
     QVariantList result;
     QList<QGraphicsItem *> itemList = item->scene()->items(scenePos);
@@ -202,7 +212,7 @@ QVariantList SceneUtils::getItemsBelow(QDeclarativeItem *item, qreal sceneX, qre
     {
         for (int i = index + 1; i < itemList.count(); ++i)
         {
-            QObject *item = qgraphicsitem_cast<QDeclarativeItem *>(itemList.at(i));
+            QObject *item = qobject_cast<QDeclarativeItem *>(itemList.at(i));
             if (item)
                 result.append(qVariantFromValue(item));
         }
@@ -248,6 +258,16 @@ QVariant SceneUtils::takeImageFromScene(QDeclarativeItem *sceneItem)
 void SceneUtils::forceUpdate(QDeclarativeItem *item)
 {
     item->update();
+}
+
+void SceneUtils::grabMouse(QDeclarativeItem *item)
+{
+    item->grabMouse();
+}
+
+void SceneUtils::ungrabMouse(QDeclarativeItem *item)
+{
+    item->ungrabMouse();
 }
 
 #endif
