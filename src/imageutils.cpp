@@ -180,6 +180,47 @@ bool ImageUtils::hasAlphaValues(const QImage &srcImage, const QRect &srcRect)
     return result;
 }
 
+bool ImageUtils::convertToGrayscale(const QImage &srcImage, QImage &dstImage)
+{
+    if (srcImage.isNull())
+        return false;
+
+    QImage image = srcImage;
+    if (image.format() != QImage::Format_ARGB32)
+        image = image.convertToFormat(QImage::Format_ARGB32);
+
+    dstImage = QImage(image.width(), image.height(), QImage::Format_Indexed8);
+
+    QVector<QRgb> grayTable(256);
+    for (int i = 0; i < 256; ++i)
+        grayTable[i] = qRgb(i, i, i);
+
+    dstImage.setColorTable(grayTable);
+
+    int y;
+    int height = image.height();
+    int x;
+    int width = image.width();
+    register const QRgb *input;
+    register uchar *output;
+
+    for (y = 0; y < height; ++y)
+    {
+        input = (QRgb *)image.constScanLine(y);
+        output = dstImage.scanLine(y);
+
+        for (x = 0; x < width; ++x)
+        {
+            *output = qGray(*input);
+
+            ++output;
+            ++input;
+        }
+    }
+
+    return true;
+}
+
 bool ImageUtils::imageFromVariant(const QVariant &image, QImage *result)
 {
     if (image.canConvert<QImage>())

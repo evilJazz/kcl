@@ -23,6 +23,8 @@ public:
     static bool applyAlpha(const QImage &srcImage, QImage &dstImage, unsigned int alpha);
     static bool hasAlphaValues(const QImage &srcImage, const QRect &srcRect = QRect());
 
+    static bool convertToGrayscale(const QImage &srcImage, QImage &dstImage);
+
     static bool imageFromVariant(const QVariant &image, QImage *result = NULL);
 
     /* Image methods for use in JavaScript - all require QImage::Format_ARGB32 */
