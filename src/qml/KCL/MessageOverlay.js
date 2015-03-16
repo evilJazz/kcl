@@ -1,5 +1,5 @@
 
-function open(parent, delegate, params, autoOpen, looseItem)
+function open(parent, delegate, params, autoOpen, looseItem, immediate)
 {
     var component = Qt.createComponent(Qt.resolvedUrl("qrc:/KCL/MessageOverlay.qml"));
     console.log(component.errorString());
@@ -18,6 +18,9 @@ function open(parent, delegate, params, autoOpen, looseItem)
 
     if (typeof(looseItem) != "undefined")
         p.looseItem = looseItem;
+
+    if (typeof(immediate) != "undefined")
+        p.fadeEnabled = !immediate;
 
     var overlay = component.createObject(parent, p);
     return overlay;
