@@ -27,6 +27,7 @@ function stop(name)
     if (isScheduled(name))
     {
         if (debug) console.log("Stopping scheduled timer: " + name);
+        scheduledTimers[name].stop();
         scheduledTimers[name].destroy();
         delete scheduledTimers[name];
     }
@@ -45,8 +46,21 @@ function executeIn(ms, func, name, parent)
 {
     if (debug) console.log("Starting timer " + name + " in " + ms + " ms.");
 
-    var timerParent = typeof(parent) != "undefined" ? parent : (Qt.hasOwnProperty("application") ? Qt.application : app); // Use Qt.application on QtQuick 1.1 and up, else fall back to root item id "app".
-    var timer = createNewTimer(timerParent);
+    var namedTimer = typeof(parent) != "undefined";
+
+    var timerParent = namedTimer ? parent : (Qt.hasOwnProperty("application") ? Qt.application : app); // Use Qt.application on QtQuick 1.1 and up, else fall back to root item id "app".
+    var timer;
+
+    if (namedTimer && isScheduled(name))
+    {
+        if (debug) console.log("Reusing scheduled timer " + name + "...");
+        timer = scheduledTimers[name];
+    }
+    else
+    {
+        if (debug) console.log("Creating new timer...");
+        timer = createNewTimer(timerParent);
+    }
 
     var triggerFunc = function()
     {
@@ -58,7 +72,7 @@ function executeIn(ms, func, name, parent)
         }
         finally
         {
-            if (typeof(name) != "undefined")
+            if (namedTimer)
                 stop(name);
             else
                 timer.destroy();
@@ -67,24 +81,24 @@ function executeIn(ms, func, name, parent)
         }
     };
 
+    timer.stop();
     timer.interval = ms;
 
     if (useQtTimers)
     {
         timer.singleShot = true;
+        timer.timeout.disconnect();
         timer.timeout.connect(triggerFunc);
     }
     else
     {
         timer.repeat = false;
+        timer.triggered.disconnect();
         timer.triggered.connect(triggerFunc);
     }
 
-    if (typeof(name) != "undefined")
-    {
-        stop(name);
+    if (namedTimer)
         scheduledTimers[name] = timer;
-    }
 
     timer.start();
     if (debug) console.log("Timer started");
