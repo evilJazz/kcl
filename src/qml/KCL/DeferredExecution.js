@@ -46,21 +46,10 @@ function executeIn(ms, func, name, parent)
 {
     if (debug) console.log("Starting timer " + name + " in " + ms + " ms.");
 
-    var namedTimer = typeof(parent) != "undefined";
+    var namedTimer = typeof(name) != "undefined";
 
-    var timerParent = namedTimer ? parent : (Qt.hasOwnProperty("application") ? Qt.application : app); // Use Qt.application on QtQuick 1.1 and up, else fall back to root item id "app".
-    var timer;
-
-    if (namedTimer && isScheduled(name))
-    {
-        if (debug) console.log("Reusing scheduled timer " + name + "...");
-        timer = scheduledTimers[name];
-    }
-    else
-    {
-        if (debug) console.log("Creating new timer...");
-        timer = createNewTimer(timerParent);
-    }
+    var timerParent = typeof(parent) != "undefined" ? parent : (Qt.hasOwnProperty("application") ? Qt.application : app); // Use Qt.application on QtQuick 1.1 and up, else fall back to root item id "app".
+    var timer = createNewTimer(timerParent);
 
     var triggerFunc = function()
     {
@@ -81,24 +70,24 @@ function executeIn(ms, func, name, parent)
         }
     };
 
-    timer.stop();
     timer.interval = ms;
 
     if (useQtTimers)
     {
         timer.singleShot = true;
-        timer.timeout.disconnect();
         timer.timeout.connect(triggerFunc);
     }
     else
     {
         timer.repeat = false;
-        timer.triggered.disconnect();
         timer.triggered.connect(triggerFunc);
     }
 
     if (namedTimer)
+    {
+        stop(name);
         scheduledTimers[name] = timer;
+    }
 
     timer.start();
     if (debug) console.log("Timer started");
