@@ -133,7 +133,8 @@ void Logging::customMessageHandler(QtMsgType type, const char *msg)
     if (!loggingEnabled_ && type != QtFatalMsg) return;
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-    const char *msg = msgText.toLocal8Bit().constData();
+    QByteArray msgArray = msgText.toLocal8Bit(); // Store transient data in local variable...
+    const char *msg = msgArray.constData(); // ...or content gets popped from stack later on.
     QString message = msgText;
 #else
     QString message = msg;

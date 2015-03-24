@@ -16,6 +16,7 @@ class QScriptContextInfo;
 class KCL_EXPORT DeclarativeDebug : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool outputEnabled READ outputEnabled WRITE setOutputEnabled NOTIFY outputEnabledChanged)
 public:
 #ifdef KCL_QTQUICK2
     explicit DeclarativeDebug(QQmlEngine *engine);
@@ -23,6 +24,12 @@ public:
     explicit DeclarativeDebug(QDeclarativeEngine *engine);
 #endif
     virtual ~DeclarativeDebug();
+
+    bool outputEnabled() const { return outputEnabled_; }
+    void setOutputEnabled(bool enabled);
+
+signals:
+    void outputEnabledChanged();
 
 public slots:
     void enterMethod(const QString &text = QString::null);
@@ -36,6 +43,8 @@ private:
 #else
     QDeclarativeEngine *engine_;
     QScriptEngine *scriptEngine_;
+
+    bool outputEnabled_;
 
     static QString getFunctionSignature(QScriptContextInfo *info);
 #endif

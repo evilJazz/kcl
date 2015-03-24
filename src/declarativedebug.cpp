@@ -15,9 +15,19 @@
 
 const QString cIdentifier("QML/JS");
 
+void DeclarativeDebug::setOutputEnabled(bool enabled)
+{
+    if (enabled != outputEnabled_)
+    {
+        outputEnabled_ = enabled;
+        emit outputEnabledChanged();
+    }
+}
+
 DeclarativeDebug::DeclarativeDebug(QDeclarativeEngine *engine) :
     QObject(engine),
-    engine_(engine)
+    engine_(engine),
+    outputEnabled_(true)
 {
 #ifndef KCL_QTQUICK2
     scriptEngine_ = QDeclarativeDebugHelper::getScriptEngine(engine_);
@@ -33,7 +43,7 @@ DeclarativeDebug::~DeclarativeDebug()
 
 void DeclarativeDebug::enterMethod(const QString &text)
 {
-    if (diagnosticOutputEnabled())
+    if (outputEnabled_ && diagnosticOutputEnabled())
     {
         kaDebugEnterMethod(QString(cIdentifier + ": <unknown>").toUtf8().constData(), 0, QString("<unknown method>").toUtf8().constData(), text);
     }
@@ -41,7 +51,7 @@ void DeclarativeDebug::enterMethod(const QString &text)
 
 void DeclarativeDebug::exitMethod(const QString &text)
 {
-    if (diagnosticOutputEnabled())
+    if (outputEnabled_ && diagnosticOutputEnabled())
     {
         kaDebugExitMethod(QString(cIdentifier + ": <unknown>").toUtf8().constData(), 0, QString("<unknown method>").toUtf8().constData(), text);
     }
@@ -54,7 +64,7 @@ QString DeclarativeDebug::getFunctionSignature(QScriptContextInfo *info)
 
 void DeclarativeDebug::enterMethod(const QString &text)
 {
-    if (diagnosticOutputEnabled() && scriptEngine_)
+    if (outputEnabled_ && diagnosticOutputEnabled() && scriptEngine_)
     {
         QScriptContext *context = scriptEngine_->currentContext()->parentContext();
         if (context)
@@ -67,7 +77,7 @@ void DeclarativeDebug::enterMethod(const QString &text)
 
 void DeclarativeDebug::exitMethod(const QString &text)
 {
-    if (diagnosticOutputEnabled() && scriptEngine_)
+    if (outputEnabled_ && diagnosticOutputEnabled() && scriptEngine_)
     {
         QScriptContext *context = scriptEngine_->currentContext()->parentContext();
         if (context)
@@ -81,6 +91,6 @@ void DeclarativeDebug::exitMethod(const QString &text)
 
 void DeclarativeDebug::print(const QString &text)
 {
-    if (diagnosticOutputEnabled())
+    if (outputEnabled_ && diagnosticOutputEnabled())
         kaDebug("[" + cIdentifier + "] " + text);
 }
