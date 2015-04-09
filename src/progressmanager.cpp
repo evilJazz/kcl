@@ -259,7 +259,7 @@ void ProgressManager::endActivity()
 void ProgressManager::asyncTick(int progressValue, int progressTotal)
 {
     QEventLoop el;
-    el.processEvents();
+    el.processEvents(QEventLoop::ExcludeUserInputEvents);
 }
 
 void ProgressManager::dumpTopLevelContext()
@@ -276,17 +276,6 @@ void ProgressManager::setCurrentContext(ProgressContext *context)
 
 void ProgressManager::setTopLevelContext(ProgressContext *context)
 {
-    if (context)
-    {
-        connect(context, SIGNAL(progressPercentageChanged()), this, SLOT(progressPercentageChangedHandler()));
-    }
-
     topLevelContext_ = context;
     emit topLevelContextChanged();
-}
-
-void ProgressManager::progressPercentageChangedHandler()
-{
-    QEventLoop el;
-    el.processEvents();
 }
