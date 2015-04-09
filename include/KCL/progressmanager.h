@@ -123,9 +123,6 @@ signals:
     void topLevelContextChanged();
     void currentContextChanged();
 
-private slots:
-    void progressPercentageChangedHandler();
-
 private:
     QList<ProgressContext *> contexts_;
 
