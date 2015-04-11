@@ -63,7 +63,8 @@ isEmpty(kcl): kcl = \
     sceneutils \
     rawmousearea \
     datetimeutils \
-    base64imageprovider
+    base64imageprovider \
+    updatelocker
 
 defineTest(kclAddModule) {
     message(KCL: Adding module $${1})
@@ -100,6 +101,7 @@ kclConditionalAddModule(graphicsutils)
 kclConditionalAddModule(imageutils)
 kclConditionalAddModule(objectutils)
 kclConditionalAddModule(datetimeutils)
+kclConditionalAddModule(updatelocker)
 
 kcl_widgets {
     message("KCL: Configuring with Widgets support")
