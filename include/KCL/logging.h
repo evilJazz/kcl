@@ -45,6 +45,9 @@ public:
     void enableLogFile(const QString &fileName);
     void disableLogFile();
 
+    bool isEnabled() const;
+    QString logFileName() const;
+
 signals:
 
 public slots:
