@@ -38,14 +38,12 @@ public slots:
     void print(const QString &text);
 
 private:
+    bool outputEnabled_;
 #ifdef KCL_QTQUICK2
     QQmlEngine *engine_;
 #else
     QDeclarativeEngine *engine_;
     QScriptEngine *scriptEngine_;
-
-    bool outputEnabled_;
-
     static QString getFunctionSignature(QScriptContextInfo *info);
 #endif
 };

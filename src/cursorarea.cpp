@@ -122,6 +122,14 @@ QCursor CursorArea::createCustomCursor()
     return result;
 }
 
+void CursorArea::setOnDesktop()
+{
+}
+
+void CursorArea::restoreOnDesktop()
+{
+}
+
 QQmlComponent *CursorArea::delegate() const
 {
     return delegate_;
@@ -199,7 +207,6 @@ void CursorArea::setDelegate(QDeclarativeComponent *delegate)
         emit delegateChanged();
     }
 }
-
 #endif
 
 void CursorArea::setHotX(int newValue)

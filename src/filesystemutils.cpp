@@ -34,7 +34,9 @@
 #include <QDesktopServices>
 #endif
 
+#ifndef _MSC_VER
 #include <unistd.h>
+#endif
 
 FileSystemUtils::FileSystemUtils(QObject *parent) :
     QObject(parent)
