@@ -122,12 +122,12 @@ void Logging::disableLogFile()
 
 bool Logging::isEnabled() const
 {
-    return (logFile_ && logFile_->isOpen());
+    return (logFile_ != NULL);
 }
 
 QString Logging::logFileName() const
 {
-    return (logFile_ && logFile_->isOpen()) ? logFile_->fileName() : QString::null;
+    return (logFile_ ? logFile_->fileName() : QString::null);
 }
 
 Logging::Logging()
