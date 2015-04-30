@@ -78,13 +78,18 @@ MouseEater {
 
     function unload()
     {
-        loader.sourceComponent = null;
-        loader.source = "";
+        // Defer execution of unload, so signal handlers still have
+        // a chance to work with loader.item and possible results...
+        DeferredExecution.invoke(function ()
+        {
+            loader.sourceComponent = null;
+            loader.source = "";
 
-        if (destroyOnDone)
-            // Use Queued invocation because destroy() may be called when still in Component.onCompleted, which causes
-            // Error: Invalid attempt to destroy() an indestructible object in QtQuick 2+
-            DeferredExecution.invoke(function () { overlayRoot.destroy(); });
+            if (destroyOnDone)
+                // Use Queued invocation because destroy() may be called when still in Component.onCompleted, which causes
+                // Error: Invalid attempt to destroy() an indestructible object in QtQuick 2+
+                DeferredExecution.invoke(function () { overlayRoot.destroy(); });
+        });
     }
 
     Fader {
