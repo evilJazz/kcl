@@ -25,6 +25,7 @@ public:
     Q_INVOKABLE static QColor setAlpha(const QColor &color, QVariant alpha);
 
     Q_INVOKABLE static QColor grabColorFromScreen(const QPoint &screenPos = QPoint(INT_MAX, INT_MAX));
+    Q_INVOKABLE static QColor grabColorFromImage(const QVariant image, int posX = 0, int posY = 0);
 
 signals:
 

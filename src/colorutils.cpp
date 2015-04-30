@@ -1,5 +1,7 @@
 #include "KCL/colorutils.h"
 
+#include "KCL/imageutils.h"
+
 #ifdef KCL_WIDGETS
 #include <QPixmap>
 #include <QImage>
@@ -102,4 +104,13 @@ QColor ColorUtils::grabColorFromScreen(const QPoint &screenPos)
     qWarning("ColorUtils::grabColorFromScreen is not implemented.");
     return QColor();
 #endif
+}
+
+QColor ColorUtils::grabColorFromImage(const QVariant image, int posX, int posY)
+{
+    QImage src;
+    if (ImageUtils::imageFromVariant(image, &src) && !src.isNull())
+        return src.pixel(posX, posY);
+    else
+        return QColor();
 }
