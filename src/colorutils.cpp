@@ -2,9 +2,10 @@
 
 #include "KCL/imageutils.h"
 
+#include <QImage>
+
 #ifdef KCL_WIDGETS
 #include <QPixmap>
-#include <QImage>
 #include <QScreen>
 #include <QApplication>
 #include <QDesktopWidget>
