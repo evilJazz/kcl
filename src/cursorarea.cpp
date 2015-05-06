@@ -124,10 +124,12 @@ QCursor CursorArea::createCustomCursor()
 
 void CursorArea::setOnDesktop()
 {
+    qWarning("CursorArea::setOnDesktop is not implemented for KCL_QTQUICK2.");
 }
 
 void CursorArea::restoreOnDesktop()
 {
+    qWarning("CursorArea::restoreOnDesktop is not implemented for KCL_QTQUICK2.");
 }
 
 QQmlComponent *CursorArea::delegate() const

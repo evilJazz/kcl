@@ -7,6 +7,28 @@
 #define DIAGNOSTIC_OUTPUT
 #include "KCL/debug.h"
 
+/* NetworkConfigurationRunnable */
+
+class NetworkConfigurationRunnable : public QObject, public QRunnable
+{
+    Q_OBJECT
+public:
+    NetworkConfigurationRunnable() : QObject(NULL), QRunnable() { setAutoDelete(true); }
+    virtual ~NetworkConfigurationRunnable() {}
+
+signals:
+    void done(QNetworkConfigurationManager *result);
+
+protected:
+    void run()
+    {
+        // Depending on the platform, getting an instance of the
+        // QNetworkConfigurationManager can take a while, up to 5 seconds on Symbian.
+        QNetworkConfigurationManager *network = new QNetworkConfigurationManager();
+        emit done(network);
+    }
+};
+
 /* NetworkUtils */
 
 NetworkUtils::NetworkUtils(QObject *parent) :
@@ -17,14 +39,14 @@ NetworkUtils::NetworkUtils(QObject *parent) :
     DGUARDMETHODTIMED;
     PERFDATA_STARTDETAIL(cStartUp, "QNetworkConfigurationManager", "runtime");
 
-    //network_ = new QNetworkConfigurationManager(this);
-    //connectToNetworkConfigurationManager();
-
+#ifndef Q_OS_SYMBIAN
+    network_ = new QNetworkConfigurationManager(this);
+    connectToNetworkConfigurationManager();
+#else
     NetworkConfigurationRunnable *runnable = new NetworkConfigurationRunnable();
     connect(runnable, SIGNAL(done(QNetworkConfigurationManager*)), this, SLOT(networkConfigurationManagerDone(QNetworkConfigurationManager*)));
     QThreadPool::globalInstance()->start(runnable);
-
-    //QTimer::singleShot(6000, this, SLOT(deferredInitializeNetwork()));
+#endif
 
     PERFDATA_STOPDETAIL(cStartUp, "QNetworkConfigurationManager", "runtime");
 }
@@ -102,6 +124,9 @@ bool NetworkUtils::attemptToOpenNetworkSession(int msecs)
     if (!session_)
         newNetworkSession();
 
+    if (!session_)
+        return false;
+
     if (!session_->isOpen())
     {
         session_->open();
@@ -112,3 +137,4 @@ bool NetworkUtils::attemptToOpenNetworkSession(int msecs)
     return true;
 }
 
+#include "networkutils.moc"

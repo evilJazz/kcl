@@ -38,23 +38,4 @@ private:
     void connectToNetworkConfigurationManager();
 };
 
-class KCL_EXPORT NetworkConfigurationRunnable : public QObject, public QRunnable
-{
-    Q_OBJECT
-public:
-    NetworkConfigurationRunnable() : QObject(NULL), QRunnable() { setAutoDelete(true); }
-    virtual ~NetworkConfigurationRunnable() {}
-
-signals:
-    void done(QNetworkConfigurationManager *result);
-
-protected:
-    void run()
-    {
-        // Depending on the platform, getting an instance of the
-        // QNetworkConfigurationManager can take a while, up to 5 seconds on Symbian.
-        QNetworkConfigurationManager *network = new QNetworkConfigurationManager();
-        emit done(network);
-    }
-};
 #endif // NETWORKUTILS_H
