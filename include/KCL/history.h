@@ -66,6 +66,9 @@ signals:
     void aboutToGoBack();
     void aboutToGoForward();
 
+    void wentBack();
+    void wentForward();
+
 public slots:
     void goBack();
     void goForward();

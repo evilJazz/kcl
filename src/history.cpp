@@ -178,6 +178,7 @@ void History::goBack() // UNDO
         }
 
         emit activeIndexChanged();
+        emit wentBack();
     }
 }
 
@@ -191,5 +192,6 @@ void History::goForward() // REDO
         loadSnapshot(activeIndex_);
 
         emit activeIndexChanged();
+        emit wentForward();
     }
 }
