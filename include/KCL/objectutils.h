@@ -24,6 +24,8 @@ public:
     Q_INVOKABLE static QString objectAsString(QObject *object);
     Q_INVOKABLE static void dumpObjectTree(QObject *target);
 
+    Q_INVOKABLE static QObject *findObjectByObjectName(QObject *rootElement, const QString &objectName);
+
 private:
     static void dumpObjectTreeRecursive(int level, QObject *object);
 };

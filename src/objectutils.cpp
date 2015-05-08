@@ -75,3 +75,19 @@ bool ObjectUtils::isNull(QObject *target)
 {
     return target == NULL;
 }
+
+QObject *ObjectUtils::findObjectByObjectName(QObject *rootElement, const QString &objectName)
+{
+    if (rootElement->objectName() == objectName)
+        return rootElement;
+
+    const QObjectList list = rootElement->children();
+    for (QObjectList::const_iterator it = list.begin(); it != list.end(); it++)
+    {
+        QObject *object = findObjectByObjectName((*it), objectName);
+        if (object)
+            return object;
+    }
+
+    return NULL;
+}
