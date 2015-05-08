@@ -78,7 +78,11 @@ private:
 
 #if defined(DEBUG) || defined(DIAGNOSTIC_OUTPUT)
   #define DOP(...) __VA_ARGS__
-  #define DHOP(...)
+  #ifdef DEBUG_NOISY
+    #define DHOP(...) __VA_ARGS__
+  #else
+    #define DHOP(...)
+  #endif
 #else
   #define DOP(...)
   #define DHOP(...)
