@@ -16,8 +16,23 @@ QtObjectWithChildren {
 
     // ATTENTION: if you add properties or signals here, also update ActionForwarder !!!
 
+    property bool isRunning: false
+
     signal triggered()
-    function _Action_trigger() { triggered(); }
+    function _Action_trigger()
+    {
+        if (isRunning) return;
+        isRunning = true;
+
+        try
+        {
+            triggered();
+        }
+        finally
+        {
+            isRunning = false;
+        }
+    }
     function trigger() { _Action_trigger(); }
 
     function _Action_toggle() { checked = !checked; }
