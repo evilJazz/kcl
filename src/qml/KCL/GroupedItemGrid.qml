@@ -241,6 +241,33 @@ Column {
             onWidthChanged: logic.deferredUpdateLoadState()
         }
 
+        Connections {
+            target: groupRepeater.model
+            ignoreUnknownSignals: true
+
+            onModelAboutToBeReset:
+            {
+                logic.resetItems();
+                logic.deferredUpdateLoadState();
+            }
+
+            onModelReset:
+            {
+                logic.resetItems();
+                logic.deferredUpdateLoadState();
+            }
+        }
+
+        Connections {
+            target: groupRepeater
+
+            onModelChanged:
+            {
+                logic.resetItems();
+                logic.deferredUpdateLoadState();
+            }
+        }
+
         property bool modelLoading: false
         property bool deferredUpdateStarted: false
 
@@ -251,6 +278,7 @@ Column {
             if (logic.debug) console.log("deferredUpdateLoadState() !!! height: " + height + " contextY: " + contentY + " contentHeight: " + contentHeight);
 
             logic.deferredUpdateStarted = true;
+
             DeferredExecution.invoke(function ()
             {
                 logic.deferredUpdateStarted = false;
@@ -293,6 +321,26 @@ Column {
             //if (logic.debug) console.log(itemIndex + " -> " + JSON.stringify(posInView) + " visible: " + visible);
 
             return visible;
+        }
+
+        function resetItems()
+        {
+            var newItems = [];
+            var newIds = {};
+
+            for (var i = 0; i < Private.items.length; ++i)
+            {
+                var item = Private.items[i];
+
+                //console.log("item " + i + ": " + item + " -> " + typeof(item) + " -> " + ObjectUtils.isNull(item));
+
+                //if (item != null && typeof(item) != "undefined") // does not work because item is null (!) but comparison does evaluate to true and typeof(item) returns "object"
+                if (!ObjectUtils.isNull(item))
+                    item.destroy();
+            }
+
+            Private.items = newItems;
+            Private.itemsIds = newIds;
         }
 
         function updateLoadState()
