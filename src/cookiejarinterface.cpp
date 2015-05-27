@@ -1,11 +1,27 @@
 #include "KCL/cookiejarinterface.h"
 
+#if KCL_QTQUICK2
+#else
+#include <QNetworkAccessManager>
+#include <QNetworkCookie>
+#endif
+
+
+#if KCL_QTQUICK2
 CookieJarInterface::CookieJarInterface(QQmlEngine *engine) :
     QObject(engine),
     engine_(engine)
 {
 
 }
+#else
+CookieJarInterface::CookieJarInterface(QDeclarativeEngine *engine) :
+    QObject(engine),
+    engine_(engine)
+{
+
+}
+#endif
 
 CookieJarInterface::~CookieJarInterface()
 {
