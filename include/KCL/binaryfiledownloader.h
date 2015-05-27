@@ -42,7 +42,15 @@ class KCL_EXPORT BinaryFileDownloader : public QObject
 public:
     explicit BinaryFileDownloader();
     virtual ~BinaryFileDownloader();
-    Q_INVOKABLE void download(QString url);
+
+    Q_INVOKABLE void download(QString url) { get(url); }
+
+    Q_INVOKABLE void get(QString url);
+    Q_INVOKABLE void post(QString url, const QByteArray &rawData);
+
+    Q_INVOKABLE void setRequestHeader(const QByteArray &key, const QByteArray &value);
+    Q_INVOKABLE void clearRequestHeaders();
+
     Q_INVOKABLE QByteArray downloadedData() const { return downloadedData_; }
 
     int errorCode() const { return errorCode_; }
@@ -67,6 +75,10 @@ private:
     bool autoDelete_;
 
     QNetworkAccessManager *manager();
+
+    QMultiMap<QByteArray, QByteArray> requestHeaders_;
+
+    void setHeadersOnRequest(QNetworkRequest *request);
 };
 
 #endif // BINARYFILEDOWNLOADER_H

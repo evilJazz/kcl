@@ -66,6 +66,10 @@
     #include "KCL/binaryfiledownloader.h"
 #endif
 
+#ifdef KCL_cookiejarinterface
+    #include "KCL/cookiejarinterface.h"
+#endif
+
 #ifdef KCL_performancedatamanager
     #include "KCL/performancedatamanager.h"
 #endif
@@ -112,6 +116,10 @@
 
 #ifdef KCL_base64imageprovider
     #include "KCL/base64imageprovider.h"
+#endif
+
+#ifdef KCL_sortfiltermodel
+    #include "KCL/sortfiltermodel.h"
 #endif
 
 void KCLPlugin::registerTypes(const char *uri)
@@ -163,6 +171,11 @@ void KCLPlugin::registerTypes(const char *uri)
 #ifdef KCL_declarativedebug
     qmlRegisterType<DeclarativeDebug>();
 #endif
+
+#ifdef KCL_sortfiltermodel
+    qmlRegisterType<QAbstractItemModel>();
+    qmlRegisterType<SortFilterModel>(uri, 1, 0, "SortFilterModel");
+#endif
 }
 
 void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
@@ -209,6 +222,11 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 #ifdef KCL_networkutils
     NetworkUtils *networkUtils = new NetworkUtils(engine);
     engine->rootContext()->setContextProperty("NetworkUtils", networkUtils);
+#endif
+
+#ifdef KCL_cookiejarinterface
+    CookieJarInterface *cookieJarInterface = new CookieJarInterface(engine);
+    engine->rootContext()->setContextProperty("CookieJar", cookieJarInterface);
 #endif
 
 #ifdef KCL_nativedialogs

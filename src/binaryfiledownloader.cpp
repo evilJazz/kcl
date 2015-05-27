@@ -47,12 +47,41 @@ BinaryFileDownloader::~BinaryFileDownloader()
 {
 }
 
-void BinaryFileDownloader::download(QString url)
+void BinaryFileDownloader::get(QString url)
 {
     QNetworkRequest request(QUrl::fromEncoded(url.toUtf8()));
-    //request.setRawHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:7.0.1) Gecko/20100101 Firefox/7.0.1");
+    setHeadersOnRequest(&request);
+
     QNetworkReply *reply = manager()->get(request);
     connect(reply, SIGNAL(finished()), this, SLOT(fileDownloaded()));
+}
+
+void BinaryFileDownloader::post(QString url, const QByteArray &rawData)
+{
+    QNetworkRequest request(QUrl::fromEncoded(url.toUtf8()));
+    setHeadersOnRequest(&request);
+
+    QNetworkReply *reply = manager()->post(request, rawData);
+    connect(reply, SIGNAL(finished()), this, SLOT(fileDownloaded()));
+}
+
+void BinaryFileDownloader::setHeadersOnRequest(QNetworkRequest *request)
+{
+    foreach (const QByteArray &key, requestHeaders_.keys())
+    {
+        QByteArray combinedValues = requestHeaders_.values(key).join(',');
+        request->setRawHeader(key, combinedValues);
+    }
+}
+
+void BinaryFileDownloader::setRequestHeader(const QByteArray &key, const QByteArray &value)
+{
+    requestHeaders_.insertMulti(key, value);
+}
+
+void BinaryFileDownloader::clearRequestHeaders()
+{
+    requestHeaders_.clear();
 }
 
 void BinaryFileDownloader::fileDownloaded()

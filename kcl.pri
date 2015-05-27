@@ -37,6 +37,7 @@ KCL_INC_PATH = $${PWD}/include
 
 isEmpty(kcl): kcl = \
     binaryfiledownloader \
+    cookiejarinterface \
     filescanner \
     filesystemutils \
     history \
@@ -64,7 +65,8 @@ isEmpty(kcl): kcl = \
     rawmousearea \
     datetimeutils \
     base64imageprovider \
-    updatelocker
+    updatelocker \
+    sortfiltermodel
 
 defineTest(kclAddModule) {
     message(KCL: Adding module $${1})
@@ -81,7 +83,8 @@ defineTest(kclConditionalAddModule) {
 }
 
 INCLUDEPATH += $$KCL_INC_PATH
-HEADERS     += $$KCL_INC_PATH/KCL/kcl_global.h
+HEADERS     += $$KCL_INC_PATH/KCL/kcl_global.h \
+    $$PWD/include/KCL/cookiejarinterface.h
 
 kclConditionalAddModule(filescanner)
 kclConditionalAddModule(filesystemutils)
@@ -102,6 +105,7 @@ kclConditionalAddModule(imageutils)
 kclConditionalAddModule(objectutils)
 kclConditionalAddModule(datetimeutils)
 kclConditionalAddModule(updatelocker)
+kclConditionalAddModule(sortfiltermodel)
 
 kcl_widgets {
     message("KCL: Configuring with Widgets support")
@@ -131,6 +135,7 @@ kcl_declarative {
     kclConditionalAddModule(sceneutils)
     kclConditionalAddModule(declarativedebug)
     kclConditionalAddModule(binaryfiledownloader)
+    kclConditionalAddModule(cookiejarinterface)
     kclConditionalAddModule(keyeventfilter)
     kclConditionalAddModule(base64imageprovider)
 
@@ -149,4 +154,3 @@ kcl_declarative {
         kcl_qtquick2: qmlPreprocessFolder($$KCL_SRC_PATH/qml, @QtQuick2, 2.0)
     }
 }
-

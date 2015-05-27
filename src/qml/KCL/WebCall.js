@@ -138,14 +138,19 @@ function get(url, params, callbackObject, useCache)
     webCall(url, params, "GET", callbackObject, useCache);
 }
 
-function getBinary(url, params, callbackObject)
+function getBinary(url, params, callbackObject, useCache)
 {
-    webCall(url, params, "GETBINARY", callbackObject, false);
+    webCall(url, params, "GETBINARY", callbackObject, useCache);
 }
 
 function post(url, params, callbackObject, useCache)
 {
     webCall(url, params, "POST", callbackObject, useCache);
+}
+
+function postBinary(url, params, callbackObject, useCache)
+{
+    webCall(url, params, "POSTBINARY", callbackObject, useCache);
 }
 
 function webCall(url, params, action, callbackObject, useCache)
@@ -196,15 +201,21 @@ function webCall(url, params, action, callbackObject, useCache)
 
     var ueParams = paramArray.join('&');
 
-    if (action === "GETBINARY")
+    if (action === "GETBINARY" || action === "POSTBINARY")
     {
-        var bfl = Qt.createQmlObject('import KCL 1.0; BinaryFileDownloader { autoDelete: true; }', app);
+        var bfl = Qt.createQmlObject('import KCL 1.0; BinaryFileDownloader { autoDelete: true; }',  Qt.hasOwnProperty("application") ? Qt.application : app);
 
         if (typeof(successCallbackFunction) !== "undefined")
             bfl.downloaded.connect(function(data)
             {
                 //if (debug) console.log("bfl: " + JSON.stringify(bfl));
-                successCallbackFunction(data);
+
+                if (typeof(useCache) !== "undefined" && useCache !== NoCache)
+                    insertIntoCache(url, params, action, data);
+
+                if (typeof(successCallbackFunction) !== "undefined")
+                    returnResponseToCallbackFunction(successCallbackFunction, bfl);
+
                 //bfl.destroy(); // not necessary because we are autoDeleting above...
             });
 
@@ -217,12 +228,25 @@ function webCall(url, params, action, callbackObject, useCache)
                 failureCallbackFunction(result);
             });
 
-        if (ueParams.length > 0)
-            callurl = url + '?' + ueParams;
-        else
+        if (action === "GETBINARY")
+        {
+            if (ueParams.length > 0)
+                callurl = url + '?' + ueParams;
+            else
+                callurl = url;
+
+            bfl.get(callurl);
+        }
+        else if (action === "POSTBINARY")
+        {
             callurl = url;
 
-        bfl.download(callurl);
+            bfl.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            bfl.setRequestHeader("Content-length", ueParams.length);
+            bfl.setRequestHeader("Connection", "close");
+
+            bfl.post(callurl, ueParams);
+        }
     }
     else
     {
@@ -299,9 +323,16 @@ function returnResponseToCallbackFunction(successCallbackFunction, xhr)
 {
     var data;
 
-    if (xhr.responseXML === null)
+    if ("responseXML" in xhr && xhr.responseXML !== null)
     {
-        data = xhr.responseText;
+        data = xhr.responseXML;
+    }
+    else
+    {
+        if ("responseText" in xhr)
+            data = xhr.responseText;
+        else
+            data = xhr.downloadedData;
 
         try
         {
@@ -312,8 +343,6 @@ function returnResponseToCallbackFunction(successCallbackFunction, xhr)
             if (debug) console.log(e.message)
         }
     }
-    else
-        data = xhr.responseXML;
 
     successCallbackFunction(data);
 }
