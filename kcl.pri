@@ -66,7 +66,8 @@ isEmpty(kcl): kcl = \
     datetimeutils \
     base64imageprovider \
     updatelocker \
-    sortfiltermodel
+    sortfiltermodel \
+    $$kclAdd
 
 defineTest(kclAddModule) {
     message(KCL: Adding module $${1})
@@ -83,8 +84,7 @@ defineTest(kclConditionalAddModule) {
 }
 
 INCLUDEPATH += $$KCL_INC_PATH
-HEADERS     += $$KCL_INC_PATH/KCL/kcl_global.h \
-    $$PWD/include/KCL/cookiejarinterface.h
+HEADERS     += $$KCL_INC_PATH/KCL/kcl_global.h
 
 kclConditionalAddModule(filescanner)
 kclConditionalAddModule(filesystemutils)
@@ -106,6 +106,7 @@ kclConditionalAddModule(objectutils)
 kclConditionalAddModule(datetimeutils)
 kclConditionalAddModule(updatelocker)
 kclConditionalAddModule(sortfiltermodel)
+kclConditionalAddModule(paranoidretrier)
 
 kcl_widgets {
     message("KCL: Configuring with Widgets support")
@@ -153,4 +154,8 @@ kcl_declarative {
         kcl_qtquick1: qmlPreprocessFolder($$KCL_SRC_PATH/qml, @QtQuick1, 1.0)
         kcl_qtquick2: qmlPreprocessFolder($$KCL_SRC_PATH/qml, @QtQuick2, 2.0)
     }
+}
+
+contains(kcl, paranoidretrier) {
+    message("KCL: Paranoid Retrier class enabled, make sure to enable C++X0/C++11 support in your compiler flags.")
 }
