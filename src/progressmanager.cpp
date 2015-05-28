@@ -217,36 +217,49 @@ void ProgressManager::beginActivity(const QString &activityName, int subSteps)
 void ProgressManager::setActivityBias(int subStep, qreal bias)
 {
     DASSERT(currentContext_ != NULL && currentContext_->isGroup(), "Start an activity group first before you can set bias on it...");
-    currentContext_->setBias(subStep, bias);
+
+    if (currentContext_)
+        currentContext_->setBias(subStep, bias);
 }
 
 void ProgressManager::updateActivity(const QString &progressText, int progressValue, int progressTotal)
 {
     DASSERT(currentContext_ != NULL, "Start an activity first before you can update it...");
-    currentContext_->setProgressText(progressText);
-    currentContext_->setProgressTotal(progressTotal);
-    currentContext_->setProgressValue(progressValue);
+
+    if (currentContext_)
+    {
+        currentContext_->setProgressText(progressText);
+        currentContext_->setProgressTotal(progressTotal);
+        currentContext_->setProgressValue(progressValue);
+    }
 }
 
 void ProgressManager::updateActivity(int progressValue, int progressTotal)
 {
     DASSERT(currentContext_ != NULL, "Start an activity first before you can update it...");
-    currentContext_->setProgressTotal(progressTotal);
-    currentContext_->setProgressValue(progressValue);
+
+    if (currentContext_)
+    {
+        currentContext_->setProgressTotal(progressTotal);
+        currentContext_->setProgressValue(progressValue);
+    }
 }
 
 void ProgressManager::endActivity()
 {
     DASSERT(currentContext_ != NULL, "Start an activity first before you can end it...");
 
-    if (currentContext_->parent_)
-        setCurrentContext(currentContext_->parent_->endActivity(currentContext_));
-    else
+    if (currentContext_)
     {
-        if (!currentContext_->isGroup())
-            currentContext_->setProgressValue(currentContext_->progressTotal());
+        if (currentContext_->parent_)
+            setCurrentContext(currentContext_->parent_->endActivity(currentContext_));
+        else
+        {
+            if (!currentContext_->isGroup())
+                currentContext_->setProgressValue(currentContext_->progressTotal());
 
-        setCurrentContext(NULL);
+            setCurrentContext(NULL);
+        }
     }
 
     if (currentContext_ == NULL)

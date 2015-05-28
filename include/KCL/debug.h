@@ -126,7 +126,7 @@ private:
 #define DMEMSTAT DOP(kaPrintMemStat())
 #define DBACKTRACE DOP(kaPrintBacktrace())
 
-#define DASSERT(cond, text) DOP((!(cond)) ? kaFatal(QString().sprintf("Assertion failed: %s, %s [in %s %s:%d]", #cond, text, D_FUNC_INFO, __FILE__, __LINE__)) : qt_noop())
+#define DASSERT(cond, text) DOP((!(cond)) ? kaDebug(QString().sprintf("Assertion failed: %s, %s [in %s %s:%d]", #cond, text, D_FUNC_INFO, __FILE__, __LINE__)) : qt_noop())
 
 #define WTF(...) kaFatal(QString().sprintf(__VA_ARGS__))
 
