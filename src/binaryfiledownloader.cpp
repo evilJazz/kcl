@@ -69,7 +69,16 @@ void BinaryFileDownloader::setHeadersOnRequest(QNetworkRequest *request)
 {
     foreach (const QByteArray &key, requestHeaders_.keys())
     {
-        QByteArray combinedValues = requestHeaders_.values(key).join(',');
+        QList<QByteArray> values = requestHeaders_.values(key);
+
+        QByteArray combinedValues;
+
+        foreach (const QByteArray &value, values)
+            combinedValues += value + ',';
+
+        if (combinedValues.length() > 0)
+            combinedValues.chop(1);
+
         request->setRawHeader(key, combinedValues);
     }
 }
