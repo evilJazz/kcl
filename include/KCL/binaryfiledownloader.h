@@ -32,6 +32,13 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 
+class RequestCapturedData
+{
+public:
+    QString method;
+    QByteArray rawData;
+};
+
 class KCL_EXPORT BinaryFileDownloader : public QObject
 {
     Q_OBJECT
@@ -75,6 +82,8 @@ private:
     bool autoDelete_;
 
     QNetworkAccessManager *manager();
+
+    QHash<QNetworkReply *, RequestCapturedData> requestData_;
 
     QMultiMap<QByteArray, QByteArray> requestHeaders_;
 

@@ -54,6 +54,11 @@ void BinaryFileDownloader::get(QString url)
 
     QNetworkReply *reply = manager()->get(request);
     connect(reply, SIGNAL(finished()), this, SLOT(fileDownloaded()));
+
+    RequestCapturedData data;
+    data.method = "GET";
+
+    requestData_.insert(reply, data);
 }
 
 void BinaryFileDownloader::post(QString url, const QByteArray &rawData)
@@ -63,6 +68,12 @@ void BinaryFileDownloader::post(QString url, const QByteArray &rawData)
 
     QNetworkReply *reply = manager()->post(request, rawData);
     connect(reply, SIGNAL(finished()), this, SLOT(fileDownloaded()));
+
+    RequestCapturedData data;
+    data.method = "POST";
+    data.rawData = rawData;
+
+    requestData_.insert(reply, data);
 }
 
 void BinaryFileDownloader::setHeadersOnRequest(QNetworkRequest *request)
@@ -99,6 +110,21 @@ void BinaryFileDownloader::fileDownloaded()
 
     if (reply)
     {
+        QString possibleRedirectUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toString();
+        if (!possibleRedirectUrl.isEmpty())
+        {
+            RequestCapturedData data = requestData_[reply];
+
+            if (data.method == "POST")
+                post(possibleRedirectUrl, data.rawData);
+            else
+                get(possibleRedirectUrl);
+
+            reply->deleteLater();
+
+            return;
+        }
+
         //qDebug("reply->url(): %s", (const char *)reply->url().toString().toUtf8());
         //qDebug("statuscode: %d", reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt());
         //qDebug("bytesAvailable: %d", reply->bytesAvailable());
@@ -115,6 +141,8 @@ void BinaryFileDownloader::fileDownloaded()
             downloadedData_ = reply->readAll();
             emit downloaded(downloadedData_);
         }
+
+        reply->deleteLater();
     }
     else
         emit error(-1, "Invalid reply received.");
