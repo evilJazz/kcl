@@ -1,27 +1,11 @@
 #include "KCL/cookiejarinterface.h"
 
-#if KCL_QTQUICK2
-#else
-#include <QNetworkAccessManager>
-#include <QNetworkCookie>
-#endif
-
-
-#if KCL_QTQUICK2
 CookieJarInterface::CookieJarInterface(QQmlEngine *engine) :
     QObject(engine),
     engine_(engine)
 {
 
 }
-#else
-CookieJarInterface::CookieJarInterface(QDeclarativeEngine *engine) :
-    QObject(engine),
-    engine_(engine)
-{
-
-}
-#endif
 
 CookieJarInterface::~CookieJarInterface()
 {
@@ -92,3 +76,61 @@ bool CookieJarInterface::setCookiesFromUrl(const QVariantList &cookieList, const
     else
         return false;
 }
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+
+bool CookieJarInterface::insertCookie(const QString &cookieString)
+{
+    QNetworkCookieJar *jar = cookieJar();
+    if (jar)
+    {
+        QList<QNetworkCookie> cookieList = QNetworkCookie::parseCookies(cookieString.toUtf8());
+
+        bool result = true;
+
+        foreach (const QNetworkCookie &cookie, cookieList)
+            result = result && jar->insertCookie(cookie);
+
+        return result;
+    }
+    else
+        return false;
+}
+
+bool CookieJarInterface::updateCookie(const QString &cookieString)
+{
+    QNetworkCookieJar *jar = cookieJar();
+    if (jar)
+    {
+        QList<QNetworkCookie> cookieList = QNetworkCookie::parseCookies(cookieString.toUtf8());
+
+        bool result = true;
+
+        foreach (const QNetworkCookie &cookie, cookieList)
+            result = result && jar->updateCookie(cookie);
+
+        return result;
+    }
+    else
+        return false;
+}
+
+bool CookieJarInterface::deleteCookie(const QString &cookieString)
+{
+    QNetworkCookieJar *jar = cookieJar();
+    if (jar)
+    {
+        QList<QNetworkCookie> cookieList = QNetworkCookie::parseCookies(cookieString.toUtf8());
+
+        bool result = true;
+
+        foreach (const QNetworkCookie &cookie, cookieList)
+            result = result && jar->deleteCookie(cookie);
+
+        return result;
+    }
+    else
+        return false;
+}
+
+#endif
