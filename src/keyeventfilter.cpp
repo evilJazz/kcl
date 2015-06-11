@@ -30,8 +30,8 @@
     #include <QApplication>
 #endif
 
-KeyEventFilter::KeyEventFilter(QObject *parent) :
-    QObject(parent)
+KeyEventFilter::KeyEventFilter(QObject *filteredObject) :
+    QObject(filteredObject)
 {
 }
 
@@ -90,6 +90,18 @@ bool KeyEventFilter::injectKeyReleased(int key, int modifiers, const QString &te
     if (qke.isAccepted())
         return true;
     return false;
+}
+
+bool KeyEventFilter::sendKeyPressedToFilteredObject(int key, int modifiers, const QString &text, bool autorep, ushort count)
+{
+    DeclarativeKeyEvent qke(QEvent::KeyPress, key, modifiers, text, autorep, count, false);
+    return qApp->sendEvent(parent(), qke.keyEvent());
+}
+
+bool KeyEventFilter::sendKeyReleasedToFilteredObject(int key, int modifiers, const QString &text, bool autorep, ushort count)
+{
+    DeclarativeKeyEvent qke(QEvent::KeyRelease, key, modifiers, text, autorep, count, false);
+    return qApp->sendEvent(parent(), qke.keyEvent());
 }
 
 bool KeyEventFilter::eventFilter(QObject *watched, QEvent *event)

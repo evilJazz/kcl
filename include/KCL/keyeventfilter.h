@@ -63,6 +63,8 @@ public:
     quint32 nativeVirtualKey() const { return event.nativeVirtualKey(); }
     quint32 nativeModifiers() const { return event.nativeModifiers(); }
 
+    QKeyEvent *keyEvent() { return &event; }
+
 private:
     QKeyEvent event;
     bool spontaneous_;
@@ -73,7 +75,7 @@ class KCL_EXPORT KeyEventFilter : public QObject
     Q_OBJECT
     Q_PROPERTY(int inputInterval READ inputInterval CONSTANT)
 public:
-    explicit KeyEventFilter(QObject *parent = 0);
+    explicit KeyEventFilter(QObject *filteredObject = 0);
     virtual ~KeyEventFilter();
     
     Q_INVOKABLE static int inputInterval();
@@ -83,6 +85,9 @@ public:
 
     Q_INVOKABLE bool injectKeyPressed(int key, int modifiers = 0, const QString &text = QString(), bool autorep = false, ushort count = 1);
     Q_INVOKABLE bool injectKeyReleased(int key, int modifiers = 0, const QString &text = QString(), bool autorep = false, ushort count = 1);
+
+    Q_INVOKABLE bool sendKeyPressedToFilteredObject(int key, int modifiers = 0, const QString &text = QString(), bool autorep = false, ushort count = 1);
+    Q_INVOKABLE bool sendKeyReleasedToFilteredObject(int key, int modifiers = 0, const QString &text = QString(), bool autorep = false, ushort count = 1);
 
 signals:
     void keyPressed(DeclarativeKeyEvent *event);
