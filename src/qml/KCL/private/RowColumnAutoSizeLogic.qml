@@ -13,6 +13,9 @@ QtObject {
     property real targetHeight: target ? target.height : 0
     onTargetHeightChanged: if (!isHorizontal) fullUpdate()
 
+    property real targetSpacing: target ? target.spacing : 0
+    onTargetSpacingChanged: fullUpdate()
+
     property list<Item> autoSizedChildren
 
     property int orientation: Qt.Vertical
