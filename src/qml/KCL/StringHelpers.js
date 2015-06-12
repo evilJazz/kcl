@@ -21,5 +21,5 @@ String.prototype.removeClasses = function(s)
 
 String.prototype.lineFeedsToBreaks = function(s)
 {
-    return this.replace(/\n/gi, "<br/>");
+    return this.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br/>$2');
 }
