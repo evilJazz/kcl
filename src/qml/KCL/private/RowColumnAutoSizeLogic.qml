@@ -8,10 +8,10 @@ QtObject {
     property Item target: null
 
     property real targetWidth: target ? target.width : 0
-    onTargetWidthChanged: if (isHorizontal) fullUpdate()
+    onTargetWidthChanged: fullUpdate()
 
     property real targetHeight: target ? target.height : 0
-    onTargetHeightChanged: if (!isHorizontal) fullUpdate()
+    onTargetHeightChanged: fullUpdate()
 
     property real targetSpacing: target ? target.spacing : 0
     onTargetSpacingChanged: fullUpdate()
