@@ -141,6 +141,11 @@ QDateTime FileSystemUtils::lastModified(const QString &path)
     return QFileInfo(path).lastModified();
 }
 
+QDateTime FileSystemUtils::created(const QString &path)
+{
+    return QFileInfo(path).created();
+}
+
 QString FileSystemUtils::findNextParent(const QString &path)
 {
     QString parent = path;
