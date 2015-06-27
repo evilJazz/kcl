@@ -142,4 +142,21 @@ bool CookieJarInterface::deleteCookie(const QString &cookieString)
         return false;
 }
 
+#else
+
+bool CookieJarInterface::insertCookie(const QString &cookieString)
+{
+    qWarning("CookieJarInterface::insertCookie not implemented on Qt 4");
+}
+
+bool CookieJarInterface::updateCookie(const QString &cookieString)
+{
+    qWarning("CookieJarInterface::updateCookie not implemented on Qt 4");
+}
+
+bool CookieJarInterface::deleteCookie(const QString &cookieString)
+{
+    qWarning("CookieJarInterface::deleteCookie not implemented on Qt 4");
+}
+
 #endif
