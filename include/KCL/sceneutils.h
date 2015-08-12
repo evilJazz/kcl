@@ -57,14 +57,14 @@ public:
     Q_INVOKABLE static void takeItemFromScene(QDeclarativeItem *item);
     Q_INVOKABLE static void reparentItem(QDeclarativeItem *item, QDeclarativeItem *newParent);
 
-    Q_INVOKABLE static QVariant mappedBoundingRect(QDeclarativeItem *targetItem, QDeclarativeItem *sourceItem, const QRect &rect = QRect());
+    Q_INVOKABLE static QVariant mappedBoundingRect(QGraphicsObject *targetItem, QGraphicsObject *sourceItem, const QRect &rect = QRect());
 
-    Q_INVOKABLE static QVariant takeImageFromScene(QDeclarativeItem *sceneItem);
+    Q_INVOKABLE static QVariant takeImageFromScene(QGraphicsObject *sceneItem);
 
-    Q_INVOKABLE static void forceUpdate(QDeclarativeItem *item);
+    Q_INVOKABLE static void forceUpdate(QGraphicsObject *item);
 
-    Q_INVOKABLE static void grabMouse(QDeclarativeItem *item);
-    Q_INVOKABLE static void ungrabMouse(QDeclarativeItem *item);
+    Q_INVOKABLE static void grabMouse(QGraphicsObject *item);
+    Q_INVOKABLE static void ungrabMouse(QGraphicsObject *item);
 #endif
 };
 

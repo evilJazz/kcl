@@ -180,6 +180,12 @@ void SceneUtils::ungrabMouse(QQuickItem *item)
     item->ungrabMouse();
 }
 
+QVariant SceneUtils::mappedBoundingRect(QQuickItem *targetItem, QQuickItem *sourceItem, const QRect &rect)
+{
+    QRectF sourceRect = rect.isNull() ? sourceItem->boundingRect() : rect;
+    return targetItem->mapRectFromItem(sourceItem, sourceRect);
+}
+
 #else
 
 QVariantList SceneUtils::getAllItemsInScene(QDeclarativeItem *item, qreal itemX, qreal itemY)
@@ -235,7 +241,7 @@ void SceneUtils::reparentItem(QDeclarativeItem *item, QDeclarativeItem *newParen
         item->setParentItem(newParent);
 }
 
-QVariant SceneUtils::takeImageFromScene(QDeclarativeItem *sceneItem)
+QVariant SceneUtils::takeImageFromScene(QGraphicsObject *sceneItem)
 {
     if (!sceneItem || !sceneItem->scene())
         return QImage();
@@ -255,25 +261,25 @@ QVariant SceneUtils::takeImageFromScene(QDeclarativeItem *sceneItem)
     return image;
 }
 
-void SceneUtils::forceUpdate(QDeclarativeItem *item)
+void SceneUtils::forceUpdate(QGraphicsObject *item)
 {
     item->update();
 }
 
-void SceneUtils::grabMouse(QDeclarativeItem *item)
+void SceneUtils::grabMouse(QGraphicsObject *item)
 {
     item->grabMouse();
 }
 
-void SceneUtils::ungrabMouse(QDeclarativeItem *item)
+void SceneUtils::ungrabMouse(QGraphicsObject *item)
 {
     item->ungrabMouse();
 }
 
-#endif
-
-QVariant SceneUtils::mappedBoundingRect(KCLDeclarativeItem *targetItem, KCLDeclarativeItem *sourceItem, const QRect &rect)
+QVariant SceneUtils::mappedBoundingRect(QGraphicsObject *targetItem, QGraphicsObject *sourceItem, const QRect &rect)
 {
     QRectF sourceRect = rect.isNull() ? sourceItem->boundingRect() : rect;
     return targetItem->mapRectFromItem(sourceItem, sourceRect);
 }
+
+#endif
