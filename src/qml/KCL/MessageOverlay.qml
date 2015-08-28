@@ -33,7 +33,10 @@ MouseEater {
     onDoneChanged:
     {
         if (done)
-            overlayRoot.close();
+        {
+            // Make sure that done signal is emitted before fadedOut signal no matter what fadeEnabled is set to.
+            DeferredExecution.invoke(overlayRoot.close);
+        }
     }
 
     property alias frame: frame
