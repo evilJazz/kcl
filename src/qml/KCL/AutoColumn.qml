@@ -14,6 +14,8 @@ Column {
     property alias blockUpdate: logic.blockUpdate
     property alias orientation: logic.orientation // READONLY!
 
+    property alias debug: logic.debug
+
     Component.onCompleted:
     {
         childrenChanged.connect(logic.updateNonAutoSizedChildren);

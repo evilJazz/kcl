@@ -85,16 +85,22 @@ QtObject {
             // Analyze and connect to signals...
 
             var itemVisible = item.visible && item.opacity > 0 && (isHorizontal ? item.height : item.width) > 0;
+            var itemSize = itemVisible ? (isHorizontal ? item.width : item.height) : 0;
 
             if (!isAutoSizedChild)
             {
-                //newNonAutoSizedChildren.push(item);
-                newVisibleNonAutoSizedChildrenSize += itemVisible ? (isHorizontal ? item.width : item.height) : 0;
+                newVisibleNonAutoSizedChildrenSize += Math.floor(itemSize);
 
                 if (isHorizontal)
                     item.widthChanged.connect(logic.fullUpdate);
                 else
                     item.heightChanged.connect(logic.fullUpdate);
+            }
+
+            if (debug)
+            {
+                var suffix = itemSize - Math.floor(itemSize) > 0 ? "floored to " + Math.floor(itemSize) + "px " : "";
+                console.log(item + ": " + itemSize + "px " + suffix + (isAutoSizedChild ? "autosized" : "") + " (visible: " + itemVisible + ")");
             }
 
             if (itemVisible)
@@ -104,14 +110,14 @@ QtObject {
             item.opacityChanged.connect(logic.fullUpdate);
         }
 
-        //nonAutoSizedChildren = newNonAutoSizedChildren;
-        newVisibleNonAutoSizedChildrenSize += (visibleCount - 1) * spacing;
+        var allSpacing = (visibleCount - 1) * spacing;
+        newVisibleNonAutoSizedChildrenSize += allSpacing;
         visibleNonAutoSizedChildrenSize = newVisibleNonAutoSizedChildrenSize;
 
         if (debug)
         {
+            console.log("allSpacing: " + allSpacing);
             console.log("autoSizedChildren.length: " + autoSizedChildren.length);
-            //console.log("nonAutoSizedChildren.length: " + nonAutoSizedChildren.length);
             console.log("visibleNonAutoSizedChildrenSize: " + visibleNonAutoSizedChildrenSize);
         }
     }
@@ -146,7 +152,7 @@ QtObject {
                 percentSizes[i] = percentage;
                 if (!item.visible) invisiblePercentage += percentage;
 
-                if (debug) console.log(item + ": " + percentSizes[i]);
+                if (debug) console.log(item + ": " + percentSizes[i] * 100 + "%");
             }
         }
         else
@@ -160,24 +166,32 @@ QtObject {
                 percentSizes[i] = unifiedPercentage;
                 if (!item.visible) invisiblePercentage += unifiedPercentage;
 
-                if (debug) console.log(item + ": " + percentSizes[i]);
+                if (debug) console.log(item + ": " + percentSizes[i] * 100 + "%");
             }
         }
 
         if (invisiblePercentage < 1)
         {
-            var remainingSize = (isHorizontal ? targetWidth : targetHeight) - visibleNonAutoSizedChildrenSize;
+            var targetSize = (isHorizontal ? targetWidth : targetHeight);
+            var remainingSize = targetSize - visibleNonAutoSizedChildrenSize;
             var scaleRatio = 1 / (1 - invisiblePercentage);
 
-            if (debug) console.log("remainingSize: " + remainingSize);
+            if (debug) console.log("targetSize: " + targetSize + " visibleNonAutoSizedChildrenSize: " + visibleNonAutoSizedChildrenSize + " remainingSize: " + remainingSize);
+
+            var usedSize = 0;
+            var calculatedSize = 0;
 
             for (i = 0; i < autoSizedChildren.length; ++i)
             {
                 item = autoSizedChildren[i];
+                calculatedSize = remainingSize * percentSizes[i] * scaleRatio;
+
                 if (isHorizontal)
-                    item.width = remainingSize * percentSizes[i] * scaleRatio;
+                    item.width = calculatedSize;
                 else
-                    item.height = remainingSize * percentSizes[i] * scaleRatio;
+                    item.height = calculatedSize;
+
+                usedSize += Math.floor(calculatedSize);
             }
         }
     }
