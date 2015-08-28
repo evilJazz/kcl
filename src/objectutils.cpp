@@ -9,7 +9,7 @@ ObjectUtils::ObjectUtils(QObject *parent) :
 
 QString ObjectUtils::className(QObject *target)
 {
-    return QString::fromLatin1(target->metaObject()->className());
+    return target ? QString::fromLatin1(target->metaObject()->className()) : QString::null;
 }
 
 bool ObjectUtils::sameClass(QObject *object1, QObject *object2)
@@ -24,7 +24,7 @@ bool ObjectUtils::sameReference(QObject *object1, QObject *object2)
 
 bool ObjectUtils::inherits(QObject *target, const QString &className)
 {
-    return target->inherits(className.toLatin1());
+    return target ? target->inherits(className.toLatin1()) : false;
 }
 
 QObject *ObjectUtils::objectify(const QVariant &object)
@@ -78,15 +78,18 @@ bool ObjectUtils::isNull(QObject *target)
 
 QObject *ObjectUtils::findObjectByObjectName(QObject *rootElement, const QString &objectName)
 {
-    if (rootElement->objectName() == objectName)
-        return rootElement;
-
-    const QObjectList list = rootElement->children();
-    for (QObjectList::const_iterator it = list.begin(); it != list.end(); it++)
+    if (rootElement)
     {
-        QObject *object = findObjectByObjectName((*it), objectName);
-        if (object)
-            return object;
+        if (rootElement->objectName() == objectName)
+            return rootElement;
+
+        const QObjectList list = rootElement->children();
+        for (QObjectList::const_iterator it = list.begin(); it != list.end(); it++)
+        {
+            QObject *object = findObjectByObjectName((*it), objectName);
+            if (object)
+                return object;
+        }
     }
 
     return NULL;
