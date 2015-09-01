@@ -160,6 +160,7 @@ void KCLPlugin::registerTypes(const char *uri)
 #endif
 
 #ifdef KCL_progressmanager
+    qmlRegisterType<ProgressManager>();
     qmlRegisterType<ProgressContext>();
 #endif
 

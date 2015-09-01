@@ -41,6 +41,7 @@
 
 FileScannerRunnable::FileScannerRunnable(FileScanner *fileScanner) :
     QObject(NULL),
+    QRunnable(),
     fileScanner_(fileScanner)
 {
 }

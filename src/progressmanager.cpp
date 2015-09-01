@@ -24,6 +24,7 @@
 #include "KCL/progressmanager.h"
 #include <QCoreApplication>
 
+#include <QThread>
 #include <QEventLoop>
 
 #include "KCL/debug.h"
@@ -200,37 +201,74 @@ ProgressManager &ProgressManager::singleton()
 
 void ProgressManager::beginActivity(const QString &activityName, int subSteps)
 {
-    ProgressContext *activity;
-
-    if (!topLevelContext_ || !currentContext_)
+    if (QThread::currentThread() != this->thread())
     {
-        activity = new ProgressContext(NULL, activityName, subSteps);
-        contexts_.append(activity);
-        setTopLevelContext(activity);
+        QMetaObject::invokeMethod(
+                this, "beginActivity",
+                Qt::BlockingQueuedConnection,
+                Q_ARG(const QString &, activityName),
+                Q_ARG(int, subSteps)
+        );
     }
     else
-        activity = currentContext_->beginActivity(activityName, subSteps);
+    {
+        ProgressContext *activity;
 
-    setCurrentContext(activity);
+        if (!topLevelContext_ || !currentContext_)
+        {
+            activity = new ProgressContext(NULL, activityName, subSteps);
+            contexts_.append(activity);
+            setTopLevelContext(activity);
+        }
+        else
+            activity = currentContext_->beginActivity(activityName, subSteps);
+
+        setCurrentContext(activity);
+    }
 }
 
 void ProgressManager::setActivityBias(int subStep, qreal bias)
 {
     DASSERT(currentContext_ != NULL && currentContext_->isGroup(), "Start an activity group first before you can set bias on it...");
 
-    if (currentContext_)
-        currentContext_->setBias(subStep, bias);
+    if (QThread::currentThread() != this->thread())
+    {
+        QMetaObject::invokeMethod(
+            this, "setActivityBias",
+            Qt::BlockingQueuedConnection,
+            Q_ARG(int, subStep),
+            Q_ARG(qreal, bias)
+        );
+    }
+    else
+    {
+        if (currentContext_)
+            currentContext_->setBias(subStep, bias);
+    }
 }
 
 void ProgressManager::updateActivity(const QString &progressText, int progressValue, int progressTotal)
 {
     DASSERT(currentContext_ != NULL, "Start an activity first before you can update it...");
 
-    if (currentContext_)
+    if (QThread::currentThread() != this->thread())
     {
-        currentContext_->setProgressText(progressText);
-        currentContext_->setProgressTotal(progressTotal);
-        currentContext_->setProgressValue(progressValue);
+        QMetaObject::invokeMethod(
+            this, "updateActivity",
+            Qt::BlockingQueuedConnection,
+            Q_ARG(const QString &, progressText),
+            Q_ARG(int, progressValue),
+            Q_ARG(int, progressTotal)
+        );
+    }
+    else
+    {
+        if (currentContext_)
+        {
+            currentContext_->setProgressText(progressText);
+            currentContext_->setProgressTotal(progressTotal);
+            currentContext_->setProgressValue(progressValue);
+        }
     }
 }
 
@@ -238,10 +276,22 @@ void ProgressManager::updateActivity(int progressValue, int progressTotal)
 {
     DASSERT(currentContext_ != NULL, "Start an activity first before you can update it...");
 
-    if (currentContext_)
+    if (QThread::currentThread() != this->thread())
     {
-        currentContext_->setProgressTotal(progressTotal);
-        currentContext_->setProgressValue(progressValue);
+        QMetaObject::invokeMethod(
+            this, "updateActivity",
+            Qt::BlockingQueuedConnection,
+            Q_ARG(int, progressValue),
+            Q_ARG(int, progressTotal)
+        );
+    }
+    else
+    {
+        if (currentContext_)
+        {
+            currentContext_->setProgressTotal(progressTotal);
+            currentContext_->setProgressValue(progressValue);
+        }
     }
 }
 
@@ -249,23 +299,33 @@ void ProgressManager::endActivity()
 {
     DASSERT(currentContext_ != NULL, "Start an activity first before you can end it...");
 
-    if (currentContext_)
+    if (QThread::currentThread() != this->thread())
     {
-        if (currentContext_->parent_)
-            setCurrentContext(currentContext_->parent_->endActivity(currentContext_));
-        else
-        {
-            if (!currentContext_->isGroup())
-                currentContext_->setProgressValue(currentContext_->progressTotal());
-
-            setCurrentContext(NULL);
-        }
+        QMetaObject::invokeMethod(
+            this, "endActivity",
+            Qt::BlockingQueuedConnection
+        );
     }
-
-    if (currentContext_ == NULL)
+    else
     {
-        setTopLevelContext(NULL);
-        // TODO: EMIT DONE!
+        if (currentContext_)
+        {
+            if (currentContext_->parent_)
+                setCurrentContext(currentContext_->parent_->endActivity(currentContext_));
+            else
+            {
+                if (!currentContext_->isGroup())
+                    currentContext_->setProgressValue(currentContext_->progressTotal());
+
+                setCurrentContext(NULL);
+            }
+        }
+
+        if (currentContext_ == NULL)
+        {
+            setTopLevelContext(NULL);
+            // TODO: EMIT DONE!
+        }
     }
 }
 
