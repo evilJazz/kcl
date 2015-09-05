@@ -40,7 +40,8 @@ ProgressContext::ProgressContext(ProgressContext *parent, const QString &activit
     expectedSubSteps_(countSubSteps),
     progressText_(""),
     progressValue_(0),
-    progressTotal_(1)
+    progressTotal_(1),
+    cancelled_(false)
 {
     for (int i = 0; i < countSubSteps; ++i)
         biases_.append(1); // all items are equal by default.
@@ -82,32 +83,107 @@ bool ProgressContext::isGroup() const
     return expectedSubSteps_ > 0;
 }
 
+void ProgressContext::setProgressIsAbsolute(bool value)
+{
+    if (QThread::currentThread() != this->thread())
+    {
+        QMetaObject::invokeMethod(
+            this, "setProgressIsAbsolute",
+            Qt::BlockingQueuedConnection,
+            Q_ARG(bool, value)
+        );
+    }
+    else
+    {
+        if (value != progressIsAbsolute_)
+        {
+            progressIsAbsolute_ = value;
+            emit progressIsAbsoluteChanged();
+        }
+    }
+}
+
 void ProgressContext::setProgressText(const QString &text)
 {
-    if (text != progressText_)
+    if (QThread::currentThread() != this->thread())
     {
-        progressText_ = text;
-        emit progressTextChanged();
+        QMetaObject::invokeMethod(
+            this, "setProgressText",
+            Qt::BlockingQueuedConnection,
+            Q_ARG(const QString &, text)
+        );
+    }
+    else
+    {
+        if (text != progressText_)
+        {
+            progressText_ = text;
+            emit progressTextChanged();
+        }
     }
 }
 
 void ProgressContext::setProgressValue(int value)
 {
     DASSERT(!isGroup(), "Can not change progress value for a activity group.");
-    if (value != progressValue_)
+
+    if (QThread::currentThread() != this->thread())
     {
-        progressValue_ = value;
-        emit progressValueChanged();
+        QMetaObject::invokeMethod(
+            this, "setProgressValue",
+            Qt::BlockingQueuedConnection,
+            Q_ARG(int, value)
+        );
+    }
+    else
+    {
+        if (value != progressValue_)
+        {
+            progressValue_ = value;
+            emit progressValueChanged();
+        }
     }
 }
 
 void ProgressContext::setProgressTotal(int total)
 {
     DASSERT(!isGroup(), "Can not change progress total for a activity group.");
-    if (total != progressTotal_)
+
+    if (QThread::currentThread() != this->thread())
     {
-        progressTotal_ = total;
-        emit progressTotalChanged();
+        QMetaObject::invokeMethod(
+            this, "setProgressTotal",
+            Qt::BlockingQueuedConnection,
+            Q_ARG(int, total)
+        );
+    }
+    else
+    {
+        if (total != progressTotal_)
+        {
+            progressTotal_ = total;
+            emit progressTotalChanged();
+        }
+    }
+}
+
+void ProgressContext::setData(const QVariant &data)
+{
+    if (QThread::currentThread() != this->thread())
+    {
+        QMetaObject::invokeMethod(
+            this, "setData",
+            Qt::BlockingQueuedConnection,
+            Q_ARG(const QVariant &, data)
+        );
+    }
+    else
+    {
+        if (data != data_)
+        {
+            data_ = data;
+            emit dataChanged();
+        }
     }
 }
 
@@ -116,12 +192,24 @@ void ProgressContext::setBias(int subStep, float bias)
     DASSERT(subSteps_.count() == 0, "Do not change bias in a group once activity in it has started.");
     DASSERT(subStep > -1 && subStep < biases_.count(), "Bias index does not exist for this activity.");
 
-    if (subStep > -1 && subStep < biases_.count())
+    if (QThread::currentThread() != this->thread())
     {
-        if (bias != biases_.at(subStep))
+        QMetaObject::invokeMethod(
+            this, "setBias",
+            Qt::BlockingQueuedConnection,
+            Q_ARG(int, subStep),
+            Q_ARG(float, bias)
+        );
+    }
+    else
+    {
+        if (subStep > -1 && subStep < biases_.count())
         {
-            biases_[subStep] = bias;
-            emit progressPercentageChanged();
+            if (bias != biases_.at(subStep))
+            {
+                biases_[subStep] = bias;
+                emit progressPercentageChanged();
+            }
         }
     }
 }
@@ -129,6 +217,25 @@ void ProgressContext::setBias(int subStep, float bias)
 qreal ProgressContext::bias(int subStep)
 {
     return biases_.at(subStep);
+}
+
+void ProgressContext::cancel()
+{
+    if (QThread::currentThread() != this->thread())
+    {
+        QMetaObject::invokeMethod(
+            this, "cancel",
+            Qt::BlockingQueuedConnection
+        );
+    }
+    else
+    {
+        if (!cancelled_)
+        {
+            cancelled_ = true;
+            emit cancelledChanged();
+        }
+    }
 }
 
 void ProgressContext::dumpActivities(int indentLevel)
@@ -247,7 +354,7 @@ void ProgressManager::setActivityBias(int subStep, qreal bias)
     }
 }
 
-void ProgressManager::updateActivity(const QString &progressText, int progressValue, int progressTotal)
+void ProgressManager::updateActivity(const QString &progressText, int progressValue, int progressTotal, bool isAbsolute)
 {
     DASSERT(currentContext_ != NULL, "Start an activity first before you can update it...");
 
@@ -258,13 +365,15 @@ void ProgressManager::updateActivity(const QString &progressText, int progressVa
             Qt::BlockingQueuedConnection,
             Q_ARG(const QString &, progressText),
             Q_ARG(int, progressValue),
-            Q_ARG(int, progressTotal)
+            Q_ARG(int, progressTotal),
+            Q_ARG(bool, isAbsolute)
         );
     }
     else
     {
         if (currentContext_)
         {
+            currentContext_->setProgressIsAbsolute(isAbsolute);
             currentContext_->setProgressText(progressText);
             currentContext_->setProgressTotal(progressTotal);
             currentContext_->setProgressValue(progressValue);
@@ -272,7 +381,7 @@ void ProgressManager::updateActivity(const QString &progressText, int progressVa
     }
 }
 
-void ProgressManager::updateActivity(int progressValue, int progressTotal)
+void ProgressManager::updateActivity(int progressValue, int progressTotal, bool isAbsolute)
 {
     DASSERT(currentContext_ != NULL, "Start an activity first before you can update it...");
 
@@ -282,13 +391,15 @@ void ProgressManager::updateActivity(int progressValue, int progressTotal)
             this, "updateActivity",
             Qt::BlockingQueuedConnection,
             Q_ARG(int, progressValue),
-            Q_ARG(int, progressTotal)
+            Q_ARG(int, progressTotal),
+            Q_ARG(bool, isAbsolute)
         );
     }
     else
     {
         if (currentContext_)
         {
+            currentContext_->setProgressIsAbsolute(isAbsolute);
             currentContext_->setProgressTotal(progressTotal);
             currentContext_->setProgressValue(progressValue);
         }

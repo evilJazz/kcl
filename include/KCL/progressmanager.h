@@ -27,6 +27,7 @@
 #include "KCL/kcl_global.h"
 
 #include <QObject>
+#include <QVariant>
 
 class ProgressManager;
 class ProgressContext;
@@ -38,9 +39,12 @@ class KCL_EXPORT ProgressContext : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString progressText READ progressText WRITE setProgressText NOTIFY progressTextChanged)
+    Q_PROPERTY(bool progressIsAbsolute READ progressIsAbsolute WRITE setProgressIsAbsolute NOTIFY progressIsAbsoluteChanged)
     Q_PROPERTY(int progressValue READ progressValue WRITE setProgressValue NOTIFY progressValueChanged)
     Q_PROPERTY(int progressTotal READ progressTotal WRITE setProgressTotal NOTIFY progressTotalChanged)
-    Q_PROPERTY(qreal progressPercentage READ progressPercentage() NOTIFY progressPercentageChanged)
+    Q_PROPERTY(qreal progressPercentage READ progressPercentage NOTIFY progressPercentageChanged)
+    Q_PROPERTY(QVariant data READ data WRITE setData NOTIFY dataChanged)
+    Q_PROPERTY(bool cancelled READ cancelled NOTIFY cancelledChanged)
     Q_PROPERTY(QString activityName READ activityName CONSTANT)
 public:
     explicit ProgressContext(ProgressContext *parent, const QString &activityName, int countSubSteps = 0);
@@ -51,26 +55,34 @@ public:
     qreal progressPercentage() const;
     bool isGroup() const;
 
-    void setProgressText(const QString &text);
-    void setProgressValue(int value);
-    void setProgressTotal(int total);
+    Q_INVOKABLE void setProgressIsAbsolute(bool value);
+    Q_INVOKABLE void setProgressText(const QString &text);
+    Q_INVOKABLE void setProgressValue(int value);
+    Q_INVOKABLE void setProgressTotal(int total);
+    Q_INVOKABLE void setData(const QVariant &data);
 
+    bool progressIsAbsolute() const { return progressIsAbsolute_; }
     const QString &progressText() const { return progressText_; }
     int progressValue() const { return progressValue_; }
     int progressTotal() const { return progressTotal_; }
+    QVariant data() const { return data_; }
 
-    void setBias(int subStep, float bias);
+    Q_INVOKABLE void setBias(int subStep, float bias);
     qreal bias(int subStep);
 
-    bool cancelled() { return false; } // TODO
+    bool cancelled() const { return cancelled_; }
+    Q_INVOKABLE void cancel();
 
     void dumpActivities(int indentLevel = 0);
 
 signals:
+    void progressIsAbsoluteChanged();
     void progressTextChanged();
     void progressValueChanged();
     void progressTotalChanged();
     void progressPercentageChanged();
+    void dataChanged();
+    void cancelledChanged();
 
 protected:
     friend class ProgressManager;
@@ -86,9 +98,13 @@ private:
     ProgressContext *parent_;
     int expectedSubSteps_;
 
+    bool progressIsAbsolute_;
     QString progressText_;
     int progressValue_;
     int progressTotal_;
+    QVariant data_;
+
+    bool cancelled_;
 };
 
 class KCL_EXPORT ProgressManager : public QObject
@@ -107,8 +123,8 @@ public:
     Q_INVOKABLE void beginActivity(const QString &activityName, int subSteps = 0);
 
     Q_INVOKABLE void setActivityBias(int subStep, qreal bias);
-    Q_INVOKABLE void updateActivity(const QString &progressText, int progressValue, int progressTotal);
-    Q_INVOKABLE void updateActivity(int progressValue, int progressTotal);
+    Q_INVOKABLE void updateActivity(const QString &progressText, int progressValue, int progressTotal, bool isAbsolute = false);
+    Q_INVOKABLE void updateActivity(int progressValue, int progressTotal, bool isAbsolute = false);
 
     Q_INVOKABLE void endActivity();
 
