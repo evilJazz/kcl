@@ -37,6 +37,26 @@ void Task::postExecute()
 {
 }
 
+/* InterruptableTask */
+
+InterruptableTask::InterruptableTask() :
+    Task()
+{
+}
+
+InterruptableTask::~InterruptableTask()
+{
+}
+
+void InterruptableTask::requestStop()
+{
+    stopped_ = true;
+}
+
+bool InterruptableTask::stopRequested() const
+{
+    return stopped_;
+}
 
 /* EventLoopTask */
 

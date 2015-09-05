@@ -32,6 +32,19 @@ private:
     virtual void run();
 };
 
+class KCL_EXPORT InterruptableTask : public Task
+{
+public:
+    InterruptableTask();
+    virtual ~InterruptableTask();
+
+    void requestStop();
+    bool stopRequested() const;
+
+private:
+    bool stopped_;
+};
+
 class KCL_EXPORT EventLoopTask : public Task
 {
     Q_OBJECT
