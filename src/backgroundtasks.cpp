@@ -40,7 +40,8 @@ void Task::postExecute()
 /* InterruptableTask */
 
 InterruptableTask::InterruptableTask() :
-    Task()
+    Task(),
+    stopped_(false)
 {
 }
 
