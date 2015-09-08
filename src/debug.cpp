@@ -28,6 +28,8 @@
 #include <QMutex>
 #include <QCoreApplication>
 
+#include <QCoreApplication>
+
 #include <stdio.h>
 #include <sys/types.h>
 
@@ -135,6 +137,11 @@ void kaDebugExitMethod(const char *fileName, int line, const char *functionSigna
 
 void kaDebug(const QString &msg)
 {
+    if (!qApp)
+    {
+        qWarning("ALARM! Qt application is not running!!!");
+    }
+
     if (diagnosticOutputEnabled_)
     {
         QMutexLocker l(getMutex());
@@ -218,7 +225,7 @@ KaDebugGuard::KaDebugGuard(const char *fileName, int line, const char *functionS
     if (!diagnosticOutputEnabled_)
         silence_ = true;
 
-    if (timed)
+    if (qApp && timed)
     {
         timer_ = new QElapsedTimer();
         timer_->start();
