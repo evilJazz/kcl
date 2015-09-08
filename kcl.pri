@@ -67,6 +67,7 @@ isEmpty(kcl): kcl = \
     base64imageprovider \
     updatelocker \
     sortfiltermodel \
+    singletons \
     $$kclAdd
 
 defineTest(kclAddModule) {
@@ -107,6 +108,7 @@ kclConditionalAddModule(datetimeutils)
 kclConditionalAddModule(updatelocker)
 kclConditionalAddModule(sortfiltermodel)
 kclConditionalAddModule(paranoidretrier)
+kclConditionalAddModule(singletons)
 
 kcl_widgets {
     message("KCL: Configuring with Widgets support")
