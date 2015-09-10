@@ -1,12 +1,14 @@
 #ifndef SINGLETONS_H
 #define SINGLETONS_H
 
+#include "kcl_global.h"
+
 #include <QList>
 #include <QGlobalStatic>
 
 typedef void * (*SingletonInitializerFunc)();
 
-class SingletonRegistry
+class KCL_EXPORT SingletonRegistry
 {
 public:
     static SingletonRegistry &instance();
