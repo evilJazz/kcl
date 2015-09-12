@@ -26,15 +26,7 @@
 #endif
 #include "KCL/debug.h"
 
-static TaskProcessingController *instance = NULL;
-
-TaskProcessingController &tpc()
-{
-    if (!instance)
-        instance = new TaskProcessingController();
-
-    return *instance;
-}
+Q_GLOBAL_STATIC(TaskProcessingController, tpc)
 
 class RenderTask : public Task
 {
@@ -173,7 +165,7 @@ void ImageRenderSurface::updateSurface()
 
     task_ = rt;
 
-    tpc().addTask(task_);
+    tpc()->addTask(task_);
 }
 
 void ImageRenderSurface::removeTask()
@@ -182,8 +174,8 @@ void ImageRenderSurface::removeTask()
     {
         static_cast<RenderTask *>(task_)->surface = NULL;
 
-        if (tpc().isTaskEnqueued(task_))
-            tpc().removeTask(task_);
+        if (tpc()->isTaskEnqueued(task_))
+            tpc()->removeTask(task_);
 
         task_ = NULL;
     }
