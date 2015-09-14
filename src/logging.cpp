@@ -155,7 +155,7 @@ void Logging::customMessageHandler(QtMsgType type, const char *msg)
 
     switch (type)
     {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
     case QtInfoMsg:
 #endif
     case QtDebugMsg:
