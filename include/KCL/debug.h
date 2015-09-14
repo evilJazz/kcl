@@ -121,7 +121,7 @@ private:
 
 #define DTIMERINIT(timername) DOP(QElapsedTimer timername; timername.start())
 #define DTIMERSTART(timername) DOP(timername.start())
-#define DTIMERPRINT(timername, description) DOP(kaDebug(QString().sprintf("[Timing] %-30s: %5d ms", description, timername.elapsed())))
+#define DTIMERPRINT(timername, description) DOP(kaDebug(QString().sprintf("[Timing] %-30s: %5lld ms", description, timername.elapsed())))
 
 #define DMEMSTAT DOP(kaPrintMemStat())
 #define DBACKTRACE DOP(kaPrintBacktrace())

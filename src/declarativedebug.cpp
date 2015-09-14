@@ -26,8 +26,8 @@ void DeclarativeDebug::setOutputEnabled(bool enabled)
 
 DeclarativeDebug::DeclarativeDebug(QDeclarativeEngine *engine) :
     QObject(engine),
-    engine_(engine),
-    outputEnabled_(true)
+    outputEnabled_(true),
+    engine_(engine)
 {
 #ifndef KCL_QTQUICK2
     scriptEngine_ = QDeclarativeDebugHelper::getScriptEngine(engine_);

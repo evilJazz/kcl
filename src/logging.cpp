@@ -155,6 +155,9 @@ void Logging::customMessageHandler(QtMsgType type, const char *msg)
 
     switch (type)
     {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    case QtInfoMsg:
+#endif
     case QtDebugMsg:
 #ifdef KCL_WIDGETS
         if (logWindow_)

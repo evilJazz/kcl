@@ -242,12 +242,12 @@ KaDebugGuard::~KaDebugGuard()
 {
     if (timer_)
     {
-        int elapsed = timer_->elapsed();
+        qint64 elapsed = timer_->elapsed();
 
         if (profile_)
             kaProfileAddRecord(string_, elapsed);
 
-        string_ += QString().sprintf(" - [Timing] %5d ms", elapsed);
+        string_ += QString().sprintf(" - [Timing] %5lld ms", elapsed);
         delete timer_;
         timer_ = NULL;
     }
