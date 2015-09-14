@@ -6,6 +6,11 @@ Action {
     property QtObject target: null
 
     property bool targetValid: target !== null
+    onTargetValidChanged:
+    {
+        if (targetValid)
+            bidiChecked.copyLeftToRight();
+    }
 
     enabled: targetValid ? target.enabled : false
     visible: targetValid ? target.visible : false
@@ -14,7 +19,16 @@ Action {
     tooltip: targetValid ? target.tooltip : ""
     shortcut: targetValid ? target.shortcut : ""
     iconSource: targetValid ? target.iconSource : ""
-    checked: targetValid ? target.checked : false
+
+    BidirectionalBinding {
+        id: bidiChecked
+        enabled: forwarder.targetValid
+        leftTarget: target
+        leftPropertyName: "checked"
+        rightTarget: forwarder
+        rightPropertyName: "checked"
+    }
+
     checkable: targetValid ? target.checkable : false
 
     widthHint: targetValid ? target.widthHint : 0
