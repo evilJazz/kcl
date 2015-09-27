@@ -106,19 +106,30 @@ bool KeyEventFilter::sendKeyReleasedToFilteredObject(int key, int modifiers, con
 
 bool KeyEventFilter::eventFilter(QObject *watched, QEvent *event)
 {
-    if (event->type() == QEvent::KeyPress)
+    if (watched == parent())
     {
-        DeclarativeKeyEvent qke(*static_cast<QKeyEvent *>(event));
-        emit keyPressed(&qke);
-        if (qke.isAccepted())
-            return true;
-    }
-    else if (event->type() == QEvent::KeyRelease)
-    {
-        DeclarativeKeyEvent qke(*static_cast<QKeyEvent *>(event));
-        emit keyReleased(&qke);
-        if (qke.isAccepted())
-            return true;
+        switch (event->type())
+        {
+            case QEvent::KeyPress:
+            {
+                DeclarativeKeyEvent qke(*static_cast<QKeyEvent *>(event));
+                emit keyPressed(&qke);
+                if (qke.isAccepted())
+                    return true;
+                break;
+            }
+            case QEvent::KeyRelease:
+            {
+                DeclarativeKeyEvent qke(*static_cast<QKeyEvent *>(event));
+                emit keyReleased(&qke);
+                if (qke.isAccepted())
+                    return true;
+                break;
+            }
+            default:
+            {
+            }
+        }
     }
 
     return QObject::eventFilter(watched, event);
