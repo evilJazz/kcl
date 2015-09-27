@@ -97,7 +97,12 @@ int showMarkerAfter()
 
 QString kaFormatFunctionSignature(const char *fileName, int line, const char *functionSignature, const QString &text)
 {
-    QString result = QString().sprintf("[%s:%d] : %s", fileName, line, functionSignature);
+    QByteArray fileNameBA(fileName);
+    int lastSlash = fileNameBA.lastIndexOf('/');
+    if (lastSlash > -1)
+        fileNameBA = fileNameBA.mid(lastSlash + 1);
+
+    QString result = QString().sprintf("[%s:%d] : %s", fileNameBA.constData(), line, functionSignature);
 
     if (!text.isEmpty())
         result += " : " + text;
