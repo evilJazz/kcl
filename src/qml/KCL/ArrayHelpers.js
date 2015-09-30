@@ -10,6 +10,10 @@ Array.prototype.unique = function() {
     return a;
 }
 
+Array.prototype.clone = function() {
+    return this.slice(0);
+}
+
 Array.prototype.remove = function(from, to) {
     var rest = this.slice((to || from) + 1 || this.length);
     this.length = from < 0 ? this.length + from : from;
