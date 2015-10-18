@@ -25,7 +25,7 @@ signals:
     void onlineStateChanged();
 
 private slots:
-    void deferredInitializeNetwork();
+    void initializeNetwork();
     void networkConfigurationManagerDone(QNetworkConfigurationManager *result);
     void deferredUpdateNetworkConfigurations();
     void handleNetworkUpdateCompleted();
@@ -36,6 +36,8 @@ private:
 
     void newNetworkSession();
     void connectToNetworkConfigurationManager();
+
+    void dumpNetworkConfigurations();
 };
 
 #endif // NETWORKUTILS_H

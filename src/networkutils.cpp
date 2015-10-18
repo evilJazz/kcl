@@ -40,8 +40,7 @@ NetworkUtils::NetworkUtils(QObject *parent) :
     PERFDATA_STARTDETAIL(cStartUp, "QNetworkConfigurationManager", "runtime");
 
 #ifndef Q_OS_SYMBIAN
-    network_ = new QNetworkConfigurationManager(this);
-    connectToNetworkConfigurationManager();
+    initializeNetwork();
 #else
     NetworkConfigurationRunnable *runnable = new NetworkConfigurationRunnable();
     connect(runnable, SIGNAL(done(QNetworkConfigurationManager*)), this, SLOT(networkConfigurationManagerDone(QNetworkConfigurationManager*)));
@@ -51,12 +50,11 @@ NetworkUtils::NetworkUtils(QObject *parent) :
     PERFDATA_STOPDETAIL(cStartUp, "QNetworkConfigurationManager", "runtime");
 }
 
-void NetworkUtils::deferredInitializeNetwork()
+void NetworkUtils::initializeNetwork()
 {
     DGUARDMETHODTIMED;
     network_ = new QNetworkConfigurationManager(this);
     connectToNetworkConfigurationManager();
-    QTimer::singleShot(2000, this, SLOT(deferredUpdateNetworkConfigurations()));
 }
 
 void NetworkUtils::networkConfigurationManagerDone(QNetworkConfigurationManager *result)
@@ -64,15 +62,29 @@ void NetworkUtils::networkConfigurationManagerDone(QNetworkConfigurationManager 
     DGUARDMETHODTIMED;
     network_ = result;
     connectToNetworkConfigurationManager();
-    QTimer::singleShot(2000, this, SLOT(deferredUpdateNetworkConfigurations()));
+}
+
+void NetworkUtils::dumpNetworkConfigurations()
+{
+    DGUARDMETHODTIMED;
+    if (network_)
+    {
+        DPRINTF("Count of all network configurations: %d", network_->allConfigurations().count());
+        DPRINTF("Count of active network configurations: %d", network_->allConfigurations(QNetworkConfiguration::Active).count());
+    }
 }
 
 void NetworkUtils::connectToNetworkConfigurationManager()
 {
+    DGUARDMETHODTIMED;
     if (network_)
     {
+        DOP(dumpNetworkConfigurations());
+
         connect(network_, SIGNAL(onlineStateChanged(bool)), this, SIGNAL(onlineStateChanged()));
         connect(network_, SIGNAL(updateCompleted()), this, SLOT(handleNetworkUpdateCompleted()));
+
+        QTimer::singleShot(2000, this, SLOT(deferredUpdateNetworkConfigurations()));
     }
 }
 
@@ -80,11 +92,16 @@ void NetworkUtils::deferredUpdateNetworkConfigurations()
 {
     DGUARDMETHODTIMED;
     if (network_)
+    {
         network_->updateConfigurations();
+        DOP(dumpNetworkConfigurations());
+    }
 }
 
 void NetworkUtils::handleNetworkUpdateCompleted()
 {
+    DGUARDMETHODTIMED;
+    DOP(dumpNetworkConfigurations());
     newNetworkSession();
     emit onlineStateChanged();
 }
