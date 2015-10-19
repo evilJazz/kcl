@@ -61,9 +61,10 @@ SettingsGroup::SettingsGroup(QObject *parent) :
     autoLoad_(true),
     saveDefaults_(true)
 {
-    autoSaveTimer_.setInterval(1000);
-    autoSaveTimer_.setSingleShot(true);
-    connect(&autoSaveTimer_, SIGNAL(timeout()), this, SLOT(save()));
+    autoSaveTimer_ = new QTimer(this);
+    autoSaveTimer_->setInterval(1000);
+    autoSaveTimer_->setSingleShot(true);
+    connect(autoSaveTimer_, SIGNAL(timeout()), this, SLOT(save()));
 }
 
 SettingsGroup::~SettingsGroup()
@@ -108,7 +109,7 @@ void SettingsGroup::connectToNotifySignals()
 void SettingsGroup::handlePropertyChanged()
 {
     if (autoSave_)
-        autoSaveTimer_.start();
+        autoSaveTimer_->start();
 }
 
 bool SettingsGroup::shallSkipProperty(const QString &propName)

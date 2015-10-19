@@ -130,7 +130,7 @@ private:
     bool saveDefaults_;
     QVariantMap defaults_;
 
-    QTimer autoSaveTimer_;
+    QTimer *autoSaveTimer_;
 
     QList<SettingsGroup *> groups_;
 
