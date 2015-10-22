@@ -46,6 +46,9 @@ KCL_EXPORT bool diagnosticOutputEnabled();
 KCL_EXPORT void setShowMarkerAfter(int seconds);
 KCL_EXPORT int showMarkerAfter();
 
+KCL_EXPORT void setTimestampsEnabled(bool value);
+KCL_EXPORT bool timestampsEnabled();
+
 typedef void (*KaMessageHandlerFunc)(const QString &msg);
 KCL_EXPORT void kaInstallMessageHandler(KaMessageHandlerFunc customFunc);
 

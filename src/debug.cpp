@@ -25,6 +25,7 @@
 
 #include <QHash>
 #include <QThread>
+#include <QDateTime>
 #include <QMutex>
 #include <QCoreApplication>
 
@@ -93,6 +94,18 @@ void setShowMarkerAfter(int msecs)
 int showMarkerAfter()
 {
     return showMarkerAfterMSecs_;
+}
+
+static bool showTimestamps_ = false;
+
+void setTimestampsEnabled(bool value)
+{
+    showTimestamps_ = value;
+}
+
+bool timestampsEnabled()
+{
+    return showTimestamps_;
 }
 
 QString kaFormatFunctionSignature(const char *fileName, int line, const char *functionSignature, const QString &text)
@@ -164,12 +177,12 @@ void kaDebug(const QString &msg)
         }
 
         int indent = indentLevel_ == -1 ? 0 : indentLevel_ * 3 + 3;
-        const char *threadMarker = qApp ? (qApp->thread() == QThread::currentThread() ? "M" : "T") : "!";
+        QByteArray marker = (showTimestamps_ ? QByteArray::number(QDateTime::currentMSecsSinceEpoch()) + " " : "") + (qApp ? (qApp->thread() == QThread::currentThread() ? "M" : "T") : "!");
 
         if (customMessageHandler)
-            customMessageHandler(QString().sprintf("[%s%10p] %*s%s", threadMarker, (void *)QThread::currentThread(), indent, "", (const char*)msg.toUtf8()));
+            customMessageHandler(QString().sprintf("[%s%10p] %*s%s", marker.constData(), (void *)QThread::currentThread(), indent, "", (const char*)msg.toUtf8()));
         else
-            qDebug("[%s%10p] %*s%s", threadMarker, (void *)QThread::currentThread(), indent, "", (const char*)msg.toUtf8());
+            qDebug("[%s%10p] %*s%s", marker.constData(), (void *)QThread::currentThread(), indent, "", (const char*)msg.toUtf8());
     }
 }
 
