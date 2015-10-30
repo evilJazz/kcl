@@ -44,6 +44,7 @@ public:
 
     Q_INVOKABLE static QVariant mappedBoundingRect(QQuickItem *targetItem, QQuickItem *sourceItem, const QRect &rect = QRect());
 
+    Q_INVOKABLE static QRectF sceneItemsBoundingRect(QQuickItem *sceneItem);
     Q_INVOKABLE static QVariant takeImageFromScene(QQuickItem *sceneItem);
 
     Q_INVOKABLE static void forceUpdate(QQuickItem *item);
@@ -59,6 +60,7 @@ public:
 
     Q_INVOKABLE static QVariant mappedBoundingRect(QGraphicsObject *targetItem, QGraphicsObject *sourceItem, const QRect &rect = QRect());
 
+    Q_INVOKABLE static QRectF sceneItemsBoundingRect(QGraphicsObject *sceneItem);
     Q_INVOKABLE static QVariant takeImageFromScene(QGraphicsObject *sceneItem);
 
     Q_INVOKABLE static void forceUpdate(QGraphicsObject *item);

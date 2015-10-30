@@ -55,6 +55,9 @@ struct ItemPositionPaintOrderFilter : PaintOrderFilter
 
 QList<KCLGraphicsItem *> SceneUtils::paintOrderChildItems(KCLGraphicsItem *item, bool recursive, PaintOrderFilter *filter)
 {
+    if (!item)
+        return QList<KCLGraphicsItem *>();
+
     QList<KCLGraphicsItem *> childItems = item->childItems();
 
     // If none of the items have set Z then the paint order list is the same as
@@ -105,6 +108,9 @@ QVariantList SceneUtils::getAllItemsInScene(QQuickItem *item, qreal itemX, qreal
 {
     QVariantList result;
 
+    if (!item || !item->window() || !item->window()->contentItem())
+        return result;
+
     ScenePositionPaintOrderFilter filter;
     filter.scenePoint = item->mapToScene(QPointF(itemX, itemY));
 
@@ -123,6 +129,9 @@ QVariantList SceneUtils::getAllItemsInScene(QQuickItem *item, qreal itemX, qreal
 QVariantList SceneUtils::getItemsBelow(QQuickItem *item, qreal itemX, qreal itemY)
 {
     QVariantList result;
+
+    if (!item)
+        return result;
 
     ScenePositionPaintOrderFilter filter;
     filter.scenePoint = item->mapToScene(QPointF(itemX, itemY));
@@ -148,13 +157,31 @@ void SceneUtils::takeItemFromScene(QQuickItem *item)
 {
     // We can't actually take the item from the scene
     // It will be moved to the parentless-item list of the associated QQuickWindow instead...
-    reparentItem(item, NULL);
+    if (item)
+        reparentItem(item, NULL);
 }
 
 void SceneUtils::reparentItem(QQuickItem *item, QQuickItem *newParent)
 {
     if (item)
         item->setParentItem(newParent);
+}
+
+QVariant SceneUtils::mappedBoundingRect(QQuickItem *targetItem, QQuickItem *sourceItem, const QRect &rect)
+{
+    if (!targetItem || !sourceItem)
+        return QVariant();
+
+    QRectF sourceRect = rect.isNull() ? sourceItem->boundingRect() : rect;
+    return targetItem->mapRectFromItem(sourceItem, sourceRect);
+}
+
+QRectF SceneUtils::sceneItemsBoundingRect(QQuickItem *sceneItem)
+{
+    if (!sceneItem || !sceneItem->window() || !sceneItem->window()->contentItem())
+        return QRectF();
+
+    return sceneItem->window()->contentItem()->childrenRect();
 }
 
 QVariant SceneUtils::takeImageFromScene(QQuickItem *sceneItem)
@@ -167,32 +194,32 @@ QVariant SceneUtils::takeImageFromScene(QQuickItem *sceneItem)
 
 void SceneUtils::forceUpdate(QQuickItem *item)
 {
-    item->update();
+    if (item)
+        item->update();
 }
 
 void SceneUtils::grabMouse(QQuickItem *item)
 {
-    item->grabMouse();
+    if (item)
+        item->grabMouse();
 }
 
 void SceneUtils::ungrabMouse(QQuickItem *item)
 {
-    item->ungrabMouse();
-}
-
-QVariant SceneUtils::mappedBoundingRect(QQuickItem *targetItem, QQuickItem *sourceItem, const QRect &rect)
-{
-    QRectF sourceRect = rect.isNull() ? sourceItem->boundingRect() : rect;
-    return targetItem->mapRectFromItem(sourceItem, sourceRect);
+    if (item)
+        item->ungrabMouse();
 }
 
 #else
 
 QVariantList SceneUtils::getAllItemsInScene(QDeclarativeItem *item, qreal itemX, qreal itemY)
 {
-    QPointF scenePos = item->mapToScene(QPointF(itemX, itemY));
-
     QVariantList result;
+
+    if (!item || !item->scene())
+        return result;
+
+    QPointF scenePos = item->mapToScene(QPointF(itemX, itemY));
     QList<QGraphicsItem *> itemList = item->scene()->items(scenePos);
 
     for (int i = 0; i < itemList.count(); ++i)
@@ -207,9 +234,12 @@ QVariantList SceneUtils::getAllItemsInScene(QDeclarativeItem *item, qreal itemX,
 
 QVariantList SceneUtils::getItemsBelow(QDeclarativeItem *item, qreal itemX, qreal itemY)
 {
-    QPointF scenePos = item->mapToScene(QPointF(itemX, itemY));
-
     QVariantList result;
+
+    if (!item || !item->scene())
+        return result;
+
+    QPointF scenePos = item->mapToScene(QPointF(itemX, itemY));
     QList<QGraphicsItem *> itemList = item->scene()->items(scenePos);
 
     int index = itemList.indexOf(item);
@@ -241,6 +271,20 @@ void SceneUtils::reparentItem(QDeclarativeItem *item, QDeclarativeItem *newParen
         item->setParentItem(newParent);
 }
 
+QVariant SceneUtils::mappedBoundingRect(QGraphicsObject *targetItem, QGraphicsObject *sourceItem, const QRect &rect)
+{
+    QRectF sourceRect = rect.isNull() ? sourceItem->boundingRect() : rect;
+    return targetItem->mapRectFromItem(sourceItem, sourceRect);
+}
+
+QRectF SceneUtils::sceneItemsBoundingRect(QGraphicsObject *sceneItem)
+{
+    if (!sceneItem || !sceneItem->scene())
+        return QRectF();
+
+    return sceneItem->scene()->itemsBoundingRect();
+}
+
 QVariant SceneUtils::takeImageFromScene(QGraphicsObject *sceneItem)
 {
     if (!sceneItem || !sceneItem->scene())
@@ -251,12 +295,14 @@ QVariant SceneUtils::takeImageFromScene(QGraphicsObject *sceneItem)
     if (sceneItem->scene()->views().count() > 0)
         size = sceneItem->scene()->views().at(0)->size();
     else
-        size = sceneItem->scene()->sceneRect().size().toSize();
+        size = sceneItemsBoundingRect(sceneItem).size().toSize();
 
     QImage image(size, QImage::Format_ARGB32);
-
-    QPainter p(&image);
-    sceneItem->scene()->render(&p, QRectF(image.rect()), QRectF(QPointF(0, 0), QSizeF(size)));
+    if (!image.isNull())
+    {
+        QPainter p(&image);
+        sceneItem->scene()->render(&p, QRectF(image.rect()), QRectF(QPointF(0, 0), QSizeF(size)));
+    }
 
     return image;
 }
@@ -274,12 +320,6 @@ void SceneUtils::grabMouse(QGraphicsObject *item)
 void SceneUtils::ungrabMouse(QGraphicsObject *item)
 {
     item->ungrabMouse();
-}
-
-QVariant SceneUtils::mappedBoundingRect(QGraphicsObject *targetItem, QGraphicsObject *sourceItem, const QRect &rect)
-{
-    QRectF sourceRect = rect.isNull() ? sourceItem->boundingRect() : rect;
-    return targetItem->mapRectFromItem(sourceItem, sourceRect);
 }
 
 #endif
