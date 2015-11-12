@@ -120,11 +120,7 @@ void NetworkUtils::newNetworkSession()
 
 bool NetworkUtils::isOnline()
 {
-#ifdef KCL_NETWORKUTILS_FORCE_ALWAYS_ONLINE
-    return true;
-#else
     return (network_ && network_->isOnline()) || (session_ && session_->isOpen());
-#endif
 }
 
 bool NetworkUtils::connectedToCell()

@@ -178,7 +178,7 @@ function webCall(url, params, action, callbackObject, useCache)
         }
     }
 
-    if (!NetworkUtils.isOnline)
+    if (typeof(NetworkUtils) !== "undefined" && !NetworkUtils.isOnline)
     {
         if (debug) console.log("No internet connection, will not do anything.");
 
@@ -261,8 +261,13 @@ function webCall(url, params, action, callbackObject, useCache)
         else
         {
             callurl = url;
-            if (debug) console.log("POST callurl: " + callurl);
-            if (debug) console.log("POST ueParams: " + ueParams);
+
+            if (debug)
+            {
+                console.log("POST callurl: " + callurl);
+                console.log("POST ueParams: " + ueParams);
+            }
+
             xhr.open("POST", callurl);
             xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xhr.setRequestHeader("Content-length", ueParams.length);
@@ -271,8 +276,14 @@ function webCall(url, params, action, callbackObject, useCache)
 
         xhr.onreadystatechange = function()
         {
-            //console.log("xhr: " + JSON.stringify(xhr));
-            //console.log("xhr.readyState: " + xhr.readyState);
+            if (debug)
+            {
+                console.log("xhr.readyState: " + xhr.readyState);
+                console.log("xhr.status: " + xhr.status);
+                console.log("xhr.statusText: " + xhr.statusText);
+                console.log("xhr.responseText: " + xhr.responseText);
+                console.log("xhr.responseXML: " + xhr.responseXML);
+            }
 
             if (xhr.readyState === XMLHttpRequest.DONE)
             {

@@ -70,6 +70,8 @@ isEmpty(kcl): kcl = \
     singletons \
     $$kclAdd
 
+!isEmpty(kclRemove): kcl -= $$kclRemove
+
 defineTest(kclAddModule) {
     message(KCL: Adding module $${1})
     HEADERS += $$KCL_INC_PATH/KCL/$${1}.h
