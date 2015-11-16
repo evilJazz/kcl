@@ -73,7 +73,7 @@ public:
     bool isTaskEnqueued(Task *task);
 
     bool isIdle();
-    void waitForDone();
+    void waitForDone(int maxWaitInMs = -1);
 	
 	void clear();
 

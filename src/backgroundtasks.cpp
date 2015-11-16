@@ -109,7 +109,7 @@ TaskProcessingController::~TaskProcessingController()
 	clear();
 	
 	// Signal sleeping threads to wake up and discover they are marked for termination...
-    pool_->waitForDone();
+    waitForDone();
 }
 
 void TaskProcessingController::clear()
@@ -179,14 +179,19 @@ void TaskProcessingController::tryStartNextTask()
     DPRINTF("Tasks left in queue: %d, active threads: %d, max threads: %d", taskQueue_.length(), pool_->activeThreadCount(), pool_->maxThreadCount());
 }
 
-void TaskProcessingController::waitForDone()
+void TaskProcessingController::waitForDone(int maxWaitInMs)
 {
     QEventLoop loop;
+    QElapsedTimer timer;
+    timer.start();
 
     while (taskQueue_.length() > 0 || pool_->activeThreadCount() > 0)
     {
         tryStartNextTask();
         loop.processEvents(QEventLoop::ExcludeUserInputEvents);
+
+        if (maxWaitInMs > -1 && timer.elapsed() > maxWaitInMs)
+            break;
     }
 
     // NOTE: We can't use QThreadPool::waitForDone here because the
