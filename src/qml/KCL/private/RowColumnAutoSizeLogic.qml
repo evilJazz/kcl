@@ -59,6 +59,8 @@ QtObject {
     {
         if (logic.blockUpdate) return;
 
+        if (debug) console.log("updateNonAutoSizedChildren ------------------------------------------------");
+
         var newVisibleNonAutoSizedChildrenSize = 0;
         var item;
         var visibleCount = 0;
@@ -126,7 +128,7 @@ QtObject {
     {
         if (blockUpdate) return;
 
-        if (debug) console.log("------------------------------------------------");
+        if (debug) console.log("updateAutoSizedChildren ------------------------------------------------");
 
         var item, i;
 
@@ -148,11 +150,13 @@ QtObject {
             {
                 item = autoSizedChildren[i];
 
-                percentage = (isHorizontal ? item.width : item.height) / autoSizeTotal;
+                var itemSize = (isHorizontal ? item.width : item.height);
+
+                percentage = itemSize / autoSizeTotal;
                 percentSizes[i] = percentage;
                 if (!item.visible) invisiblePercentage += percentage;
 
-                if (debug) console.log(item + ": " + percentSizes[i] * 100 + "%");
+                if (debug) console.log(item + ": " + itemSize + "px -> " + percentSizes[i] * 100 + "%");
             }
         }
         else
