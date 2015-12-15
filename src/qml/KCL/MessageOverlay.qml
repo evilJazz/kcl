@@ -168,6 +168,12 @@ MouseEater {
                 id: loader
                 anchors.fill: !overlay.looseItem ? parent : undefined
 
+                // Aliases required here for when using a sourceComponent
+                // This seems to be a context bug in QtQuick
+                property alias frame: frame
+                property alias overlay: overlay
+                property alias overlayRoot: overlayRoot
+
                 onItemChanged:
                 {
                     if (item !== null)
