@@ -47,7 +47,7 @@ class KCL_EXPORT BinaryFileDownloader : public QObject
     Q_PROPERTY(QString errorText READ errorText NOTIFY error)
     Q_PROPERTY(bool autoDelete READ autoDelete WRITE setAutoDelete NOTIFY autoDeleteChanged)
 public:
-    explicit BinaryFileDownloader();
+    explicit BinaryFileDownloader(QObject *parent = NULL);
     virtual ~BinaryFileDownloader();
 
     Q_INVOKABLE void download(QString url) { get(url); }
@@ -66,6 +66,9 @@ public:
     bool autoDelete() const;
     void setAutoDelete(bool value);
 
+    QNetworkAccessManager *networkAccessManager();
+    void setNetworkAccessManager(QNetworkAccessManager *networkAccessManager);
+
 signals:
     void downloaded(QByteArray data);
     void error(int errorCode, const QString &errorText);
@@ -80,8 +83,6 @@ private:
     int errorCode_;
     QString errorText_;
     bool autoDelete_;
-
-    QNetworkAccessManager *manager();
 
     QHash<QNetworkReply *, RequestCapturedData> requestData_;
 

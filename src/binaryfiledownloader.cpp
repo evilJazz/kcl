@@ -35,8 +35,8 @@
     #define KCLDeclarativeContext QDeclarativeContext
 #endif
 
-BinaryFileDownloader::BinaryFileDownloader() :
-    QObject(),
+BinaryFileDownloader::BinaryFileDownloader(QObject *parent) :
+    QObject(parent),
     manager_(NULL),
     errorCode_(0),
     autoDelete_(false)
@@ -52,7 +52,7 @@ void BinaryFileDownloader::get(QString url)
     QNetworkRequest request(QUrl::fromEncoded(url.toUtf8()));
     setHeadersOnRequest(&request);
 
-    QNetworkReply *reply = manager()->get(request);
+    QNetworkReply *reply = networkAccessManager()->get(request);
     connect(reply, SIGNAL(finished()), this, SLOT(fileDownloaded()));
 
     RequestCapturedData data;
@@ -66,7 +66,7 @@ void BinaryFileDownloader::post(QString url, const QByteArray &rawData)
     QNetworkRequest request(QUrl::fromEncoded(url.toUtf8()));
     setHeadersOnRequest(&request);
 
-    QNetworkReply *reply = manager()->post(request, rawData);
+    QNetworkReply *reply = networkAccessManager()->post(request, rawData);
     connect(reply, SIGNAL(finished()), this, SLOT(fileDownloaded()));
 
     RequestCapturedData data;
@@ -151,7 +151,7 @@ void BinaryFileDownloader::fileDownloaded()
         deleteLater();
 }
 
-QNetworkAccessManager *BinaryFileDownloader::manager()
+QNetworkAccessManager *BinaryFileDownloader::networkAccessManager()
 {
     if (!manager_)
     {
@@ -166,6 +166,11 @@ QNetworkAccessManager *BinaryFileDownloader::manager()
     }
 
     return manager_;
+}
+
+void BinaryFileDownloader::setNetworkAccessManager(QNetworkAccessManager *manager)
+{
+    manager_ = manager;
 }
 
 bool BinaryFileDownloader::autoDelete() const
