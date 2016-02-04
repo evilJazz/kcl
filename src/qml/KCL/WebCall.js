@@ -197,7 +197,16 @@ function webCall(url, params, action, callbackObject, useCache)
     var paramArray = [];
 
     for (var param in params)
-        paramArray.push(param + "=" + encodeURIComponent(params[param]));
+    {
+        var paramValue = params[param];
+        if (Array.isArray(paramValue))
+        {
+            for (var i = 0; i < paramValue.length; ++i)
+                paramArray.push(param + "=" + encodeURIComponent(paramValue[i]));
+        }
+        else
+            paramArray.push(param + "=" + encodeURIComponent(paramValue));
+    }
 
     var ueParams = paramArray.join('&');
 
