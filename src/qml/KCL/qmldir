@@ -15,6 +15,7 @@ ImagePushButton 1.0 ImagePushButton.qml
 
 QueueManager 1.0 QueueManager.qml
 FlickableColumn 1.0 FlickableColumn.qml
+FlickableRow 1.0 FlickableRow.qml
 
 AutoRow 1.0 AutoRow.qml
 AutoColumn 1.0 AutoColumn.qml

@@ -40,5 +40,6 @@
         <file>MouseEater.qml</file>
         <file>private/GroupedItemGrid.js</file>
         <file>PopUpOverlay.qml</file>
+        <file>FlickableRow.qml</file>
     </qresource>
 </RCC>
