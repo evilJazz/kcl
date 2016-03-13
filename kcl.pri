@@ -130,7 +130,13 @@ kcl_qtquick1 {
     kclConditionalAddModule(rawmousearea)
 }
 
+kcl_qtquick2 {
+    message("KCL: Configuring with QtQuick 2.x support")
+}
+
 kcl_declarative {
+    message("KCL: Configuring declarative support classes")
+
     HEADERS += $$KCL_INC_PATH/kclplugin.h
     SOURCES += $$KCL_SRC_PATH/kclplugin.cpp
 
@@ -153,7 +159,7 @@ kcl_declarative {
         $$KCL_SRC_PATH/qml/
 
     !kcl_noqmlpp {
-        include(qmlpp/src/qmlpp.pri)
+        include($${PWD}/qmlpp/src/qmlpp.pri)
 
         kcl_qtquick1: qmlPreprocessFolder($$KCL_SRC_PATH/qml, @QtQuick1, 1.0)
         kcl_qtquick2: qmlPreprocessFolder($$KCL_SRC_PATH/qml, @QtQuick2, 2.0)
