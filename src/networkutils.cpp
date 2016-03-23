@@ -4,7 +4,9 @@
 #include <QThreadPool>
 #include <QTimer>
 
-#define DIAGNOSTIC_OUTPUT
+#ifndef KCL_DEBUG
+#undef DEBUG
+#endif
 #include "KCL/debug.h"
 
 /* NetworkConfigurationRunnable */
