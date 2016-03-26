@@ -80,11 +80,17 @@ void FileScannerRunnable::run()
     foreach (QString targetDirectoryName, targetDirectories)
     {
         QString prefix = "";
+        bool convertBackToUrl = false;
 
         if (targetDirectoryName.startsWith("qrc:/")) // if resource path that remove qrc as that is not enumerable...
         {
             prefix = "qrc";
             targetDirectoryName.remove(0, 3);
+        }
+        else if (targetDirectoryName.startsWith("file:"))
+        {
+            convertBackToUrl = true;
+            targetDirectoryName = FileSystemUtils::localPathFromUrl(targetDirectoryName);
         }
 
         QDirIterator it(targetDirectoryName, QDir::Files | QDir::NoSymLinks, QDirIterator::Subdirectories);
@@ -108,11 +114,16 @@ void FileScannerRunnable::run()
 
             if (addItem)
             {
+                QString formattedFilename = prefix + currentFilename;
+
+                if (convertBackToUrl)
+                    formattedFilename = FileSystemUtils::urlFromLocalPath(formattedFilename).toString();
+
                 if (fileScanner_->returnExtendedResults())
                 {
                     QFileInfo fi(it.fileInfo());
                     QVariantMap result;
-                    result.insert("fileName", prefix + currentFilename);
+                    result.insert("fileName", formattedFilename);
                     result.insert("fileSize", fi.size());
                     result.insert("lastModified", fi.lastModified());
                     result.insert("created", fi.created());
@@ -124,7 +135,7 @@ void FileScannerRunnable::run()
                     results.append(result);
                 }
                 else
-                    results.append(prefix + currentFilename);
+                    results.append(formattedFilename);
             }
 
             if (fileScanner_->lowPriorityScanning())
