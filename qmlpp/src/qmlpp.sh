@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/sh
 #
 # qmlpp - KISS QML and JavaScript preprocessor
 #
@@ -43,31 +43,31 @@ else
     sedCmdExt=-r
 fi
 
-function processor()
+processor()
 {
     set -- \
         -e "$rewriteParams" \
         -e "s/^([ \x9]*)(\/\/){0,1}(.*)\/\/@(.*)/\1\3\/\/@\4/" \
         -e "/($defines)/!s/^([ \x9]*)(.*)\/\/(@.*)/\1\/\/\2\/\/\3/"
 
-    if [[ -n "$sedIsBSD" && -n "$processInline" ]]; then
+    if ( [ -n "$sedIsBSD" ] && [ -n "$processInline" ] ); then
         xargs -0 "$sedCmd" $sedOSCmdExt $sedCmdExt -i '' "$@"
     else
         xargs -0 "$sedCmd" $sedOSCmdExt $sedCmdExt $additionalSedArgs "$@"
     fi
 }
 
-function preprocessFile()
+preprocessFile()
 {
     echo -ne "$1\0" | processor
 }
 
-function preprocessDirectory()
+preprocessDirectory()
 {
     "$findCmd" "$1" -type f \( -name "*.qml" -or -name "*.js" \) -print0 | processor
 }
 
-function usage()
+usage()
 {
     cat << EOF
 usage: $0 [options] <filename JS or QML or directoryname>
@@ -111,9 +111,10 @@ done
 rewriteParams=""
 [ "$rewriteQtQuickVersion" != "" ] && rewriteParams="/\/\/!noRewrite/!s/(import QtQuick)[ \x9]*[0-9].[0-9]/\1 $rewriteQtQuickVersion/"
 
-input="${@: -1}"
+for last in "$@"; do : ; done
+input="$last"
 
-if [[ -f "$input" || "$input" == "-" ]]; then
+if ( [ -f "$input" ] || [ "$input" = "-" ] ); then
         preprocessFile "$input"
 elif [ -d "$input" ]; then
         if [ "$processInline" != "true" ]; then
