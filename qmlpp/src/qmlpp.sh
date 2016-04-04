@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 #
 # qmlpp - KISS QML and JavaScript preprocessor
 #
@@ -43,29 +43,28 @@ else
     sedCmdExt=-r
 fi
 
-function callSed()
+function processor()
 {
+    set -- \
+        -e "$rewriteParams" \
+        -e "s/^([ \x9]*)(\/\/){0,1}(.*)\/\/@(.*)/\1\3\/\/@\4/" \
+        -e "/($defines)/!s/^([ \x9]*)(.*)\/\/(@.*)/\1\/\/\2\/\/\3/"
+
     if [[ -n "$sedIsBSD" && -n "$processInline" ]]; then
-        "$sedCmd" $sedOSCmdExt $sedCmdExt -i '' "$@" # Braindead BSD sed syntax, try to escape '' in Bash!
+        xargs -0 "$sedCmd" $sedOSCmdExt $sedCmdExt -i '' "$@"
     else
-        "$sedCmd" $sedOSCmdExt $sedCmdExt $additionalSedArgs "$@"
+        xargs -0 "$sedCmd" $sedOSCmdExt $sedCmdExt $additionalSedArgs "$@"
     fi
 }
 
 function preprocessFile()
 {
-    callSed \
-        -e "$rewriteParams" \
-        -e "s/^([ \x9]*)(\/\/){0,1}(.*)\/\/@(.*)/\1\3\/\/@\4/" \
-        -e "/($defines)/!s/^([ \x9]*)(.*)\/\/(@.*)/\1\/\/\2\/\/\3/" \
-        "$1"
+    echo -ne "$1\0" | processor
 }
 
 function preprocessDirectory()
 {
-    "$findCmd" "$1" -type f | grep -v .svn | grep -v .git | while read file; do
-        [[ "${file##*.}" == "qml" || "${file##*.}" == "js" ]] && preprocessFile "$file"
-    done
+    "$findCmd" "$1" -type f \( -name "*.qml" -or -name "*.js" \) -print0 | processor
 }
 
 function usage()
