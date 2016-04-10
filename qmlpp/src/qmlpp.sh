@@ -110,7 +110,7 @@ shift $((OPTIND-1))
 
 if ( [ $# -eq 1 ] && [ -f "$1" ] ); then
     preprocess "$1"
-elif ( [ $# > 1 ] || ( [ $# -eq 1 ] && [ -d "$1" ] ) ); then
+elif ( [ $# -gt 1 ] || ( [ $# -eq 1 ] && [ -d "$1" ] ) ); then
 	if [ "$processInline" != "true" ]; then
 		echo "Please specify -i when trying to preprocess a whole directory recursively."
 		usage
