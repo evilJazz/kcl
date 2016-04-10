@@ -8,7 +8,6 @@ QMLPP_SCRIPT = "bash $${QMLPP_PATH}/qmlpp.sh"
 defineTest(qmlPreprocessFolder) {
     !isEmpty(1) {
         qmlppCommand = $${QMLPP_SCRIPT} -i
-        qmlppCommands =
 
         !isEmpty(3): qmlppCommand += -q $${3}
         !isEmpty(2) {
@@ -16,14 +15,15 @@ defineTest(qmlPreprocessFolder) {
             qmlppCommand += -d \"$$defines\"
         }
 
+        qmlppEscapedFolders =
         for(folder, 1) {
-            !isEmpty(qmlppCommands): qmlppCommands += &&
-            qmlppCommands += $${qmlppCommand} \"$$folder\"
+            qmlppEscapedFolders += \"$$folder\"
         }
 
-        #message($$qmlppCommands)
+        qmlppCommand += $${qmlppEscapedFolders}
 
-        system($$qmlppCommands)
+        message($$qmlppCommand)
+        system($$qmlppCommand)
     }
 }
 

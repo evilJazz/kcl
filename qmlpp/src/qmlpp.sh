@@ -57,20 +57,15 @@ processor()
     fi
 }
 
-preprocessFile()
+preprocess()
 {
-    echo -ne "$1\0" | processor
-}
-
-preprocessDirectory()
-{
-    "$findCmd" "$1" -type f \( -name "*.qml" -or -name "*.js" \) -print0 | processor
+    "$findCmd" "$@" -type f \( -name "*.qml" -or -name "*.js" \) -print0 | processor
 }
 
 usage()
 {
     cat << EOF
-usage: $0 [options] <filename JS or QML or directoryname>
+usage: $0 [options] <filenames JS or QML or directorynames>
 
 OPTIONS:
    -h                Show this message.
@@ -111,23 +106,22 @@ done
 rewriteParams=""
 [ "$rewriteQtQuickVersion" != "" ] && rewriteParams="/\/\/!noRewrite/!s/(import QtQuick)[ \x9]*[0-9].[0-9]/\1 $rewriteQtQuickVersion/"
 
-for last in "$@"; do : ; done
-input="$last"
+shift $((OPTIND-1))
 
-if ( [ -f "$input" ] || [ "$input" = "-" ] ); then
-        preprocessFile "$input"
-elif [ -d "$input" ]; then
-        if [ "$processInline" != "true" ]; then
-            echo "Please specify -i when trying to preprocess a whole directory recursively."
-            usage
-            exit 1
-        fi
+if ( [ $# -eq 1 ] && [ -f "$1" ] ); then
+    preprocess "$1"
+elif ( [ $# > 1 ] || ( [ $# -eq 1 ] && [ -d "$1" ] ) ); then
+	if [ "$processInline" != "true" ]; then
+		echo "Please specify -i when trying to preprocess a whole directory recursively."
+		usage
+		exit 1
+	fi
 
-        preprocessDirectory "$input"
+	preprocess $@
 else
-        echo "Please specify a valid file or directory."
-        usage
-        exit 1
+	echo "Please specify a valid file or directory."
+	usage
+	exit 1
 fi
 
 exit 0
