@@ -21,7 +21,7 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
-//.import QtQuick.LocalStorage 2.0 as SQL //@QtQuick2
+.import QtQuick.LocalStorage 2.0 as SQL //@QtQuick2
 
 var debug = false;
 var cCacheExpiryTimeInMinutes = 2 * 7 * 1440; // two weeks
@@ -64,8 +64,8 @@ function getTextByTagName(element, nodeName)
 function insertIntoCache(url, params, method, response)
 {
     var paramsJSON = JSON.stringify(params);
-    var db = openDatabaseSync("WebCall", "1.0", "WebCall Cache Database", 1000000); //@QtQuick1
-    //var db = SQL.LocalStorage.openDatabaseSync("WebCall", "1.0", "WebCall Cache Database", 1000000); //@QtQuick2
+    //var db = openDatabaseSync("WebCall", "1.0", "WebCall Cache Database", 1000000); //@QtQuick1
+    var db = SQL.LocalStorage.openDatabaseSync("WebCall", "1.0", "WebCall Cache Database", 1000000); //@QtQuick2
 
     for (var i = 0; i < 2; ++i)
     try
@@ -107,8 +107,8 @@ function insertIntoCache(url, params, method, response)
 function getFromCache(url, params, method)
 {
     var paramsJSON = JSON.stringify(params);
-    var db = openDatabaseSync("WebCall", "1.0", "WebCall Cache Database", 1000000); //@QtQuick1
-    //var db = SQL.LocalStorage.openDatabaseSync("WebCall", "1.0", "WebCall Cache Database", 1000000); //@QtQuick2
+    //var db = openDatabaseSync("WebCall", "1.0", "WebCall Cache Database", 1000000); //@QtQuick1
+    var db = SQL.LocalStorage.openDatabaseSync("WebCall", "1.0", "WebCall Cache Database", 1000000); //@QtQuick2
 
     var response = false;
 

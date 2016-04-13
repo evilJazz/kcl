@@ -1,4 +1,4 @@
-import QtQuick 1.0
+import QtQuick 2.0
 import KCL 1.0
 
 import "private/GroupedItemGrid.js" as Private

@@ -1,4 +1,4 @@
-import QtQuick 1.0
+import QtQuick 2.0
 
 Rectangle {
     Behavior on opacity { id: opacityBehaviour; NumberAnimation { id: animation; duration: 250 } }

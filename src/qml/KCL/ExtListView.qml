@@ -1,4 +1,4 @@
-import QtQuick 1.0
+import QtQuick 2.0
 
 ListView {
     id: container
@@ -6,7 +6,7 @@ ListView {
     property int heightOfSectionDelegate: 70
     property int heightOfDelegate: 50
 
-    //pixelAligned: true //@QtQuick2
+    pixelAligned: true //@QtQuick2
 
     function firstVisibleItem()
     {

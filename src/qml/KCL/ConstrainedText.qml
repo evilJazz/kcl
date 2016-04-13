@@ -1,4 +1,4 @@
-import QtQuick 1.0
+import QtQuick 2.0
 
 //*
 Item {
@@ -26,8 +26,8 @@ Item {
 
         transformOrigin: Item.TopLeft
 
-        onPaintedSizeChanged: text.updateAll() //@QtQuick1
-        //onContentSizeChanged: text.updateAll() //@QtQuick2
+        //onPaintedSizeChanged: text.updateAll() //@QtQuick1
+        onContentSizeChanged: text.updateAll() //@QtQuick2
 
         function updateAll()
         {

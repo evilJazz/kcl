@@ -16,7 +16,7 @@ function isScheduled(name)
 
 function createNewTimer(parent)
 {
-    var timerQml = "import QtQuick 1.0; " + (useQtTimers ? "import KCL 1.0; QtTimer {" : "Timer {");
+    var timerQml = "import QtQuick 2.0; " + (useQtTimers ? "import KCL 1.0; QtTimer {" : "Timer {");
     timerQml += (debug ? "Component.onDestruction: console.log('NUCULAR!!!'); }" : "}");
 
     return Qt.createQmlObject(timerQml, parent, "dynamicTimer");
