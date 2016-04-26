@@ -65,10 +65,7 @@ MouseEater {
         }
         else
         {
-            if (fadeEnabled)
-                fadeTimer.start();
-            else
-                overlay.fadeIn();
+            overlay.fadeIn();
         }
     }
 
@@ -138,18 +135,6 @@ MouseEater {
             overlayRoot.fadingIn();
         }
         onFadingOut: overlayRoot.fadingOut()
-
-        Timer {
-            id: fadeTimer
-            interval: 100
-            repeat: false
-
-            onTriggered:
-            {
-                if (loader.item !== null)
-                    overlay.fadeIn();
-            }
-        }
 
         function updateState()
         {
