@@ -42,6 +42,10 @@
     #include "KCL/cursorarea.h"
 #endif
 
+#ifdef KCL_touchdetector
+    #include "KCL/touchdetector.h"
+#endif
+
 #ifdef KCL_rawmousearea
     #include "KCL/rawmousearea.h"
 #endif
@@ -140,6 +144,10 @@ void KCLPlugin::registerTypes(const char *uri)
 
 #ifdef KCL_cursorarea
     qmlRegisterType<CursorArea>(uri, 1, 0, "CursorArea");
+#endif
+
+#ifdef KCL_touchdetector
+    qmlRegisterType<TouchDetector>(uri, 1, 0, "TouchDetector");
 #endif
 
 #ifdef KCL_rawmousearea

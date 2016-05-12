@@ -59,6 +59,7 @@ isEmpty(kcl): kcl = \
     declarativedebug \
     settingsgroup \
     cursorarea \
+    touchdetector \
     imagerendersurface \
     imageutils \
     sceneutils \
@@ -142,6 +143,7 @@ kcl_declarative {
 
     kclConditionalAddModule(settingsgroup)
     kclConditionalAddModule(cursorarea)
+    kclConditionalAddModule(touchdetector)
     kclConditionalAddModule(imagerendersurface)
     kclConditionalAddModule(sceneutils)
     kclConditionalAddModule(declarativedebug)
