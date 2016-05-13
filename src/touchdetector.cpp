@@ -9,6 +9,9 @@ TouchDetector::TouchDetector(QDeclarativeItem *parent) :
     QDeclarativeItem(parent),
     touchDeviceActive_(false)
 {
+#ifdef KCL_QTQUICK2
+    setAcceptedMouseButtons(Qt::AllButtons);
+#endif
 }
 
 TouchDetector::~TouchDetector()
@@ -30,21 +33,27 @@ void TouchDetector::touchEvent(QTouchEvent *event)
 
 void TouchDetector::mousePressEvent(QMouseEvent *event)
 {
-    setTouchDeviceActive(false);
+    if (event->source() == Qt::MouseEventNotSynthesized)
+        setTouchDeviceActive(false);
+
     event->ignore();
     QDeclarativeItem::mousePressEvent(event);
 }
 
 void TouchDetector::mouseMoveEvent(QMouseEvent *event)
 {
-    setTouchDeviceActive(false);
+    if (event->source() == Qt::MouseEventNotSynthesized)
+        setTouchDeviceActive(false);
+
     event->ignore();
     QDeclarativeItem::mouseMoveEvent(event);
 }
 
 void TouchDetector::mouseReleaseEvent(QMouseEvent *event)
 {
-    setTouchDeviceActive(false);
+    if (event->source() == Qt::MouseEventNotSynthesized)
+        setTouchDeviceActive(false);
+
     event->ignore();
     QDeclarativeItem::mouseReleaseEvent(event);
 }
