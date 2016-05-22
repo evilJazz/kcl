@@ -9,9 +9,11 @@ Rectangle {
     width: isHorizontal ? parent.width : splitterSize
     height: isHorizontal ? splitterSize : parent.height
 
+    property real position: isHorizontal ? splitter.y : splitter.x
+
     property alias autoAttachToSiblings: logic.autoAttachToSiblings
-    property alias itemBefore: logic.before
-    property alias itemAfter: logic.after
+    property alias itemBefore: logic.itemBefore
+    property alias itemAfter: logic.itemAfter
 
     property alias isHorizontal: logic.isHorizontal
     property alias orientation: logic.orientation
@@ -20,6 +22,11 @@ Rectangle {
     onParentChanged: logic.initFromTargetParent()
 
     color: "#AAAAAA"
+
+    function setPosition(pos)
+    {
+        logic.setPosition(pos);
+    }
 
     SplitterLogic {
         id: logic

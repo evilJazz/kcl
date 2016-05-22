@@ -8,8 +8,8 @@ QtObject {
     property int startX
     property int startY
 
-    property Item before
-    property Item after
+    property Item itemBefore
+    property Item itemAfter
 
     property real startSizeBefore
     property real startSizeAfter
@@ -83,6 +83,28 @@ QtObject {
         }
     }
 
+    function setPosition(pos)
+    {
+        if (parentCanBlockUpdate)
+            target.parent.blockUpdate = true;
+
+        var diff = pos - position;
+
+        if (isHorizontal)
+        {
+            if (itemBefore) itemBefore.height = Math.max(1, itemBefore.height + diff);
+            if (itemAfter) itemAfter.height = Math.max(1, itemAfter.height - diff);
+        }
+        else
+        {
+            if (itemBefore) itemBefore.width = Math.max(1, itemBefore.width + diff);
+            if (itemAfter) itemAfter.width = Math.max(1, itemAfter.width - diff);
+        }
+
+        if (parentCanBlockUpdate)
+            target.parent.blockUpdate = false;
+    }
+
     function start(mouseX, mouseY)
     {
         if (parentCanBlockUpdate)
@@ -95,13 +117,13 @@ QtObject {
 
         if (internal.isHorizontal)
         {
-            if (before) startSizeAfter = before.height;
-            if (after) startSizeBefore = after.height;
+            if (itemBefore) startSizeAfter = itemBefore.height;
+            if (itemAfter) startSizeBefore = itemAfter.height;
         }
         else
         {
-            if (before) startSizeAfter = before.width;
-            if (after) startSizeBefore = after.width;
+            if (itemBefore) startSizeAfter = itemBefore.width;
+            if (itemAfter) startSizeBefore = itemAfter.width;
         }
     }
 
@@ -115,13 +137,13 @@ QtObject {
 
         if (internal.isHorizontal)
         {
-            if (before) before.height = Math.max(1, startSizeAfter + diffY);
-            if (after) after.height = Math.max(1, startSizeBefore - diffY);
+            if (itemBefore) itemBefore.height = Math.max(1, startSizeAfter + diffY);
+            if (itemAfter) itemAfter.height = Math.max(1, startSizeBefore - diffY);
         }
         else
         {
-            if (before) before.width = Math.max(1, startSizeAfter + diffX);
-            if (after) after.width = Math.max(1, startSizeBefore - diffX);
+            if (itemBefore) itemBefore.width = Math.max(1, startSizeAfter + diffX);
+            if (itemAfter) itemAfter.width = Math.max(1, startSizeBefore - diffX);
         }
     }
 

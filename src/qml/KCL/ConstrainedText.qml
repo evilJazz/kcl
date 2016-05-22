@@ -31,9 +31,9 @@ Item {
 
         function updateAll()
         {
-            updateScale();
-            updateImplicitSize();
-            updateSizeFromContainer();
+            container.updateScale();
+            container.updateImplicitSize();
+            container.updateSizeFromContainer();
         }
     }
 
@@ -42,8 +42,8 @@ Item {
         propertyName: "width"
         onValueChanged:
         {
-            updateScale();
-            updateSizeFromContainer();
+            container.updateScale();
+            container.updateSizeFromContainer();
         }
     }
 
@@ -52,8 +52,8 @@ Item {
         propertyName: "height"
         onValueChanged:
         {
-            updateScale();
-            updateSizeFromContainer();
+            container.updateScale();
+            container.updateSizeFromContainer();
         }
     }
 
@@ -62,8 +62,8 @@ Item {
         propertyName: "scale"
         onValueChanged:
         {
-            updateImplicitSize();
-            updateSizeFromContainer();
+            container.updateImplicitSize();
+            container.updateSizeFromContainer();
         }
     }
 
