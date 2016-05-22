@@ -67,6 +67,7 @@ ListView {
     signal currentItemSelectedByUser()
     signal currentItemActivated()
     signal currentItemShowContextMenu(variant data)
+    signal itemClickedWithModifiers(int index, int modifiers)
     signal setCurrentIndex(int index)
 
     Keys.onPressed: {
