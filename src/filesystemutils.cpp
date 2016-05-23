@@ -121,7 +121,7 @@ QString FileSystemUtils::localPathFromUrl(const QUrl &url)
     if (url.toString().startsWith("qrc:"))
         return url.toString().replace("qrc:", ":");
     else
-        return url.isLocalFile() ? url.toLocalFile() : "";
+        return url.scheme() == "file" ? url.toLocalFile() : "";
 }
 
 QString FileSystemUtils::pathAppend(const QString &path1, const QString &path2)
