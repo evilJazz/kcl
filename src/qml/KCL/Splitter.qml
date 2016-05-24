@@ -25,7 +25,7 @@ Rectangle {
 
     function setPosition(pos)
     {
-        logic.setPosition(pos);
+        logic.setPosition(pos, position);
     }
 
     SplitterLogic {
@@ -36,5 +36,11 @@ Rectangle {
     SplitterMouseArea {
         id: splitterMouseArea
         splitterLogic: logic
+
+        onPressed: splitter.pressed(mouse)
+        onReleased: splitter.released(mouse)
     }
+
+    signal pressed(variant mouse)
+    signal released(variant mouse)
 }

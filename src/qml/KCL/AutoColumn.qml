@@ -15,6 +15,7 @@ Column {
     property alias orientation: logic.orientation // READONLY!
 
     property alias debug: logic.debug
+    property alias _logic: logic
 
     Component.onCompleted:
     {

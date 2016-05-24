@@ -83,12 +83,12 @@ QtObject {
         }
     }
 
-    function setPosition(pos)
+    function setPosition(pos, currentPosition)
     {
         if (parentCanBlockUpdate)
             target.parent.blockUpdate = true;
 
-        var diff = pos - position;
+        var diff = pos - currentPosition;
 
         if (isHorizontal)
         {
