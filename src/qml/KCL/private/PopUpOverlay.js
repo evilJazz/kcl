@@ -1,0 +1,1 @@
+var currentPositionCallback = null;

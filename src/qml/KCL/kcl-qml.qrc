@@ -41,5 +41,6 @@
         <file>private/GroupedItemGrid.js</file>
         <file>PopUpOverlay.qml</file>
         <file>FlickableRow.qml</file>
+        <file>private/PopUpOverlay.js</file>
     </qresource>
 </RCC>
