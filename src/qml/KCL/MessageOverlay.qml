@@ -40,7 +40,10 @@ MouseEater {
     }
 
     property alias frame: frame
+
     property alias item: loader.item
+    //signal itemChanged() //@QtQuick1 Explicit signal here because QtQuick 1 does not support changed signals on aliases
+
     property alias looseItem: overlay.looseItem
 
     signal backgroundClicked()
@@ -161,6 +164,8 @@ MouseEater {
 
                 onItemChanged:
                 {
+                    //overlayRoot.itemChanged(); //@QtQuick1
+
                     if (item !== null)
                         overlayRoot.open();
                 }

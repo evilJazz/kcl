@@ -81,7 +81,7 @@ Item {
     function popUp()
     {
         if (overlay == null)
-            overlay = _createOverlay(function() { if (overlay) _positionPopUpTopOrBottom(overlay.item); });
+            overlay = _createOverlay(function() { if (overlay !== null) _positionPopUpTopOrBottom(overlay.item); });
 
         overlay.open();
     }
@@ -94,7 +94,7 @@ Item {
     function popUpLeftOrRight()
     {
         if (overlay == null)
-            overlay = _createOverlay(function() { if (overlay) _positionPopUpLeftOrRight(overlay.item); });
+            overlay = _createOverlay(function() { if (overlay !== null) _positionPopUpLeftOrRight(overlay.item); });
 
         overlay.open();
     }
@@ -102,7 +102,7 @@ Item {
     function popUpAtPos(x, y)
     {
         if (overlay == null)
-            overlay = _createOverlay(function () { if (overlay) setBoundedPosition(overlay.item, x, y); });
+            overlay = _createOverlay(function () { if (overlay !== null) setBoundedPosition(overlay.item, x, y); });
 
         overlay.open();
     }
