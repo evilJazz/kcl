@@ -92,13 +92,15 @@ QtObject {
 
         if (isHorizontal)
         {
-            if (itemBefore) itemBefore.height = Math.max(1, itemBefore.height + diff);
-            if (itemAfter) itemAfter.height = Math.max(1, itemAfter.height - diff);
+            var max = itemBefore.height + itemAfter.height;
+            if (itemBefore) itemBefore.height = Math.min(Math.max(1, itemBefore.height + diff), max);
+            if (itemAfter) itemAfter.height = Math.min(Math.max(1, itemAfter.height - diff), max);
         }
         else
         {
-            if (itemBefore) itemBefore.width = Math.max(1, itemBefore.width + diff);
-            if (itemAfter) itemAfter.width = Math.max(1, itemAfter.width - diff);
+            var max = itemBefore.width + itemAfter.width;
+            if (itemBefore) itemBefore.width = Math.min(Math.max(1, itemBefore.width + diff), max);
+            if (itemAfter) itemAfter.width = Math.min(Math.max(1, itemAfter.width - diff), max);
         }
 
         if (parentCanBlockUpdate)
@@ -135,15 +137,17 @@ QtObject {
         var diffY = sceneMousePos.y - startY;
         if (debug) console.log("diffX: " + diffX + " diffY: " + diffY + " sceneMousePos.x: " + sceneMousePos.x + " sceneMousePos.y: " + sceneMousePos.y);
 
+        var max = startSizeAfter + startSizeBefore;
+
         if (internal.isHorizontal)
         {
-            if (itemBefore) itemBefore.height = Math.max(1, startSizeAfter + diffY);
-            if (itemAfter) itemAfter.height = Math.max(1, startSizeBefore - diffY);
+            if (itemBefore) itemBefore.height = Math.min(Math.max(1, startSizeAfter + diffY), max);
+            if (itemAfter) itemAfter.height = Math.min(Math.max(1, startSizeBefore - diffY), max);
         }
         else
         {
-            if (itemBefore) itemBefore.width = Math.max(1, startSizeAfter + diffX);
-            if (itemAfter) itemAfter.width = Math.max(1, startSizeBefore - diffX);
+            if (itemBefore) itemBefore.width = Math.min(Math.max(1, startSizeAfter + diffX), max);
+            if (itemAfter) itemAfter.width = Math.min(Math.max(1, startSizeBefore - diffX), max);
         }
     }
 
