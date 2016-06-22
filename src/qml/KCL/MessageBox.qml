@@ -17,7 +17,7 @@ QtObject {
     function open()
     {
         // Simulate non-modal operation with the native dialogs which are modal.
-        DeferredExecution.executeIn(1, function ()
+        DeferredExecution.invoke(function ()
         {
             if (type == MessageBox.Question)
                 clickedButton = NativeDialogs.question(title, text, buttons, defaultButton);
@@ -29,7 +29,7 @@ QtObject {
                 clickedButton = NativeDialogs.critical(title, text, buttons, defaultButton);
 
             closed(clickedButton);
-        })
+        });
     }
 
     signal closed(int clickedButton)

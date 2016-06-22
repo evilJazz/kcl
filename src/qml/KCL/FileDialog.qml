@@ -1,5 +1,7 @@
 import QtQuick 2.0
 
+import "DeferredExecution.js" as DeferredExecution
+
 QtObject {
     id: fileDialog
 
@@ -42,49 +44,61 @@ QtObject {
 
     function open()
     {
-        var dialogResult = NativeDialogs.getOpenFileName(caption, folder, getNativeFilter(), resolveSymLinks);
+        // Simulate non-modal operation with the native dialogs which are modal.
+        DeferredExecution.invoke(function ()
+        {
+            var dialogResult = NativeDialogs.getOpenFileName(fileDialog.caption, fileDialog.folder, fileDialog.getNativeFilter(), fileDialog.resolveSymLinks);
 
-        if (dialogResult.fileName.length > 0)
-        {
-            result = dialogResult.fileName;
-            accepted();
-        }
-        else
-        {
-            result = "";
-            rejected();
-        }
+            if (dialogResult.fileName.length > 0)
+            {
+                fileDialog.result = dialogResult.fileName;
+                fileDialog.accepted();
+            }
+            else
+            {
+                fileDialog.result = "";
+                fileDialog.rejected();
+            }
+        });
     }
 
     function save()
     {
-        var dialogResult = NativeDialogs.getSaveFileName(caption, folder, getNativeFilter(), resolveSymLinks);
+        // Simulate non-modal operation with the native dialogs which are modal.
+        DeferredExecution.invoke(function ()
+        {
+            var dialogResult = NativeDialogs.getSaveFileName(fileDialog.caption, fileDialog.folder, fileDialog.getNativeFilter(), fileDialog.resolveSymLinks);
 
-        if (dialogResult.fileName.length > 0)
-        {
-            result = dialogResult.fileName;
-            accepted();
-        }
-        else
-        {
-            result = "";
-            rejected();
-        }
+            if (dialogResult.fileName.length > 0)
+            {
+                fileDialog.result = dialogResult.fileName;
+                fileDialog.accepted();
+            }
+            else
+            {
+                fileDialog.result = "";
+                fileDialog.rejected();
+            }
+        });
     }
 
     function existingDirectory()
     {
-        var dialogResult = NativeDialogs.getExistingDirectory(caption, folder, true, resolveSymLinks);
+        // Simulate non-modal operation with the native dialogs which are modal.
+        DeferredExecution.invoke(function ()
+        {
+            var dialogResult = NativeDialogs.getExistingDirectory(fileDialog.caption, fileDialog.folder, true, fileDialog.resolveSymLinks);
 
-        if (dialogResult.length > 0)
-        {
-            result = dialogResult;
-            accepted();
-        }
-        else
-        {
-            result = "";
-            rejected();
-        }
+            if (dialogResult.length > 0)
+            {
+                fileDialog.result = dialogResult;
+                fileDialog.accepted();
+            }
+            else
+            {
+                fileDialog.result = "";
+                fileDialog.rejected();
+            }
+        });
     }
 }
