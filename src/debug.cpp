@@ -177,12 +177,24 @@ void kaDebug(const QString &msg)
         }
 
         int indent = indentLevel_ == -1 ? 0 : indentLevel_ * 3 + 3;
-        QByteArray marker = (showTimestamps_ ? QByteArray::number(QDateTime::currentMSecsSinceEpoch()) + " " : "") + (qApp ? (qApp->thread() == QThread::currentThread() ? "M" : "T") : "!");
+        QByteArray marker = (showTimestamps_ ? QByteArray::number(QDateTime::currentMSecsSinceEpoch()) + " " : "") +
+                            (qApp ?
+                                QString().sprintf("%16s %0x",
+                                    (qApp->thread() == QThread::currentThread() ?
+                                        "Main Thread" :
+                                        QThread::currentThread()->objectName()
+                                    ).toUtf8().constData(),
+                                    QThread::currentThreadId()
+                                ).toUtf8() :
+                                "!"
+                            );
+
+        QString message = QString().sprintf("%s: %*s%s", marker.constData(), indent, "", (const char*)msg.toUtf8());
 
         if (customMessageHandler)
-            customMessageHandler(QString().sprintf("[%s%10p] %*s%s", marker.constData(), (void *)QThread::currentThread(), indent, "", (const char*)msg.toUtf8()));
+            customMessageHandler(message);
         else
-            qDebug("[%s%10p] %*s%s", marker.constData(), (void *)QThread::currentThread(), indent, "", (const char*)msg.toUtf8());
+            qDebug(message.toUtf8().constData());
     }
 }
 
