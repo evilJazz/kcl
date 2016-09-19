@@ -126,6 +126,10 @@
     #include "KCL/sortfiltermodel.h"
 #endif
 
+#ifdef KCL_simplebase
+    #include "KCL/simplebase.h"
+#endif
+
 void KCLPlugin::registerTypes(const char *uri)
 {
     //@uri KCL
@@ -184,6 +188,10 @@ void KCLPlugin::registerTypes(const char *uri)
 #ifdef KCL_sortfiltermodel
     qmlRegisterType<QAbstractItemModel>();
     qmlRegisterType<SortFilterModel>(uri, 1, 0, "SortFilterModel");
+#endif
+
+#ifdef KCL_simplebase
+    qmlRegisterType<SimpleBase>();
 #endif
 }
 
@@ -258,6 +266,11 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 
 #ifdef KCL_base64imageprovider
     engine->addImageProvider("base64", new Base64ImageProvider());
+#endif
+
+#ifdef KCL_simplebase
+    SimpleBase *simpleBase = new SimpleBase(engine);
+    engine->rootContext()->setContextProperty("SimpleBase", simpleBase);
 #endif
 }
 

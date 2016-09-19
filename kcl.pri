@@ -32,6 +32,8 @@ contains(QT_VERSION, ^5\\..*) {
     message("KCL: Configuring for Qt 5, actual version: $${QT_VERSION}")
 }
 
+contains(QT, sql): CONFIG += kcl_sql
+
 KCL_SRC_PATH = $${PWD}/src
 KCL_INC_PATH = $${PWD}/include
 
@@ -68,6 +70,7 @@ isEmpty(kcl): kcl = \
     base64imageprovider \
     updatelocker \
     sortfiltermodel \
+    simplebase \
     singletons \
     $$kclAdd
 
@@ -112,6 +115,12 @@ kclConditionalAddModule(updatelocker)
 kclConditionalAddModule(sortfiltermodel)
 kclConditionalAddModule(paranoidretrier)
 kclConditionalAddModule(singletons)
+
+kcl_sql {
+    message("KCL: Configuring with SQL support")
+
+    kclConditionalAddModule(simplebase)
+}
 
 kcl_widgets {
     message("KCL: Configuring with Widgets support")
