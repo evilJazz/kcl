@@ -17,7 +17,7 @@
     #include "qdeclarativedebughelper_p.h"
 #endif
 
-EngineUtils::EngineUtils(QQmlEngine *engine) :
+EngineUtils::EngineUtils(QDeclarativeEngine *engine) :
     QObject(engine),
     engine_(engine)
 {
@@ -54,7 +54,9 @@ void EngineUtils::trimComponentCache()
 
 void EngineUtils::clearNetworkCache()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     engine_->networkAccessManager()->clearAccessCache();
+#endif
 
     if (engine_->networkAccessManager()->cache())
         engine_->networkAccessManager()->cache()->clear();
