@@ -141,6 +141,10 @@
     #include "KCL/simplebase.h"
 #endif
 
+#ifdef KCL_engineutils
+    #include "KCL/engineutils.h"
+#endif
+
 void KCLPlugin::registerTypes(const char *uri)
 {
     //@uri KCL
@@ -203,6 +207,10 @@ void KCLPlugin::registerTypes(const char *uri)
 
 #ifdef KCL_simplebase
     qmlRegisterType<SimpleBase>();
+#endif
+
+#ifdef KCL_engineutils
+    qmlRegisterType<EngineUtils>();
 #endif
 }
 
@@ -283,6 +291,12 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
     SimpleBase *simpleBase = new SimpleBase(engine);
     engine->rootContext()->setContextProperty("SimpleBase", simpleBase);
 #endif
+
+#ifdef KCL_engineutils
+    EngineUtils *engineUtils = new EngineUtils(engine);
+    engine->rootContext()->setContextProperty("EngineUtils", engineUtils);
+#endif
+
 }
 
 #if defined(KCL_PLUGIN) && QT_VERSION < QT_VERSION_CHECK(5, 0, 0)

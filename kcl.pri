@@ -59,6 +59,7 @@ isEmpty(kcl): kcl = \
     objectutils \
     nativedialogs \
     declarativedebug \
+    engineutils \
     settingsgroup \
     cursorarea \
     touchdetector \
@@ -91,7 +92,8 @@ defineTest(kclConditionalAddModule) {
 }
 
 INCLUDEPATH += $$KCL_INC_PATH
-HEADERS     += $$KCL_INC_PATH/KCL/kcl_global.h
+HEADERS     += $$KCL_INC_PATH/KCL/kcl_global.h \
+    $$PWD/include/KCL/engineutils.h
 
 kclConditionalAddModule(filescanner)
 kclConditionalAddModule(filesystemutils)
@@ -160,6 +162,7 @@ kcl_declarative {
     kclConditionalAddModule(cookiejarinterface)
     kclConditionalAddModule(keyeventfilter)
     kclConditionalAddModule(base64imageprovider)
+    kclConditionalAddModule(engineutils)
 
     OTHER_FILES += $$files($$KCL_SRC_PATH/qml/KCL/*, true)
 
