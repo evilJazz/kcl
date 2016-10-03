@@ -65,6 +65,7 @@ isEmpty(kcl): kcl = \
     touchdetector \
     imagerendersurface \
     imageutils \
+    filteredimageprovider \
     sceneutils \
     rawmousearea \
     datetimeutils \
@@ -111,6 +112,7 @@ kclConditionalAddModule(networkutils)
 kclConditionalAddModule(colorutils)
 kclConditionalAddModule(graphicsutils)
 kclConditionalAddModule(imageutils)
+kclConditionalAddModule(filteredimageprovider)
 kclConditionalAddModule(objectutils)
 kclConditionalAddModule(datetimeutils)
 kclConditionalAddModule(updatelocker)

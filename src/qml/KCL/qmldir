@@ -11,7 +11,7 @@ ActionCommand 1.0 ActionCommand.qml
 
 ConstrainedText 1.0 ConstrainedText.qml
 ExtListView 1.0 ExtListView.qml
-ImagePushButton 1.0 ImagePushButton.qml
+FilteredImage 1.0 FilteredImage.qml
 
 QueueManager 1.0 QueueManager.qml
 FlickableColumn 1.0 FlickableColumn.qml

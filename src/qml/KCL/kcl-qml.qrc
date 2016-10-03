@@ -42,5 +42,6 @@
         <file>PopUpOverlay.qml</file>
         <file>FlickableRow.qml</file>
         <file>private/PopUpOverlay.js</file>
+        <file>FilteredImage.qml</file>
     </qresource>
 </RCC>

@@ -133,6 +133,10 @@
     #include "KCL/base64imageprovider.h"
 #endif
 
+#ifdef KCL_filteredimageprovider
+    #include "KCL/filteredimageprovider.h"
+#endif
+
 #ifdef KCL_sortfiltermodel
     #include "KCL/sortfiltermodel.h"
 #endif
@@ -285,6 +289,10 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 
 #ifdef KCL_base64imageprovider
     engine->addImageProvider("base64", new Base64ImageProvider());
+#endif
+
+#ifdef KCL_filteredimageprovider
+    engine->addImageProvider("filtered", new FilteredImageProvider());
 #endif
 
 #ifdef KCL_simplebase
