@@ -92,7 +92,7 @@ QVariant SimpleBase::load(const QString &key, QString column)
         if (column.isEmpty())
             column = "value";
 
-        q.prepare(QString("SELECT `%1` FROM kv_store WHERE key = ?;").arg(column));
+        q.prepare(QString("SELECT `%1` FROM `kv_store` WHERE `key` = ?;").arg(column));
         q.bindValue(0, key);
 
         q.exec();
@@ -118,11 +118,17 @@ bool SimpleBase::save(const QString &key, const QVariant &value)
         QSqlQuery q(db_);
 
         QVariant created = load(key, "date_created");
+        QString date_created_preset = "?";
 
-        q.prepare("REPLACE INTO kv_store(key, value, date_created, date_modified) VALUES(?, ?, ?, CURRENT_TIMESTAMP);");
+        if (created.isNull())
+            date_created_preset = "CURRENT_TIMESTAMP";
+
+        q.prepare("REPLACE INTO `kv_store`(`key`, `value`, `date_created`, `date_modified`) VALUES(?, ?, " + date_created_preset + ", CURRENT_TIMESTAMP);");
         q.bindValue(0, key);
         q.bindValue(1, value);
-        q.bindValue(2, created);
+
+        if (!created.isNull())
+            q.bindValue(2, created);
 
         bool result = q.exec();
 
@@ -195,12 +201,12 @@ void SimpleBase::createDatabase()
     QSqlQuery result;
 
     result = db_.exec(
-        "CREATE TABLE IF NOT EXISTS kv_store"
+        "CREATE TABLE IF NOT EXISTS `kv_store`"
         "("
-        "    key TEXT PRIMARY KEY NOT NULL,"
-        "    value TEXT,"
-        "    date_created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
-        "    date_modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
+        "    `key` TEXT PRIMARY KEY NOT NULL,"
+        "    `value` TEXT,"
+        "    `date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+        "    `date_modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
         ")"
     );
 
