@@ -54,6 +54,7 @@ public:
     Q_INVOKABLE static bool inherits(QObject *target, const QString &className);
 
     Q_INVOKABLE static QObject *objectify(const QVariant &object);
+    Q_INVOKABLE static QVariant objectToVariant(QObject *object);
 
     Q_INVOKABLE static QString objectAsString(QObject *object);
     Q_INVOKABLE static void dumpObjectTree(QObject *target);

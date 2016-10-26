@@ -66,6 +66,11 @@ QObject *ObjectUtils::objectify(const QVariant &object)
     return static_cast<QObject *>(object.canConvert<QObject *>() ? object.value<QObject *>() : NULL);
 }
 
+QVariant ObjectUtils::objectToVariant(QObject *object)
+{
+    return QVariant::fromValue(object);
+}
+
 QString ObjectUtils::objectAsString(QObject *object)
 {
     return object ? QString().sprintf("%s(%s%p)", object->metaObject()->className(), (!object->objectName().isEmpty() ? object->objectName() + " " : "").toLatin1().constData(), object) : QString("NULL");
