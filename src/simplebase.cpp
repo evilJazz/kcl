@@ -141,6 +141,66 @@ bool SimpleBase::save(const QString &key, const QVariant &value)
     return false;
 }
 
+bool SimpleBase::remove(const QString &key)
+{
+    DGUARDMETHODTIMED;
+
+    if (loadDatabase())
+    {
+        QSqlQuery q(db_);
+
+        q.prepare("DELETE FROM `kv_store` WHERE `key` = ?;");
+        q.bindValue(0, key);
+
+        bool result = q.exec();
+
+        if (!result)
+            checkDatabaseError(q, "remove");
+
+        result = result && q.numRowsAffected() > 0;
+        return result;
+    }
+    else
+        return false;
+}
+
+bool SimpleBase::copy(const QString &srcKey, const QString &dstKey)
+{
+    DGUARDMETHODTIMED;
+
+    if (loadDatabase())
+    {
+        QSqlQuery q(db_);
+
+        q.prepare("REPLACE INTO `kv_store`(`key`, `value`, `date_created`, `date_modified`) SELECT ?, value, date_created, date_modified FROM `kv_store` WHERE `key` = ?;");
+        q.bindValue(0, dstKey);
+        q.bindValue(1, srcKey);
+
+        bool result = q.exec();
+
+        if (!result)
+            checkDatabaseError(q, "copy");
+
+        result = result && q.numRowsAffected() > 0;
+        return result;
+    }
+
+    return false;
+}
+
+bool SimpleBase::rename(const QString &existingKey, const QString &newKey)
+{
+    DGUARDMETHODTIMED;
+    // TODO: Improve by updating key on server...
+
+    bool result = copy(existingKey, newKey);
+
+    if (result)
+        result = remove(existingKey);
+
+    return result;
+}
+
 void SimpleBase::setGlobalDatabaseFilename(const QString fileName)
 {
     if (fileName != getGlobalDatabaseFilenameSingleton())
@@ -207,7 +267,7 @@ void SimpleBase::createDatabase()
         "    `value` TEXT,"
         "    `date_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,"
         "    `date_modified` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
-        ")"
+        ");"
     );
 
     checkDatabaseError(result, "createDatabase");

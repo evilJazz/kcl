@@ -50,6 +50,9 @@ public:
 
     Q_INVOKABLE QVariant load(const QString &key);
     Q_INVOKABLE bool save(const QString &key, const QVariant &value);
+    Q_INVOKABLE bool remove(const QString &key);
+    Q_INVOKABLE bool copy(const QString &srcKey, const QString &dstKey);
+    Q_INVOKABLE bool rename(const QString &existingKey, const QString &newKey);
 
     static void setGlobalDatabaseFilename(const QString fileName);
     static QString globalDatabaseFilename();
