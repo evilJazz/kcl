@@ -81,6 +81,31 @@ QVariant SimpleBase::load(const QString &key)
     return load(key, QString::null);
 }
 
+bool SimpleBase::exists(const QString &key)
+{
+    DGUARDMETHODTIMED;
+
+    if (loadDatabase())
+    {
+        QSqlQuery q(db_);
+
+        q.prepare("SELECT COUNT(*) FROM `kv_store` WHERE `key` = ?;");
+        q.bindValue(0, key);
+
+        q.exec();
+
+        if (!q.next())
+        {
+            checkDatabaseError(q, "exists");
+            return false;
+        }
+
+        return q.value(0).toInt() > 0;
+    }
+    else
+        return false;
+}
+
 QVariant SimpleBase::load(const QString &key, QString column)
 {
     DGUARDMETHODTIMED;

@@ -49,6 +49,7 @@ public:
     virtual ~SimpleBase();
 
     Q_INVOKABLE QVariant load(const QString &key);
+    Q_INVOKABLE bool exists(const QString &key);
     Q_INVOKABLE bool save(const QString &key, const QVariant &value);
     Q_INVOKABLE bool remove(const QString &key);
     Q_INVOKABLE bool copy(const QString &srcKey, const QString &dstKey);
