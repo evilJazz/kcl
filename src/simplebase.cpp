@@ -48,6 +48,7 @@
 #include "KCL/debug.h"
 
 static QString *globalDatabaseFilename = NULL;
+static QMutex globalDbMutex_(QMutex::Recursive);
 
 QString getGlobalDatabaseFilenameSingleton()
 {
@@ -84,6 +85,7 @@ QVariant SimpleBase::load(const QString &key)
 bool SimpleBase::exists(const QString &key)
 {
     DGUARDMETHODTIMED;
+    QMutexLocker l(&globalDbMutex_);
 
     if (loadDatabase())
     {
@@ -109,6 +111,7 @@ bool SimpleBase::exists(const QString &key)
 QVariant SimpleBase::load(const QString &key, QString column)
 {
     DGUARDMETHODTIMED;
+    QMutexLocker l(&globalDbMutex_);
 
     if (loadDatabase())
     {
@@ -137,6 +140,7 @@ QVariant SimpleBase::load(const QString &key, QString column)
 bool SimpleBase::save(const QString &key, const QVariant &value)
 {
     DGUARDMETHODTIMED;
+    QMutexLocker l(&globalDbMutex_);
 
     if (loadDatabase())
     {
@@ -169,6 +173,7 @@ bool SimpleBase::save(const QString &key, const QVariant &value)
 bool SimpleBase::remove(const QString &key)
 {
     DGUARDMETHODTIMED;
+    QMutexLocker l(&globalDbMutex_);
 
     if (loadDatabase())
     {
@@ -192,6 +197,7 @@ bool SimpleBase::remove(const QString &key)
 bool SimpleBase::copy(const QString &srcKey, const QString &dstKey)
 {
     DGUARDMETHODTIMED;
+    QMutexLocker l(&globalDbMutex_);
 
     if (loadDatabase())
     {

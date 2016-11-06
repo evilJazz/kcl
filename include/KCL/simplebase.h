@@ -40,6 +40,7 @@
 #include <QObject>
 #include <QVariant>
 #include <QSqlDatabase>
+#include <QMutex>
 
 class SimpleBase : public QObject
 {
@@ -58,12 +59,13 @@ public:
     static void setGlobalDatabaseFilename(const QString fileName);
     static QString globalDatabaseFilename();
 
+    bool loadDatabase();
+
 private:
     QSqlDatabase db_;
 
     QVariant load(const QString &key, QString column);
 
-    bool loadDatabase();
     void createDatabase();
     void checkDatabaseError(const QSqlQuery &result, const QByteArray &functionName);
 };
