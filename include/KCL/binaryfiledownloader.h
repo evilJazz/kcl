@@ -36,70 +36,28 @@
 #define BINARYFILEDOWNLOADER_H
 
 #include "KCL/kcl_global.h"
+#include "KCL/webcall.h"
 
-#include <QObject>
-#include <QByteArray>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
+/* BinaryFileDownloader is a legacy class used to implement binary downloads in
+ * QtQuick 1.x since the XMLHttpRequest in Qt 4.x is not binary safe.
+ */
 
-class RequestCapturedData
-{
-public:
-    QString method;
-    QByteArray rawData;
-};
-
-class KCL_EXPORT BinaryFileDownloader : public QObject
+class KCL_EXPORT BinaryFileDownloader : public WebCall
 {
     Q_OBJECT
     Q_PROPERTY(QByteArray downloadedData READ downloadedData NOTIFY downloaded)
-    Q_PROPERTY(int errorCode READ errorCode NOTIFY error)
-    Q_PROPERTY(QString errorText READ errorText NOTIFY error)
-    Q_PROPERTY(bool autoDelete READ autoDelete WRITE setAutoDelete NOTIFY autoDeleteChanged)
 public:
     explicit BinaryFileDownloader(QObject *parent = NULL);
     virtual ~BinaryFileDownloader();
 
     Q_INVOKABLE void download(QString url) { get(url); }
 
-    Q_INVOKABLE void get(QString url);
-    Q_INVOKABLE void post(QString url, const QByteArray &rawData);
-
-    Q_INVOKABLE void setRequestHeader(const QByteArray &key, const QByteArray &value);
-    Q_INVOKABLE void clearRequestHeaders();
-
-    Q_INVOKABLE QByteArray downloadedData() const { return downloadedData_; }
-
-    int errorCode() const { return errorCode_; }
-    QString errorText() const { return errorText_; }
-
-    bool autoDelete() const;
-    void setAutoDelete(bool value);
-
-    QNetworkAccessManager *networkAccessManager();
-    void setNetworkAccessManager(QNetworkAccessManager *networkAccessManager);
+    Q_INVOKABLE QByteArray downloadedData() const { return replyData(); }
 
 signals:
     void downloaded(QByteArray data);
-    void error(int errorCode, const QString &errorText);
-    void autoDeleteChanged();
 
-private slots:
-    void fileDownloaded();
-
-private:
-    QNetworkAccessManager *manager_;
-    QByteArray downloadedData_;
-    int errorCode_;
-    QString errorText_;
-    bool autoDelete_;
-
-    QHash<QNetworkReply *, RequestCapturedData> requestData_;
-
-    QMultiMap<QByteArray, QByteArray> requestHeaders_;
-
-    void setHeadersOnRequest(QNetworkRequest *request);
+public slots:
 };
 
 #endif // BINARYFILEDOWNLOADER_H

@@ -21,11 +21,7 @@ contains(QT_VERSION, ^5\\..*) {
     CONFIG += kcl_qt5
     QT += concurrent
 
-    contains(QT, quick) {
-        CONFIG += kcl_qtquick2 kcl_declarative
-        DEFINES += KCL_QTQUICK2
-    }
-
+    contains(QT, quick): CONFIG += kcl_qtquick2 kcl_declarative
     contains(QT, declarative): CONFIG += kcl_qtquick1 kcl_declarative
     contains(QT, widgets): CONFIG += kcl_widgets
 
@@ -39,6 +35,7 @@ KCL_INC_PATH = $${PWD}/include
 
 isEmpty(kcl): kcl = \
     binaryfiledownloader \
+    webcall \
     cookiejarinterface \
     filescanner \
     filesystemutils \
@@ -93,8 +90,7 @@ defineTest(kclConditionalAddModule) {
 }
 
 INCLUDEPATH += $$KCL_INC_PATH
-HEADERS     += $$KCL_INC_PATH/KCL/kcl_global.h \
-    $$PWD/include/KCL/engineutils.h
+HEADERS     += $$KCL_INC_PATH/KCL/kcl_global.h
 
 kclConditionalAddModule(filescanner)
 kclConditionalAddModule(filesystemutils)
@@ -112,13 +108,13 @@ kclConditionalAddModule(networkutils)
 kclConditionalAddModule(colorutils)
 kclConditionalAddModule(graphicsutils)
 kclConditionalAddModule(imageutils)
-kclConditionalAddModule(filteredimageprovider)
 kclConditionalAddModule(objectutils)
 kclConditionalAddModule(datetimeutils)
 kclConditionalAddModule(updatelocker)
 kclConditionalAddModule(sortfiltermodel)
 kclConditionalAddModule(paranoidretrier)
 kclConditionalAddModule(singletons)
+kclConditionalAddModule(webcall)
 
 kcl_sql {
     message("KCL: Configuring with SQL support")
@@ -140,12 +136,16 @@ kcl_qtquick1 {
     QT += script
 
     DEFINES -= KCL_QTQUICK2
+    DEFINES += KCL_QTQUICK1
 
     kclConditionalAddModule(rawmousearea)
 }
 
 kcl_qtquick2 {
     message("KCL: Configuring with QtQuick 2.x support")
+
+    DEFINES -= KCL_QTQUICK1
+    DEFINES += KCL_QTQUICK2
 }
 
 kcl_declarative {
@@ -163,6 +163,7 @@ kcl_declarative {
     kclConditionalAddModule(binaryfiledownloader)
     kclConditionalAddModule(cookiejarinterface)
     kclConditionalAddModule(keyeventfilter)
+    kclConditionalAddModule(filteredimageprovider)
     kclConditionalAddModule(base64imageprovider)
     kclConditionalAddModule(engineutils)
 
