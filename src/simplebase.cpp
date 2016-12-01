@@ -249,10 +249,16 @@ bool SimpleBase::loadDatabase()
 {
     DGUARDMETHODTIMED;
 
-    if (!db_.isOpen())
+    if (!db_.isValid() || !db_.isOpen() || db_.isOpenError() || db_.lastError().type() != QSqlError::NoError)
     {
+        // Use default database connection by default. This can be any database connector supported by Qt.
         db_ = QSqlDatabase::database();
 
+        // Not connected or connection error? Try a reconnect...
+        if (db_.isValid() && (!db_.isOpen() || db_.lastError().type() != QSqlError::NoError))
+            db_.open();
+
+        // Still no luck? Try with our internal SQLite database instead...
         if (!db_.isOpen())
         {
             if (!QSqlDatabase::isDriverAvailable("QSQLITE"))
@@ -309,5 +315,8 @@ void SimpleBase::checkDatabaseError(const QSqlQuery &result, const QByteArray &f
     QSqlError lastError = result.lastError();
 
     if (lastError.isValid())
+    {
         qWarning() << "SQL error in function " << functionName << ": " << lastError.text() << '\n' << flush;
+        db_.open(); // Make sure we reconnect to the database on error!
+    }
 }
