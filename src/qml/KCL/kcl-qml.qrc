@@ -43,5 +43,6 @@
         <file>FlickableRow.qml</file>
         <file>private/PopUpOverlay.js</file>
         <file>FilteredImage.qml</file>
+        <file>CountdownTimer.qml</file>
     </qresource>
 </RCC>

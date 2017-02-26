@@ -35,3 +35,5 @@ MessageBox 1.0 MessageBox.qml
 FileDialog 1.0 FileDialog.qml
 
 GroupedItemGrid 1.0 GroupedItemGrid.qml
+
+CountdownTimer 1.0 CountdownTimer.qml
