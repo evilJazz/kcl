@@ -44,5 +44,6 @@
         <file>private/PopUpOverlay.js</file>
         <file>FilteredImage.qml</file>
         <file>CountdownTimer.qml</file>
+        <file>TemplateRenderer.qml</file>
     </qresource>
 </RCC>
