@@ -89,4 +89,8 @@ PropertyChangeObserver {
         var re = new RegExp(renderer.templateRegEx, "gi");
         content = template.replace(re, replacerCallback);
     }
+
+    // The following is a hack to allow a list property to be default...
+    default property alias children: renderer.internalChildren
+    property list<QtObject> internalChildren
 }
