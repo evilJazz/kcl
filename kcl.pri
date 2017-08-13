@@ -57,6 +57,7 @@ isEmpty(kcl): kcl = \
     nativedialogs \
     declarativedebug \
     engineutils \
+    propertychangeobserver \
     settingsgroup \
     cursorarea \
     touchdetector \
@@ -115,6 +116,7 @@ kclConditionalAddModule(sortfiltermodel)
 kclConditionalAddModule(paranoidretrier)
 kclConditionalAddModule(singletons)
 kclConditionalAddModule(webcall)
+kclConditionalAddModule(propertychangeobserver)
 
 kcl_sql {
     message("KCL: Configuring with SQL support")
@@ -186,3 +188,6 @@ kcl_declarative {
 contains(kcl, paranoidretrier) {
     message("KCL: Paranoid Retrier class enabled, make sure to enable C++X0/C++11 support in your compiler flags.")
 }
+
+DISTFILES += \
+    $$PWD/src/qml/KCL/TemplateRenderer.qml
