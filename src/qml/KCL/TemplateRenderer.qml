@@ -41,10 +41,13 @@ PropertyChangeObserver {
     property url templateSource: ""
     property string template: ""
     property string content: ""
+    property bool contentDirty: true
 
     property string templateRegEx: "\\${(.*?)}"
 
     property int renderDelay: 10 // Change to -1 to disable automatic rendering
+
+    ignoredPropertyNames: ["contentDirty", "content", "renderDelay"]
 
     property Timer renderTimer: Timer {
         id: renderTimer
@@ -53,14 +56,43 @@ PropertyChangeObserver {
         onTriggered: renderer.updateContent()
     }
 
-    onPropertyChanged:
+    onParentChanged:
     {
-        if (renderDelay < 0)
-            return;
-        else if (renderDelay == 0)
+        var newTopLevel = renderer;
+        var item = parent;
+        while (item && isTemplateRenderer(item))
+        {
+            newTopLevel = item;
+            item = item.parent;
+        }
+
+        topLevelTemplateRenderer = newTopLevel;
+    }
+
+    property QtObject topLevelTemplateRenderer: null
+
+    onPropertyChanged: _propertyChanged(propertyName)
+
+    signal segmentChanged(string segmentName)
+
+    function _segmentChanged(segmentName)
+    {
+        segmentChanged(segmentName);
+        _propertyChanged(segmentName);
+    }
+
+    function _propertyChanged(propertyName)
+    {
+        if (!renderer.contentDirty)
+            renderer.contentDirty = true;
+
+        if (renderDelay == 0)
             updateContent();
-        else
+        else if (renderDelay > 0)
             renderTimer.start();
+
+        if (isTemplateRenderer(parent))
+            parent._segmentChanged(renderer.name);
     }
 
     function _TemplateRenderer_replaceMarkerForProperty(propertyName)
@@ -73,6 +105,24 @@ PropertyChangeObserver {
         return _TemplateRenderer_replaceMarkerForProperty(propertyName);
     }
 
+    function isTemplateRenderer(item)
+    {
+        return item.hasOwnProperty("contentDirty") &&
+               item.hasOwnProperty("name")
+    }
+
+    function findSegmentByName(name)
+    {
+        for (var i = 0; i < children.length; ++i)
+        {
+            var child = children[i];
+            if (isTemplateRenderer(child) && child.name === name)
+                return child;
+        }
+
+        return null;
+    }
+
     function updateContent()
     {
         if (template.length == 0 && templateSource != "")
@@ -83,11 +133,24 @@ PropertyChangeObserver {
             if (renderer.hasOwnProperty(p1))
                 return replaceMarkerForProperty(p1);
             else
-                return match;
+            {
+                var segment = findSegmentByName(p1);
+                if (segment)
+                {
+                    if (segment.contentDirty)
+                        segment.updateContent();
+
+                    return segment.content;
+                }
+                else
+                    return match;
+            }
         }
 
         var re = new RegExp(renderer.templateRegEx, "gi");
         content = template.replace(re, replacerCallback);
+
+        renderer.contentDirty = false;
     }
 
     // The following is a hack to allow a list property to be default...

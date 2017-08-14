@@ -56,19 +56,27 @@ class KCL_EXPORT PropertyChangeObserver :
 #endif
 {
     Q_OBJECT
-
+    Q_PROPERTY(QObject *parent READ parent WRITE setParent NOTIFY parentChanged)
+    Q_PROPERTY(QStringList ignoredPropertyNames READ ignoredPropertyNames WRITE setIgnoredPropertyNames NOTIFY ignoredPropertyNamesChanged)
 public:
     explicit PropertyChangeObserver(QObject *parent = 0);
+
+    QStringList ignoredPropertyNames() const;
+    void setIgnoredPropertyNames(const QStringList &ignoredPropertyNames);
 
 public slots:
 
 signals:
     void propertyChanged(const QString &propertyName);
+    void parentChanged();
+    void ignoredPropertyNamesChanged();
 
 protected slots:
     void handleDeclarativePropertyChanged();
 
 protected:
+    QSet<QString> ignoredPropertyNames_;
+
     bool event(QEvent *e);
 
     // QDeclarativeParserStatus interface
@@ -76,6 +84,7 @@ protected:
     void componentComplete();
 
     void connectToNotifySignals();
+    void emitPropertyChanged(const QString &propertyName);
 };
 
 #endif // PROPERTYCHANGEOBSERVER_H

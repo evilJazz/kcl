@@ -52,6 +52,20 @@ PropertyChangeObserver::PropertyChangeObserver(QObject *parent) :
 {
 }
 
+QStringList PropertyChangeObserver::ignoredPropertyNames() const
+{
+    return ignoredPropertyNames_.values();
+}
+
+void PropertyChangeObserver::setIgnoredPropertyNames(const QStringList &ignoredPropertyNames)
+{
+    if (ignoredPropertyNames_.values() != ignoredPropertyNames)
+    {
+        ignoredPropertyNames_ = QSet<QString>::fromList(ignoredPropertyNames);
+        emit ignoredPropertyNamesChanged();
+    }
+}
+
 bool PropertyChangeObserver::event(QEvent *e)
 {
     if (e->type() == QEvent::DynamicPropertyChange)
@@ -60,8 +74,14 @@ bool PropertyChangeObserver::event(QEvent *e)
 
         //DPRINTF("Dynamic property changed: %s", dpce->propertyName().constData());
 
-        emit propertyChanged(dpce->propertyName());
+        emitPropertyChanged(dpce->propertyName());
     }
+    else if (e->type() == QEvent::ParentChange)
+    {
+        emit parentChanged();
+    }
+
+    return QObject::event(e);
 }
 
 void PropertyChangeObserver::classBegin()
@@ -70,33 +90,50 @@ void PropertyChangeObserver::classBegin()
 
 void PropertyChangeObserver::componentComplete()
 {
+    emit parentChanged();
     connectToNotifySignals();
 }
 
 void PropertyChangeObserver::connectToNotifySignals()
 {
-    for (int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount(); ++i)
+    for (int i = 0; i < metaObject()->propertyCount(); ++i)
     {
         QMetaProperty prop = metaObject()->property(i);
         QString name = prop.name();
 
         QDeclarativeProperty dprop(this, name);
         if (dprop.isValid())
+        {
+            //qDebug() << "Connecting to signal" << name;
             dprop.connectNotifySignal(this, SLOT(handleDeclarativePropertyChanged()));
+        }
     }
+}
+
+void PropertyChangeObserver::emitPropertyChanged(const QString &propertyName)
+{
+    if (!ignoredPropertyNames_.contains(propertyName))
+        emit propertyChanged(propertyName);
 }
 
 void PropertyChangeObserver::handleDeclarativePropertyChanged()
 {
-    int index = senderSignalIndex() - metaObject()->methodOffset() + metaObject()->propertyOffset();
+    int signalIndex = senderSignalIndex();
 
-    QMetaProperty prop = metaObject()->property(index);
-    QString name = prop.name();
-
-    QDeclarativeProperty dprop(this, name);
-    if (dprop.isValid())
+    for (int i = 0; i < metaObject()->propertyCount(); ++i)
     {
-        //DOP(qDebug() << sender() << senderSignalIndex() << "->" << name << ": " << dprop.read());
-        emit propertyChanged(name);
+        QMetaProperty prop = metaObject()->property(i);
+
+        if (prop.notifySignalIndex() == signalIndex)
+        {
+            QString name = prop.name();
+            QDeclarativeProperty dprop(this, name);
+            if (dprop.isValid())
+            {
+                //DOP(qDebug() << sender() << senderSignalIndex() << "->" << name << ": " << dprop.read());
+                emitPropertyChanged(name);
+                return;
+            }
+        }
     }
 }
