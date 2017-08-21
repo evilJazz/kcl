@@ -47,7 +47,12 @@ PropertyChangeObserver {
 
     property int renderDelay: 10 // Change to -1 to disable automatic rendering
 
-    ignoredPropertyNames: ["contentDirty", "content", "renderDelay"]
+    property QtObject topLevelTemplateRenderer: null
+
+    signal subRendererTemplateChanged(var renderer)
+
+    property variant _TemplateRenderer_ignoredPropertyNames: ["templateSource", "template", "templateRegEx", "contentDirty", "content", "renderDelay", "internalChildren", "children", "topLevelTemplateRenderer"]
+    ignoredPropertyNames: _TemplateRenderer_ignoredPropertyNames
 
     property Timer renderTimer: Timer {
         id: renderTimer
@@ -58,6 +63,7 @@ PropertyChangeObserver {
 
     onParentChanged:
     {
+        //console.log("Parent changed! This item's name: " + name);
         var newTopLevel = renderer;
         var item = parent;
         while (item && isTemplateRenderer(item))
@@ -67,21 +73,25 @@ PropertyChangeObserver {
         }
 
         topLevelTemplateRenderer = newTopLevel;
+        //console.log("Top level template renderer: " + topLevelTemplateRenderer + " This item's name: " + name);
     }
 
-    property QtObject topLevelTemplateRenderer: null
+    onTemplateChanged: _notifyParentRenderer()
+    onTemplateSourceChanged: _notifyParentRenderer()
+    onTemplateRegExChanged: _notifyParentRenderer()
+    onSubRendererTemplateChanged: _notifyParentRenderer()
 
-    onPropertyChanged: _propertyChanged(propertyName)
-
-    signal segmentChanged(string segmentName)
-
-    function _segmentChanged(segmentName)
+    function _notifyParentRenderer()
     {
-        segmentChanged(segmentName);
-        _propertyChanged(segmentName);
+        _markContentDirty();
+
+        if (isTemplateRenderer(parent))
+            parent.subRendererTemplateChanged(renderer)
     }
 
-    function _propertyChanged(propertyName)
+    onPropertyChanged: _markContentDirty()
+
+    function _markContentDirty()
     {
         if (!renderer.contentDirty)
             renderer.contentDirty = true;
@@ -90,9 +100,6 @@ PropertyChangeObserver {
             updateContent();
         else if (renderDelay > 0)
             renderTimer.start();
-
-        if (isTemplateRenderer(parent))
-            parent._segmentChanged(renderer.name);
     }
 
     function _TemplateRenderer_replaceMarkerForProperty(propertyName)
@@ -105,13 +112,23 @@ PropertyChangeObserver {
         return _TemplateRenderer_replaceMarkerForProperty(propertyName);
     }
 
-    function isTemplateRenderer(item)
+    function _TemplateRenderer_replaceMarkerForContent()
     {
-        return item.hasOwnProperty("contentDirty") &&
-               item.hasOwnProperty("name")
+        return content;
     }
 
-    function findSegmentByName(name)
+    function replaceMarkerForContent()
+    {
+        return _TemplateRenderer_replaceMarkerForContent();
+    }
+
+    function isTemplateRenderer(item)
+    {
+        return item && item.hasOwnProperty("contentDirty") &&
+                       item.hasOwnProperty("name")
+    }
+
+    function findTemplateRendererByName(name)
     {
         for (var i = 0; i < children.length; ++i)
         {
@@ -134,13 +151,13 @@ PropertyChangeObserver {
                 return replaceMarkerForProperty(p1);
             else
             {
-                var segment = findSegmentByName(p1);
-                if (segment)
+                var subRenderer = findTemplateRendererByName(p1);
+                if (subRenderer)
                 {
-                    if (segment.contentDirty)
-                        segment.updateContent();
+                    if (subRenderer.contentDirty)
+                        subRenderer.updateContent();
 
-                    return segment.content;
+                    return subRenderer.replaceMarkerForContent();
                 }
                 else
                     return match;
