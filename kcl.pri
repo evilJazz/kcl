@@ -116,7 +116,6 @@ kclConditionalAddModule(sortfiltermodel)
 kclConditionalAddModule(paranoidretrier)
 kclConditionalAddModule(singletons)
 kclConditionalAddModule(webcall)
-kclConditionalAddModule(propertychangeobserver)
 
 kcl_sql {
     message("KCL: Configuring with SQL support")
@@ -189,5 +188,6 @@ contains(kcl, paranoidretrier) {
     message("KCL: Paranoid Retrier class enabled, make sure to enable C++X0/C++11 support in your compiler flags.")
 }
 
-DISTFILES += \
-    $$PWD/src/qml/KCL/TemplateRenderer.qml
+contains(QT_VERSION, ^4\\.8\\..*) | kcl_qt5 {
+    kclConditionalAddModule(propertychangeobserver)
+}

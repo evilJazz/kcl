@@ -39,6 +39,8 @@
 
 #include <QObject>
 #include <QEvent>
+#include <QSet>
+#include <QStringList>
 
 #ifdef KCL_QTQUICK2
     #include <QtQuick>
