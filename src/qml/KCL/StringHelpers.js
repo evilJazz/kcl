@@ -6,12 +6,14 @@ String.prototype.startsWith = function(s) { return this.indexOf(s) === 0; }
 String.prototype.endsWith = function (s) { return this.length >= s.length && this.substr(this.length - s.length) === s; }
 String.prototype.replaceArgs = function(args)
 {
-    var str = this;
+    var re = new RegExp("%([0-9]+)", "g");
 
-    for (var i = 0; i < args.length; ++i)
-        str = str.replace(eval("/%" + (i + 1 ) + "/"), args[i]);
+    var replacerCallback = function(match, p1, offset, string)
+    {
+        return args[parseInt(p1) - 1];
+    }
 
-    return str;
+    return this.replace(re, replacerCallback);
 }
 
 String.prototype.removeClasses = function(s)
