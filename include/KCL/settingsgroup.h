@@ -95,8 +95,12 @@ public:
     bool saveDefaults() const { return saveDefaults_; }
 
     static QSettings *settingsInstance();
+
     static void setGlobalIniFilename(const QString fileName);
     static QString globalIniFilename();
+
+    static void setGlobalCustomSettingsFormat(QSettings::Format format);
+    static QSettings::Format globalCustomSettingsFormat();
 
     static void setFullSyncEnabled(bool value);
     static bool fullSyncEnabled();

@@ -48,6 +48,7 @@
 
 static QString *globalIniFilename = NULL;
 static QSettings *globalSettings_ = NULL;
+static QSettings::Format globalCustomSettingsFormat_ = QSettings::IniFormat;
 static bool fullSyncEnabled_ = false;
 
 QString getGlobalIniFilenameSingleton()
@@ -212,9 +213,9 @@ QSettings *SettingsGroup::settingsInstance()
     if (!globalSettings_)
     {
         if (getGlobalIniFilenameSingleton().isEmpty())
-            globalSettings_ = new QSettings();
+            globalSettings_ = new QSettings(globalCustomSettingsFormat_, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
         else
-            globalSettings_ = new QSettings(getGlobalIniFilenameSingleton(), QSettings::IniFormat);
+            globalSettings_ = new QSettings(getGlobalIniFilenameSingleton(), globalCustomSettingsFormat_);
     }
 
     return globalSettings_;
@@ -237,6 +238,25 @@ void SettingsGroup::setGlobalIniFilename(const QString fileName)
 QString SettingsGroup::globalIniFilename()
 {
     return getGlobalIniFilenameSingleton();
+}
+
+void SettingsGroup::setGlobalCustomSettingsFormat(QSettings::Format format)
+{
+    if (format != globalCustomSettingsFormat_)
+    {
+        if (globalSettings_ && globalSettings_->format() != format)
+        {
+            delete globalSettings_;
+            globalSettings_ = NULL;
+        }
+
+        globalCustomSettingsFormat_ = format;
+    }
+}
+
+QSettings::Format SettingsGroup::globalCustomSettingsFormat()
+{
+    return globalCustomSettingsFormat_;
 }
 
 void SettingsGroup::setFullSyncEnabled(bool value)
