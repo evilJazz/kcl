@@ -43,6 +43,11 @@
 #include <QSqlError>
 #include <QDebug>
 
+#include <QPoint>
+#include <QSize>
+#include <QRect>
+#include <QDataStream>
+
 #include "KCL/filesystemutils.h"
 
 #ifndef KCL_DEBUG
@@ -70,12 +75,168 @@ void setGlobalDatabaseFilenameSingleton(const QString value)
     *globalDatabaseFilename = value;
 }
 
+
+/* Variant serializer helper functions taken from QSettingsPrivate */
+
+QStringList SimpleBase::splitArgs(const QString &s, int idx)
+{
+    int l = s.length();
+    Q_ASSERT(l > 0);
+    Q_ASSERT(s.at(idx) == QLatin1Char('('));
+    Q_ASSERT(s.at(l - 1) == QLatin1Char(')'));
+    QStringList result;
+    QString item;
+    for (++idx; idx < l; ++idx) {
+        QChar c = s.at(idx);
+        if (c == QLatin1Char(')')) {
+            Q_ASSERT(idx == l - 1);
+            result.append(item);
+        } else if (c == QLatin1Char(' ')) {
+            result.append(item);
+            item.clear();
+        } else {
+            item.append(c);
+        }
+    }
+    return result;
+}
+
+QString SimpleBase::variantToString(const QVariant &v)
+{
+    QString result;
+    switch (v.type()) {
+        case QVariant::Invalid:
+            result = QLatin1String("@Invalid()");
+            break;
+        case QVariant::ByteArray: {
+            QByteArray a = v.toByteArray();
+            result = QLatin1String("@ByteArray(")
+                     + QLatin1String(a.toBase64())
+                     + QLatin1Char(')');
+            break;
+        }
+        case QVariant::String:
+        case QVariant::LongLong:
+        case QVariant::ULongLong:
+        case QVariant::Int:
+        case QVariant::UInt:
+        case QVariant::Bool:
+        case QVariant::Double:
+        case QVariant::KeySequence: {
+            result = v.toString();
+            if (result.contains(QChar::Null))
+                result = QLatin1String("@String(") + result + QLatin1Char(')');
+            else if (result.startsWith(QLatin1Char('@')))
+                result.prepend(QLatin1Char('@'));
+            break;
+        }
+#ifndef QT_NO_GEOM_VARIANT
+        case QVariant::Rect: {
+            QRect r = qvariant_cast<QRect>(v);
+            result = QString().sprintf("@Rect(%d %d %d %d)", r.x(), r.y(), r.width(), r.height());
+            break;
+        }
+        case QVariant::Size: {
+            QSize s = qvariant_cast<QSize>(v);
+            result = QString().sprintf("@Size(%d %d)", s.width(), s.height());
+            break;
+        }
+        case QVariant::Point: {
+            QPoint p = qvariant_cast<QPoint>(v);
+            result = QString().sprintf("@Point(%d %d)", p.x(), p.y());
+            break;
+        }
+#endif // !QT_NO_GEOM_VARIANT
+        default: {
+#ifndef QT_NO_DATASTREAM
+            QDataStream::Version version;
+            const char *typeSpec;
+            if (v.type() == QVariant::DateTime) {
+                version = QDataStream::Qt_4_0;
+                typeSpec = "@DateTime(";
+            } else {
+                version = QDataStream::Qt_4_0;
+                typeSpec = "@Variant(";
+            }
+            QByteArray a;
+            {
+                QDataStream s(&a, QIODevice::WriteOnly);
+                s.setVersion(version);
+                s << v;
+            }
+            result = QLatin1String(typeSpec)
+                     + QLatin1String(a.toBase64())
+                     + QLatin1Char(')');
+#else
+            Q_ASSERT(!"QSettings: Cannot save custom types without QDataStream support");
+#endif
+            break;
+        }
+    }
+    return result;
+}
+
+QVariant SimpleBase::stringToVariant(const QString &s)
+{
+    if (s.startsWith(QLatin1Char('@'))) {
+        if (s.endsWith(QLatin1Char(')'))) {
+            if (s.startsWith(QLatin1String("@ByteArray("))) {
+                return QVariant(QByteArray::fromBase64(s.midRef(11, s.size() - 12).toLatin1()));
+            } else if (s.startsWith(QLatin1String("@String("))) {
+                return QVariant(s.midRef(8, s.size() - 9).toString());
+            } else if (s.startsWith(QLatin1String("@Variant("))
+                       || s.startsWith(QLatin1String("@DateTime("))) {
+#ifndef QT_NO_DATASTREAM
+                QDataStream::Version version;
+                int offset;
+                if (s.at(1) == QLatin1Char('D')) {
+                    version = QDataStream::Qt_4_0;
+                    offset = 10;
+                } else {
+                    version = QDataStream::Qt_4_0;
+                    offset = 9;
+                }
+                QByteArray a = QByteArray::fromBase64(s.midRef(offset).toLatin1());
+                QDataStream stream(&a, QIODevice::ReadOnly);
+                stream.setVersion(version);
+                QVariant result;
+                stream >> result;
+                return result;
+#else
+                Q_ASSERT(!"QSettings: Cannot load custom types without QDataStream support");
+#endif
+#ifndef QT_NO_GEOM_VARIANT
+            } else if (s.startsWith(QLatin1String("@Rect("))) {
+                QStringList args = SimpleBase::splitArgs(s, 5);
+                if (args.size() == 4)
+                    return QVariant(QRect(args[0].toInt(), args[1].toInt(), args[2].toInt(), args[3].toInt()));
+            } else if (s.startsWith(QLatin1String("@Size("))) {
+                QStringList args = SimpleBase::splitArgs(s, 5);
+                if (args.size() == 2)
+                    return QVariant(QSize(args[0].toInt(), args[1].toInt()));
+            } else if (s.startsWith(QLatin1String("@Point("))) {
+                QStringList args = SimpleBase::splitArgs(s, 6);
+                if (args.size() == 2)
+                    return QVariant(QPoint(args[0].toInt(), args[1].toInt()));
+#endif
+            } else if (s == QLatin1String("@Invalid()")) {
+                return QVariant();
+            }
+        }
+        if (s.startsWith(QLatin1String("@@")))
+            return QVariant(s.mid(1));
+    }
+    return QVariant(s);
+}
+
+/* static read/write callbacks for QSettings format */
+
 static bool qSettingsWriteSimpleBaseFunc(QIODevice &device, const QSettings::SettingsMap &map)
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QFileDevice *file = qobject_cast<QFileDevice *>(&device);
 #else
-    QFile *file = qobject_cast<QFileDevice *>(&device);
+    QFile *file = qobject_cast<QFile *>(&device);
 #endif
 
     if (file && !file->fileName().isEmpty())
@@ -94,7 +255,7 @@ static bool qSettingsWriteSimpleBaseFunc(QIODevice &device, const QSettings::Set
         sb.beginTransaction();
 
         foreach (const QString &key, map.keys())
-            sb.save(key, map.value(key));
+            sb.save(key, map.value(key), true);
 
         sb.endTransaction();
 
@@ -110,7 +271,7 @@ static bool qSettingsReadSimpleBaseFunc(QIODevice &device, QSettings::SettingsMa
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QFileDevice *file = qobject_cast<QFileDevice *>(&device);
 #else
-    QFile *file = qobject_cast<QFileDevice *>(&device);
+    QFile *file = qobject_cast<QFile *>(&device);
 #endif
 
     if (file && !file->fileName().isEmpty())
@@ -179,7 +340,12 @@ SimpleBase::~SimpleBase()
 
 QVariant SimpleBase::load(const QString &key)
 {
-    return load(key, QString::null);
+    QSqlQuery loadQuery = executeLoadQuery(key, QString::null);
+
+    if (loadQuery.isValid())
+        return SimpleBase::stringToVariant(loadQuery.value(0).toString());
+    else
+        return QVariant();
 }
 
 QStringList SimpleBase::keys()
@@ -230,7 +396,7 @@ bool SimpleBase::exists(const QString &key)
         return false;
 }
 
-QVariant SimpleBase::load(const QString &key, QString column)
+QSqlQuery SimpleBase::executeLoadQuery(const QString &key, QString column)
 {
     DGUARDMETHODTIMED;
     QMutexLocker l(&globalDbMutex_);
@@ -240,39 +406,56 @@ QVariant SimpleBase::load(const QString &key, QString column)
         QSqlQuery q(db_);
 
         if (column.isEmpty())
-            column = "value";
+            column = "`value`";
 
-        q.prepare(QString("SELECT `%1` FROM `%2` WHERE `key` = ?;").arg(column).arg(sanitizedTableName_));
+        q.prepare(QString("SELECT %1 FROM `%2` WHERE `key` = ?;").arg(column).arg(sanitizedTableName_));
         q.bindValue(0, key);
         q.exec();
 
         if (!q.next())
         {
             checkDatabaseError(q, "load");
-            return QVariant();
+            return QSqlQuery();
         }
 
-        return q.value(0);
+        return q;
     }
     else
-        return QVariant();
+        return QSqlQuery();
 }
 
-bool SimpleBase::save(const QString &key, const QVariant &value)
+bool SimpleBase::save(const QString &key, const QVariant &value, bool saveOnlyIfModified)
 {
     DGUARDMETHODTIMED;
     QMutexLocker l(&globalDbMutex_);
 
     if (loadDatabase())
     {
-        QSqlQuery q(db_);
+        QString newValue = SimpleBase::variantToString(value);
+        QString oldValue;
+        QVariant created;
 
-        QVariant created = load(key, "date_created");
+        if (saveOnlyIfModified)
+        {
+            QSqlQuery loadQuery = executeLoadQuery(key, "`value`, `date_created`");
+            oldValue = loadQuery.value(0).toString();
+            created = loadQuery.value(1);
+        }
+        else
+        {
+            QSqlQuery loadQuery = executeLoadQuery(key, "`date_created`");
+            created = loadQuery.value(0);
+        }
+
+        if (saveOnlyIfModified && newValue == oldValue)
+            return true;
+
         QString date_created_preset = "?";
 
         if (created.isNull())
             date_created_preset = "CURRENT_TIMESTAMP";
 
+        QSqlQuery saveQuery(db_);
         bool result = false;
         int run = 0;
 
@@ -280,14 +463,14 @@ bool SimpleBase::save(const QString &key, const QVariant &value)
         {
             ++run;
 
-            q.prepare(QString("REPLACE INTO `%1`(`key`, `value`, `date_created`, `date_modified`) VALUES(?, ?, " + date_created_preset + ", CURRENT_TIMESTAMP);").arg(sanitizedTableName_));
-            q.bindValue(0, key);
-            q.bindValue(1, value);
+            saveQuery.prepare(QString("REPLACE INTO `%1`(`key`, `value`, `date_created`, `date_modified`) VALUES(?, ?, " + date_created_preset + ", CURRENT_TIMESTAMP);").arg(sanitizedTableName_));
+            saveQuery.bindValue(0, key);
+            saveQuery.bindValue(1, newValue);
 
             if (!created.isNull())
-                q.bindValue(2, created);
+                saveQuery.bindValue(2, created);
 
-            result = q.exec();
+            result = saveQuery.exec();
 
             // Did this execution fail? Perhaps we need to create the table and try again?
             if (!result && db_.driverName() == "QSQLITE")
@@ -296,7 +479,7 @@ bool SimpleBase::save(const QString &key, const QVariant &value)
         while (!result && run == 1);
 
         if (!result)
-            checkDatabaseError(q, "save");
+            checkDatabaseError(saveQuery, "save");
 
         return result;
     }
@@ -471,7 +654,7 @@ bool SimpleBase::loadDatabase()
                         return false;
                     }
 
-                    bool dataBasePresent = QFileInfo::exists(databaseFilename());
+                    bool dataBasePresent = QFileInfo(databaseFilename()).exists();
                     db_ = QSqlDatabase::addDatabase("QSQLITE", databaseFilename());
                     db_.setDatabaseName(databaseFilename());
                     db_.open();
