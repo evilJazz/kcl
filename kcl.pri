@@ -72,6 +72,7 @@ isEmpty(kcl): kcl = \
     sortfiltermodel \
     simplebase \
     singletons \
+    systemutils \
     $$kclAdd
 
 !isEmpty(kclRemove): kcl -= $$kclRemove
@@ -116,6 +117,7 @@ kclConditionalAddModule(sortfiltermodel)
 kclConditionalAddModule(paranoidretrier)
 kclConditionalAddModule(singletons)
 kclConditionalAddModule(webcall)
+kclConditionalAddModule(systemutils)
 
 kcl_sql {
     message("KCL: Configuring with SQL support")

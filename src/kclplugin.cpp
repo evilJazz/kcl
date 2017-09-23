@@ -153,6 +153,10 @@
     #include "KCL/engineutils.h"
 #endif
 
+#ifdef KCL_systemutils
+    #include "KCL/systemutils.h"
+#endif
+
 void KCLPlugin::registerTypes(const char *uri)
 {
     //@uri KCL
@@ -311,6 +315,11 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 #ifdef KCL_engineutils
     EngineUtils *engineUtils = new EngineUtils(engine);
     engine->rootContext()->setContextProperty("EngineUtils", engineUtils);
+#endif
+
+#ifdef KCL_systemutils
+    SystemUtils *systemUtils = new SystemUtils(engine);
+    engine->rootContext()->setContextProperty("SystemUtils", systemUtils);
 #endif
 
 }
