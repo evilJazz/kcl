@@ -102,9 +102,6 @@ public:
     static void setGlobalCustomSettingsFormat(QSettings::Format format);
     static QSettings::Format globalCustomSettingsFormat();
 
-    static void setFullSyncEnabled(bool value);
-    static bool fullSyncEnabled();
-
 #ifdef KCL_QTQUICK2
     QQmlListProperty<SettingsGroup> groups();
 #else

@@ -81,7 +81,7 @@ public:
     Q_INVOKABLE QStringList keys();
     Q_INVOKABLE bool exists(const QString &key);
     Q_INVOKABLE QVariant load(const QString &key);
-    Q_INVOKABLE bool save(const QString &key, const QVariant &value);
+    Q_INVOKABLE bool save(const QString &key, const QVariant &value, bool saveOnlyIfModified = false);
     Q_INVOKABLE bool remove(const QString &key);
     Q_INVOKABLE bool copy(const QString &srcKey, const QString &dstKey);
     Q_INVOKABLE bool rename(const QString &existingKey, const QString &newKey);
@@ -107,11 +107,15 @@ private:
     QString databaseFilename_;
     QString sanitizedTableName_;
 
-    QVariant load(const QString &key, QString column);
+    QSqlQuery executeLoadQuery(const QString &key, QString column);
 
     bool createTable();
     void checkDatabaseError(const QSqlQuery &result, const QByteArray &functionName);
     QString sanitizeDbString(const QString &s);
+
+    static QVariant stringToVariant(const QString &s);
+    static QString variantToString(const QVariant &v);
+    static QStringList splitArgs(const QString &s, int idx);
 };
 
 #endif // SIMPLEBASE_H
