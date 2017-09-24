@@ -40,7 +40,7 @@
 #include <QObject>
 #include <QDateTime>
 
-class DateTimeUtils : public QObject
+class KCL_EXPORT DateTimeUtils : public QObject
 {
     Q_OBJECT
 public:

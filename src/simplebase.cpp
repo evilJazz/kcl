@@ -151,13 +151,18 @@ QString SimpleBase::variantToString(const QVariant &v)
 #ifndef QT_NO_DATASTREAM
             QDataStream::Version version;
             const char *typeSpec;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
             if (v.type() == QVariant::DateTime) {
-                version = QDataStream::Qt_4_0;
+                version = QDataStream::Qt_5_6;
                 typeSpec = "@DateTime(";
-            } else {
+            }
+            else
+#endif
+            {
                 version = QDataStream::Qt_4_0;
                 typeSpec = "@Variant(";
             }
+
             QByteArray a;
             {
                 QDataStream s(&a, QIODevice::WriteOnly);
@@ -181,7 +186,11 @@ QVariant SimpleBase::stringToVariant(const QString &s)
     if (s.startsWith(QLatin1Char('@'))) {
         if (s.endsWith(QLatin1Char(')'))) {
             if (s.startsWith(QLatin1String("@ByteArray("))) {
+#if QT_VERSION >= QT_VERSION_CHECK(4, 8, 0)
                 return QVariant(QByteArray::fromBase64(s.midRef(11, s.size() - 12).toLatin1()));
+#else
+                return QVariant(QByteArray::fromBase64(s.midRef(11, s.size() - 12).toString().toLatin1()));
+#endif
             } else if (s.startsWith(QLatin1String("@String("))) {
                 return QVariant(s.midRef(8, s.size() - 9).toString());
             } else if (s.startsWith(QLatin1String("@Variant("))
@@ -189,14 +198,22 @@ QVariant SimpleBase::stringToVariant(const QString &s)
 #ifndef QT_NO_DATASTREAM
                 QDataStream::Version version;
                 int offset;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
                 if (s.at(1) == QLatin1Char('D')) {
-                    version = QDataStream::Qt_4_0;
+                    version = QDataStream::Qt_5_6;
                     offset = 10;
-                } else {
+                }
+                else
+#endif
+                {
                     version = QDataStream::Qt_4_0;
                     offset = 9;
                 }
+#if QT_VERSION >= QT_VERSION_CHECK(4, 8, 0)
                 QByteArray a = QByteArray::fromBase64(s.midRef(offset).toLatin1());
+#else
+                QByteArray a = QByteArray::fromBase64(s.midRef(offset).toString().toLatin1());
+#endif
                 QDataStream stream(&a, QIODevice::ReadOnly);
                 stream.setVersion(version);
                 QVariant result;

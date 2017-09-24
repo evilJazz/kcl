@@ -35,11 +35,13 @@
 #ifndef RAWMOUSEAREA_H
 #define RAWMOUSEAREA_H
 
+#include "KCL/kcl_global.h"
+
 #include <QDeclarativeItem>
 #include <QGraphicsSceneMouseEvent>
 #include <QPointF>
 
-class DeclarativeMouseEvent : public QObject
+class KCL_EXPORT DeclarativeMouseEvent : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(int x READ x)
@@ -70,7 +72,7 @@ private:
     bool accepted_;
 };
 
-class RawMouseArea : public QDeclarativeItem
+class KCL_EXPORT RawMouseArea : public QDeclarativeItem
 {
     Q_OBJECT
 public:

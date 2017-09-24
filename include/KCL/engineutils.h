@@ -47,7 +47,7 @@ class QScriptEngine;
 class QScriptContextInfo;
 #endif
 
-class EngineUtils : public QObject
+class KCL_EXPORT EngineUtils : public QObject
 {
     Q_OBJECT
 public:

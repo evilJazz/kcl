@@ -39,6 +39,7 @@
 #include <QVariant>
 #include <QMetaProperty>
 #include <QSettings>
+#include <QCoreApplication>
 
 #ifdef KCL_QTQUICK2
     #include <QQmlProperty>

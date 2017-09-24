@@ -43,8 +43,9 @@
 #include <QSqlDatabase>
 #include <QSettings>
 #include <QMutex>
+#include <QStringList>
 
-class SimpleBase : public QObject, private UpdateLocker
+class KCL_EXPORT SimpleBase : public QObject, private UpdateLocker
 {
     Q_OBJECT
     Q_ENUMS(DatabaseConnection)
