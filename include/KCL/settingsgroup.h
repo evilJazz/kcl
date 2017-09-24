@@ -114,6 +114,8 @@ public slots:
     void setCurrentValuesAsDefaultValues();
     void resetToDefaultValues();
 
+    void sync();
+
 signals:
     void aboutToLoad();
     void loaded();

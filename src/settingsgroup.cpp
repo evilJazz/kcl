@@ -172,6 +172,11 @@ void SettingsGroup::resetToDefaultValues()
     }
 }
 
+void SettingsGroup::sync()
+{
+    settingsInstance()->sync();
+}
+
 void SettingsGroup::setGroupName(const QString &groupName)
 {
     if (groupName != groupName_)
