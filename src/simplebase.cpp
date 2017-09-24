@@ -700,6 +700,8 @@ bool SimpleBase::closeDatabase()
 {
     if (db_.isOpen())
         db_.close();
+
+    return true;
 }
 
 void SimpleBase::beginTransaction()
