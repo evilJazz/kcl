@@ -46,7 +46,11 @@ class KCL_EXPORT SystemUtils : public QObject
 public:
     explicit SystemUtils(QObject *parent = 0);
 
-    Q_INVOKABLE QVariantMap physicalScreenInfo();
+#ifdef KCL_GUI
+    Q_INVOKABLE static QVariantMap physicalScreenInfo();
+#endif
+
+    Q_INVOKABLE static void trimProcessMemoryUsage();
 };
 
 #endif // SYSTEMUTILS_H

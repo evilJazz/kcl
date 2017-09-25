@@ -6,8 +6,6 @@ contains(QT_VERSION, ^4\\.[0-6]\\..*) {
     error("Use at least Qt 4.7.")
 }
 
-QT += network
-
 contains(QT_VERSION, ^4\\..*) {
     CONFIG += kcl_qt4
 
@@ -29,6 +27,8 @@ contains(QT_VERSION, ^5\\..*) {
 }
 
 contains(QT, sql): CONFIG += kcl_sql
+contains(QT, gui): CONFIG += kcl_gui
+contains(QT, network): CONFIG += kcl_network
 
 KCL_SRC_PATH = $${PWD}/src
 KCL_INC_PATH = $${PWD}/include
@@ -99,30 +99,42 @@ kclConditionalAddModule(filesystemutils)
 kclConditionalAddModule(history)
 kclConditionalAddModule(progressmanager)
 kclConditionalAddModule(performancedatamanager)
-kclConditionalAddModule(imagefastloader)
 kclConditionalAddModule(logging)
 kclConditionalAddModule(debug)
 kclConditionalAddModule(qobjectlistmodel)
 kclConditionalAddModule(translationenumerator)
 kclConditionalAddModule(sleepaid)
 kclConditionalAddModule(backgroundtasks)
-kclConditionalAddModule(networkutils)
-kclConditionalAddModule(colorutils)
-kclConditionalAddModule(graphicsutils)
-kclConditionalAddModule(imageutils)
 kclConditionalAddModule(objectutils)
 kclConditionalAddModule(datetimeutils)
 kclConditionalAddModule(updatelocker)
 kclConditionalAddModule(sortfiltermodel)
 kclConditionalAddModule(paranoidretrier)
 kclConditionalAddModule(singletons)
-kclConditionalAddModule(webcall)
 kclConditionalAddModule(systemutils)
+
+kcl_network {
+    message("KCL: Configuring with Network support")
+
+    kclConditionalAddModule(networkutils)
+    kclConditionalAddModule(webcall)
+}
 
 kcl_sql {
     message("KCL: Configuring with SQL support")
 
     kclConditionalAddModule(simplebase)
+}
+
+kcl_gui {
+    message("KCL: Configuring with GUI support")
+
+    DEFINES += KCL_GUI
+
+    kclConditionalAddModule(imagefastloader)
+    kclConditionalAddModule(colorutils)
+    kclConditionalAddModule(graphicsutils)
+    kclConditionalAddModule(imageutils)
 }
 
 kcl_widgets {
@@ -170,6 +182,10 @@ kcl_declarative {
     kclConditionalAddModule(base64imageprovider)
     kclConditionalAddModule(engineutils)
 
+    contains(QT_VERSION, ^4\\.8\\..*) | kcl_qt5 {
+        kclConditionalAddModule(propertychangeobserver)
+    }
+
     OTHER_FILES += $$files($$KCL_SRC_PATH/qml/KCL/*, true)
 
     RESOURCES += \
@@ -188,8 +204,4 @@ kcl_declarative {
 
 contains(kcl, paranoidretrier) {
     message("KCL: Paranoid Retrier class enabled, make sure to enable C++X0/C++11 support in your compiler flags.")
-}
-
-contains(QT_VERSION, ^4\\.8\\..*) | kcl_qt5 {
-    kclConditionalAddModule(propertychangeobserver)
 }

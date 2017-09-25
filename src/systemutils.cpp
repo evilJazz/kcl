@@ -34,12 +34,20 @@
 
 #include "KCL/systemutils.h"
 
-#ifdef KCL_QTQUICK2
+#ifdef KCL_GUI
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     #include <QtGui/QGuiApplication>
     #include <QScreen>
 #else
     #include <QApplication>
     #include <QDesktopWidget>
+#endif
+#endif
+
+#ifndef Q_OS_WIN
+    #ifdef Q_CC_GNU
+    #include <malloc.h>
+    #endif
 #endif
 
 SystemUtils::SystemUtils(QObject *parent) :
@@ -47,11 +55,12 @@ SystemUtils::SystemUtils(QObject *parent) :
 {
 }
 
+#ifdef KCL_GUI
 QVariantMap SystemUtils::physicalScreenInfo()
 {
     QVariantMap result;
 
-#ifdef KCL_QTQUICK2
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     result.insert("height", qApp->primaryScreen()->availableSize().height());
     result.insert("width", qApp->primaryScreen()->availableSize().width());
     result.insert("heightMM", qApp->primaryScreen()->physicalSize().height());
@@ -72,4 +81,17 @@ QVariantMap SystemUtils::physicalScreenInfo()
 #endif
 
     return result;
+}
+#endif
+
+void SystemUtils::trimProcessMemoryUsage()
+{
+    // Attempt to give our memory back to the OS...
+#ifdef Q_OS_WIN
+    SetProcessWorkingSetSize(GetCurrentProcess(), (SIZE_T) - 1, (SIZE_T) - 1);
+#else
+#ifdef Q_CC_GNU
+    malloc_trim(0);
+#endif
+#endif
 }
