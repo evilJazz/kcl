@@ -205,3 +205,5 @@ kcl_declarative {
 contains(kcl, paranoidretrier) {
     message("KCL: Paranoid Retrier class enabled, make sure to enable C++X0/C++11 support in your compiler flags.")
 }
+
+kcl_enable_ccache: include($${PWD}/ccache.pri)
