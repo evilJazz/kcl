@@ -90,7 +90,7 @@ void SystemUtils::trimProcessMemoryUsage()
 #ifdef Q_OS_WIN
     SetProcessWorkingSetSize(GetCurrentProcess(), (SIZE_T) - 1, (SIZE_T) - 1);
 #else
-#ifdef Q_CC_GNU
+#if defined(Q_CC_GNU) && defined(__GNU_LIBRARY__)
     malloc_trim(0);
 #endif
 #endif
