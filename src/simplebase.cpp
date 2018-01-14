@@ -151,22 +151,16 @@ QString SimpleBase::variantToString(const QVariant &v)
 #ifndef QT_NO_DATASTREAM
             QDataStream::Version version;
             const char *typeSpec;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-            if (v.type() == QVariant::DateTime) {
-                version = QDataStream::Qt_5_6;
+
+            if (v.type() == QVariant::DateTime)
                 typeSpec = "@DateTime(";
-            }
             else
-#endif
-            {
-                version = QDataStream::Qt_4_0;
                 typeSpec = "@Variant(";
-            }
 
             QByteArray a;
             {
                 QDataStream s(&a, QIODevice::WriteOnly);
-                s.setVersion(version);
+                s.setVersion(QDataStream::Qt_4_0);
                 s << v;
             }
             result = QLatin1String(typeSpec)
@@ -198,24 +192,19 @@ QVariant SimpleBase::stringToVariant(const QString &s)
 #ifndef QT_NO_DATASTREAM
                 QDataStream::Version version;
                 int offset;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-                if (s.at(1) == QLatin1Char('D')) {
-                    version = QDataStream::Qt_5_6;
+
+                if (s.at(1) == QLatin1Char('D'))
                     offset = 10;
-                }
                 else
-#endif
-                {
-                    version = QDataStream::Qt_4_0;
                     offset = 9;
-                }
+
 #if QT_VERSION >= QT_VERSION_CHECK(4, 8, 0)
                 QByteArray a = QByteArray::fromBase64(s.midRef(offset).toLatin1());
 #else
                 QByteArray a = QByteArray::fromBase64(s.midRef(offset).toString().toLatin1());
 #endif
                 QDataStream stream(&a, QIODevice::ReadOnly);
-                stream.setVersion(version);
+                stream.setVersion(QDataStream::Qt_4_0);
                 QVariant result;
                 stream >> result;
                 return result;
