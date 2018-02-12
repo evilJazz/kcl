@@ -44,9 +44,11 @@
 #endif
 #endif
 
-#ifndef Q_OS_WIN
-    #ifdef Q_CC_GNU
-    #include <malloc.h>
+#ifdef Q_OS_WIN
+    #include <Windows.h>
+#else
+    #if defined(Q_CC_GNU) && defined(__GNU_LIBRARY__)
+        #include <malloc.h>
     #endif
 #endif
 
