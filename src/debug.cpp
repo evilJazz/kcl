@@ -42,6 +42,10 @@
 
 #include <QCoreApplication>
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
+#include <QLoggingCategory>
+#endif
+
 #include <stdio.h>
 #include <sys/types.h>
 
@@ -76,6 +80,19 @@ static KaMessageHandlerFunc customMessageHandler = NULL;
 void kaInstallMessageHandler(KaMessageHandlerFunc customFunc)
 {
     customMessageHandler = customFunc;
+}
+
+void forceEnableQtDebugOutput()
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
+    QLoggingCategory *defaultCategory = QLoggingCategory::defaultCategory();
+    if (defaultCategory)
+    {
+        defaultCategory->setEnabled(QtDebugMsg, true);
+        defaultCategory->setEnabled(QtWarningMsg, true);
+        defaultCategory->setEnabled(QtInfoMsg, true);
+    }
+#endif
 }
 
 #ifdef DEBUG

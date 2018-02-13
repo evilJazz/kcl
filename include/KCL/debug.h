@@ -51,6 +51,8 @@
 #define D_FUNC_INFO Q_FUNC_INFO
 #endif
 
+KCL_EXPORT void forceEnableQtDebugOutput();
+
 KCL_EXPORT void setDiagnosticOutputEnabled(bool value);
 KCL_EXPORT bool diagnosticOutputEnabled();
 
