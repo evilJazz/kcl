@@ -91,6 +91,8 @@ Item {
                     _hookItemSize(overlay.item, "connect", Private.currentPositionCallback);
                     _hookItemSize(parent, "connect", Private.currentPositionCallback);
                     _hookItemPos(itemToPopupAt, "connect", Private.currentPositionCallback);
+
+                    Private.currentPositionCallback();
                 }
             }
         });
