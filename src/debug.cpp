@@ -90,7 +90,9 @@ void forceEnableQtDebugOutput()
     {
         defaultCategory->setEnabled(QtDebugMsg, true);
         defaultCategory->setEnabled(QtWarningMsg, true);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
         defaultCategory->setEnabled(QtInfoMsg, true);
+#endif
     }
 #endif
 }
