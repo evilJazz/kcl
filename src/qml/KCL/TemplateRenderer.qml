@@ -51,8 +51,10 @@ PropertyChangeObserver {
 
     signal subRendererTemplateChanged(var renderer)
 
-    property variant _TemplateRenderer_ignoredPropertyNames: ["templateSource", "template", "templateRegEx", "contentDirty", "content", "renderDelay", "internalChildren", "children", "topLevelTemplateRenderer"]
+    property variant _TemplateRenderer_ignoredPropertyNames: ["templateSource", "template", "templateRegEx", "contentDirty", "content", "renderDelay", "internalChildren", "children", "registeredChildren", "topLevelTemplateRenderer", "parentRenderer", "debug"]
     ignoredPropertyNames: _TemplateRenderer_ignoredPropertyNames
+
+    property bool debug: false
 
     property Timer renderTimer: Timer {
         id: renderTimer
@@ -61,20 +63,43 @@ PropertyChangeObserver {
         onTriggered: renderer.updateContent()
     }
 
-    onParentChanged:
+    property QtObject registeredParentRenderer: null
+    property QtObject parentRenderer: isTemplateRenderer(parent) ? parent : null
+    onParentRendererChanged:
     {
-        //console.log("Parent changed! This item's name: " + name);
-        var newTopLevel = renderer;
-        var item = parent;
-        while (item && isTemplateRenderer(item))
+        if (debug) Debug.print("New parent renderer: " + parentRenderer + " for " + renderer);
+
+        if (registeredParentRenderer)
         {
-            newTopLevel = item;
-            item = item.parent;
+            registeredParentRenderer.removeRenderer(renderer);
+            registeredParentRenderer = null;
+        }
+
+        if (parentRenderer)
+        {
+            parentRenderer.addRenderer(renderer);
+            registeredParentRenderer = parentRenderer;
+        }
+
+        if (debug) Debug.print(renderer +  " -> Parent renderer changed to " + parentRenderer + " This item's name: " + name);
+        var newTopLevel = renderer;
+        var object = parentRenderer;
+
+        while (object && isTemplateRenderer(object))
+        {
+            newTopLevel = object;
+            object = object.parentRenderer;
         }
 
         topLevelTemplateRenderer = newTopLevel;
-        //console.log("Top level template renderer: " + topLevelTemplateRenderer + " This item's name: " + name);
+        if (debug) Debug.print(renderer +  " -> parentRenderer: " + parentRenderer + " Top level template renderer: " + topLevelTemplateRenderer + " This item's name: " + name);
     }
+
+    property Connections parentRendererConnections:
+        Connections {
+            target: parentRenderer
+            onTopLevelTemplateRendererChanged: renderer.topLevelTemplateRenderer = parentRenderer.topLevelTemplateRenderer
+        }
 
     onTemplateChanged: _notifyParentRenderer()
     onTemplateSourceChanged: _notifyParentRenderer()
@@ -85,8 +110,8 @@ PropertyChangeObserver {
     {
         _markContentDirty();
 
-        if (isTemplateRenderer(parent))
-            parent.subRendererTemplateChanged(renderer)
+        if (isTemplateRenderer(parentRenderer))
+            parentRenderer.subRendererTemplateChanged(renderer)
     }
 
     onPropertyChanged: _markContentDirty()
@@ -100,6 +125,9 @@ PropertyChangeObserver {
             updateContent();
         else if (renderDelay > 0)
             renderTimer.start();
+
+        if (parentRenderer)
+            parentRenderer._markContentDirty();
     }
 
     function _TemplateRenderer_replaceMarkerForProperty(propertyName)
@@ -125,14 +153,14 @@ PropertyChangeObserver {
     function isTemplateRenderer(item)
     {
         return item && item.hasOwnProperty("contentDirty") &&
-                       item.hasOwnProperty("name")
+                       item.hasOwnProperty("parentRenderer")
     }
 
     function findTemplateRendererByName(name)
     {
-        for (var i = 0; i < children.length; ++i)
+        for (var i = 0; i < registeredChildren.length; ++i)
         {
-            var child = children[i];
+            var child = registeredChildren[i];
             if (isTemplateRenderer(child) && child.name === name)
                 return child;
         }
@@ -173,4 +201,76 @@ PropertyChangeObserver {
     // The following is a hack to allow a list property to be default...
     default property alias children: renderer.internalChildren
     property list<QtObject> internalChildren
+
+    property variant registeredChildren: []
+
+    function addRenderer(childRenderer)
+    {
+        if (debug) Debug.print("Adding " + childRenderer + " to " + renderer);
+
+        if (!childRenderer)
+            return;
+
+        var newChildren = registeredChildren;
+        var found = false;
+
+        for (var i = 0; i < newChildren.length; ++i)
+            if (newChildren[i] === childRenderer)
+            {
+                found = true;
+                break;
+            }
+
+        if (!found)
+        {
+            newChildren.push(childRenderer);
+
+            childRenderer.Component.destruction.connect(function()
+            {
+                renderer.removeRenderer(childRenderer);
+            });
+
+            registeredChildren = newChildren;
+        }
+    }
+
+    function removeRenderer(childRenderer)
+    {
+        if (debug) Debug.print("Removing " + childRenderer + " from " + renderer);
+
+        if (!childRenderer)
+            return;
+
+        var newChildren = registeredChildren;
+
+        for (var i = newChildren.length - 1; i >= 0; --i)
+            if (newChildren[i] === childRenderer)
+                newChildren.splice(i, 1);
+
+        registeredChildren = newChildren;
+    }
+
+    function dumpRendererStructure()
+    {
+        Debug.print(renderer + " name: " + renderer.name + " contentDirty: " + renderer.contentDirty);
+        _dumpRendererStructure("    ");
+    }
+
+    function _dumpRendererStructure(indent)
+    {
+        if (typeof(indent) == "undefined")
+            indent = "";
+
+        var itemNr = 0;
+        for (var i = 0; i < registeredChildren.length; ++i)
+        {
+            var child = registeredChildren[i];
+            if (isTemplateRenderer(child))
+            {
+                Debug.print(indent + itemNr + ": " + child + " name: " + child.name + " contentDirty: " + child.contentDirty);
+                child._dumpRendererStructure(indent + "    ");
+                ++itemNr;
+            }
+        }
+    }
 }
