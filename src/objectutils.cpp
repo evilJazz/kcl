@@ -81,6 +81,21 @@ void ObjectUtils::dumpObjectTree(QObject *target)
     ObjectUtils::dumpObjectTreeRecursive(0, target);
 }
 
+void ObjectUtils::dumpParentTree(QObject *target)
+{
+    int level = 0;
+    QByteArray buf;
+
+    while (target)
+    {
+        buf.fill(' ', level * 4);
+
+        DPRINTF("%s%s", buf.constData(), objectAsString(target).toLatin1().constData());
+        target = target->parent();
+        ++level;
+    }
+}
+
 void ObjectUtils::dumpObjectTreeRecursive(int level, QObject *object)
 {
     if (object)
