@@ -227,7 +227,8 @@ PropertyChangeObserver {
 
             childRenderer.Component.destruction.connect(function()
             {
-                renderer.removeRenderer(childRenderer);
+                if (renderer)
+                    renderer.removeRenderer(childRenderer);
             });
 
             registeredChildren = newChildren;
