@@ -52,6 +52,10 @@ PropertyChangeObserver::PropertyChangeObserver(QObject *parent) :
 {
 }
 
+PropertyChangeObserver::~PropertyChangeObserver()
+{
+}
+
 QStringList PropertyChangeObserver::ignoredPropertyNames() const
 {
     return ignoredPropertyNames_.values();
@@ -64,6 +68,29 @@ void PropertyChangeObserver::setIgnoredPropertyNames(const QStringList &ignoredP
         ignoredPropertyNames_ = QSet<QString>::fromList(ignoredPropertyNames);
         emit ignoredPropertyNamesChanged();
     }
+}
+
+bool PropertyChangeObserver::hasOwnProperty(const QString &propertyName)
+{
+    QDeclarativeProperty dprop(this, propertyName);
+    if (dprop.isValid())
+        return true;
+
+    return this->property(propertyName.toLatin1().constData()).isValid();
+}
+
+QVariant PropertyChangeObserver::getProperty(const QString &propertyName)
+{
+    QVariant result;
+
+    QDeclarativeProperty dprop(this, propertyName);
+    if (dprop.isValid())
+        result = dprop.read();
+
+    if (!result.isValid())
+        result = this->property(propertyName.toLatin1().constData());
+
+    return result;
 }
 
 bool PropertyChangeObserver::event(QEvent *e)

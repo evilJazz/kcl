@@ -62,9 +62,13 @@ class KCL_EXPORT PropertyChangeObserver :
     Q_PROPERTY(QStringList ignoredPropertyNames READ ignoredPropertyNames WRITE setIgnoredPropertyNames NOTIFY ignoredPropertyNamesChanged)
 public:
     explicit PropertyChangeObserver(QObject *parent = 0);
+    virtual ~PropertyChangeObserver();
 
     QStringList ignoredPropertyNames() const;
     void setIgnoredPropertyNames(const QStringList &ignoredPropertyNames);
+
+    bool hasOwnProperty(const QString &propertyName);
+    QVariant getProperty(const QString &propertyName);
 
 public slots:
 

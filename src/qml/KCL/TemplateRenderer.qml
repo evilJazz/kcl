@@ -38,8 +38,13 @@ import KCL 1.0
 PropertyChangeObserver {
     id: renderer
 
+    property string name
+    property string childPrefix: parentRenderer ? parentRenderer.childPrefix : ""
+
+    property string identifier: (parentRenderer ? parentRenderer.childPrefix + (parentRenderer.childPrefix.length > 0 ? "_" : "") : "") + name
+
     property url templateSource: ""
-    property string template: ""
+    property string templateText: ""
     property string content: ""
     property bool contentDirty: true
 
@@ -47,12 +52,18 @@ PropertyChangeObserver {
 
     property int renderDelay: 10 // Change to -1 to disable automatic rendering
 
-    property QtObject topLevelTemplateRenderer: null
+    property QtObject topLevelRenderer: null
 
     signal subRendererTemplateChanged(var renderer)
 
-    property variant _TemplateRenderer_ignoredPropertyNames: ["templateSource", "template", "templateRegEx", "contentDirty", "content", "renderDelay", "internalChildren", "children", "registeredChildren", "topLevelTemplateRenderer", "parentRenderer", "debug"]
+    property variant _TemplateRenderer_ignoredPropertyNames: ["templateSource", "templateText", "templateRegEx", "contentDirty", "content", "renderDelay", "internalChildren", "children", "subRenderers", "topLevelRenderer", "parentRenderer", "debug", "markersUsedInTemplate"]
     ignoredPropertyNames: _TemplateRenderer_ignoredPropertyNames
+
+    property variant markersUsedInTemplate: ({})
+    function isMarkerUsedInTemplate(name)
+    {
+        return markersUsedInTemplate.hasOwnProperty(name);
+    }
 
     property bool debug: false
 
@@ -91,20 +102,49 @@ PropertyChangeObserver {
             object = object.parentRenderer;
         }
 
-        topLevelTemplateRenderer = newTopLevel;
-        if (debug) Debug.print(renderer +  " -> parentRenderer: " + parentRenderer + " Top level template renderer: " + topLevelTemplateRenderer + " This item's name: " + name);
+        topLevelRenderer = newTopLevel;
+        if (debug) Debug.print(renderer +  " -> parentRenderer: " + parentRenderer + " Top level template renderer: " + topLevelRenderer + " This item's name: " + name);
     }
 
     property Connections parentRendererConnections:
         Connections {
             target: parentRenderer
-            onTopLevelTemplateRendererChanged: renderer.topLevelTemplateRenderer = parentRenderer.topLevelTemplateRenderer
+            onTopLevelRendererChanged: renderer.topLevelRenderer = parentRenderer.topLevelRenderer
         }
 
-    onTemplateChanged: _notifyParentRenderer()
-    onTemplateSourceChanged: _notifyParentRenderer()
-    onTemplateRegExChanged: _notifyParentRenderer()
+    onTemplateTextChanged: _TemplateRenderer_handleTemplateChanged()
+    onTemplateSourceChanged:
+    {
+        template = ""; // Force reload
+        _TemplateRenderer_handleTemplateChanged();
+    }
+
+    onTemplateRegExChanged: _TemplateRenderer_handleTemplateChanged()
     onSubRendererTemplateChanged: _notifyParentRenderer()
+
+    function _TemplateRenderer_handleTemplateChanged()
+    {
+        if (templateText.length == 0 && templateSource != "")
+            templateText = FsUtils.getContents(FsUtils.localPathFromUrl(templateSource));
+
+        var usedMarkers = {};
+
+        var re = new RegExp(renderer.templateRegEx, "gi");
+        var match;
+        while (match = re.exec(templateText))
+        {
+            var p1 = match[1];
+
+            if (!usedMarkers.hasOwnProperty(p1))
+                usedMarkers[p1] = 1;
+            else
+                ++usedMarkers[p1];
+        }
+
+        markersUsedInTemplate = usedMarkers;
+
+        _notifyParentRenderer();
+    }
 
     function _notifyParentRenderer()
     {
@@ -158,9 +198,9 @@ PropertyChangeObserver {
 
     function findTemplateRendererByName(name)
     {
-        for (var i = 0; i < registeredChildren.length; ++i)
+        for (var i = 0; i < subRenderers.length; ++i)
         {
-            var child = registeredChildren[i];
+            var child = subRenderers[i];
             if (isTemplateRenderer(child) && child.name === name)
                 return child;
         }
@@ -170,8 +210,8 @@ PropertyChangeObserver {
 
     function updateContent()
     {
-        if (template.length == 0 && templateSource != "")
-            template = FsUtils.getContents(FsUtils.localPathFromUrl(templateSource));
+        if (templateText.length == 0 && templateSource != "")
+            templateText = FsUtils.getContents(FsUtils.localPathFromUrl(templateSource));
 
         var replacerCallback = function(match, p1, offset, string)
         {
@@ -193,7 +233,7 @@ PropertyChangeObserver {
         }
 
         var re = new RegExp(renderer.templateRegEx, "gi");
-        content = template.replace(re, replacerCallback);
+        content = templateText.replace(re, replacerCallback);
 
         renderer.contentDirty = false;
     }
@@ -202,7 +242,7 @@ PropertyChangeObserver {
     default property alias children: renderer.internalChildren
     property list<QtObject> internalChildren
 
-    property variant registeredChildren: []
+    property variant subRenderers: []
 
     function addRenderer(childRenderer)
     {
@@ -211,7 +251,7 @@ PropertyChangeObserver {
         if (!childRenderer)
             return;
 
-        var newChildren = registeredChildren;
+        var newChildren = subRenderers;
         var found = false;
 
         for (var i = 0; i < newChildren.length; ++i)
@@ -231,7 +271,7 @@ PropertyChangeObserver {
                     renderer.removeRenderer(childRenderer);
             });
 
-            registeredChildren = newChildren;
+            subRenderers = newChildren;
         }
     }
 
@@ -242,18 +282,18 @@ PropertyChangeObserver {
         if (!childRenderer)
             return;
 
-        var newChildren = registeredChildren;
+        var newChildren = subRenderers;
 
         for (var i = newChildren.length - 1; i >= 0; --i)
             if (newChildren[i] === childRenderer)
                 newChildren.splice(i, 1);
 
-        registeredChildren = newChildren;
+        subRenderers = newChildren;
     }
 
     function dumpRendererStructure()
     {
-        Debug.print(renderer + " name: " + renderer.name + " contentDirty: " + renderer.contentDirty);
+        Debug.print(renderer + " name: " + renderer.name + " childPrefix: " + renderer.childPrefix + " identifier: " + renderer.identifier + " contentDirty: " + renderer.contentDirty);
         _dumpRendererStructure("    ");
     }
 
@@ -263,12 +303,12 @@ PropertyChangeObserver {
             indent = "";
 
         var itemNr = 0;
-        for (var i = 0; i < registeredChildren.length; ++i)
+        for (var i = 0; i < subRenderers.length; ++i)
         {
-            var child = registeredChildren[i];
+            var child = subRenderers[i];
             if (isTemplateRenderer(child))
             {
-                Debug.print(indent + itemNr + ": " + child + " name: " + child.name + " contentDirty: " + child.contentDirty);
+                Debug.print(indent + itemNr + ": " + child + " name: " + child.name + " childPrefix: " + child.childPrefix + " identifier: " + child.identifier + " contentDirty: " + child.contentDirty);
                 child._dumpRendererStructure(indent + "    ");
                 ++itemNr;
             }
