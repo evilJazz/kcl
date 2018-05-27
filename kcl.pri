@@ -73,6 +73,7 @@ isEmpty(kcl): kcl = \
     simplebase \
     singletons \
     systemutils \
+    templaterenderer \
     $$kclAdd
 
 !isEmpty(kclRemove): kcl -= $$kclRemove
@@ -184,6 +185,7 @@ kcl_declarative {
 
     contains(QT_VERSION, ^4\\.8\\..*) | kcl_qt5 {
         kclConditionalAddModule(propertychangeobserver)
+        kclConditionalAddModule(templaterenderer)
     }
 
     OTHER_FILES += $$files($$KCL_SRC_PATH/qml/KCL/*, true)

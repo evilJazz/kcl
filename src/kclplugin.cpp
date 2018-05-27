@@ -157,6 +157,10 @@
     #include "KCL/systemutils.h"
 #endif
 
+#ifdef KCL_templaterenderer
+    #include "KCL/templaterenderer.h"
+#endif
+
 void KCLPlugin::registerTypes(const char *uri)
 {
     //@uri KCL
@@ -167,6 +171,10 @@ void KCLPlugin::registerTypes(const char *uri)
 
 #ifdef KCL_propertychangeobserver
     qmlRegisterType<PropertyChangeObserver>(uri, 1, 0, "PropertyChangeObserver");
+#endif
+
+#ifdef KCL_templaterenderer
+    qmlRegisterType<TemplateRenderer>(uri, 1, 0, "NativeTemplateRenderer");
 #endif
 
 #ifdef KCL_settingsgroup
