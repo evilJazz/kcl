@@ -77,7 +77,7 @@ class TemplateRenderer : public PropertyChangeObserver
 
     Q_PROPERTY(QStringList _TemplateRenderer_ignoredPropertyNames READ _TemplateRenderer_ignoredPropertyNames CONSTANT)
 
-    Q_PROPERTY(QList<TemplateRenderer *> subRenderers READ subRenderers NOTIFY subRenderersChanged)
+    Q_PROPERTY(DeclarativeListProperty<TemplateRenderer> subRenderers READ subRenderers NOTIFY subRenderersChanged)
 
     Q_PROPERTY(DeclarativeListProperty<QObject> children READ children)
     Q_INTERFACES(DeclarativeParserStatus)
@@ -134,7 +134,7 @@ public:
 
     DeclarativeListProperty<QObject> children();
 
-    QList<TemplateRenderer *> subRenderers() const;
+    DeclarativeListProperty<TemplateRenderer> subRenderers();
 
 signals:
     void parentRendererChanged();
@@ -189,7 +189,7 @@ private:
     static void clearChildren(DeclarativeListProperty<QObject> *);
 
     QMap<QString, QPointer<TemplateRenderer> > subRenderersMap_;
-    QList< QPointer<TemplateRenderer> > subRenderers_;
+    QList<TemplateRenderer *> subRenderers_;
     QPointer<TemplateRenderer> topLevelRenderer_;
 
     void setTopLevelRenderer(TemplateRenderer *);

@@ -1,8 +1,42 @@
+/****************************************************************************
+**
+** Copyright (C) 2018 Andre Beckedorf
+** Contact: <evilJazz _AT_ katastrophos _DOT_ net>
+**
+** This file is part of the Katastrophos.net Component Library (KCL)
+**
+** $KCL_BEGIN_LICENSE$
+** GNU Lesser General Public License Usage
+** This library is free software; you can redistribute it and/or modify
+** it under the terms of the GNU Lesser General Public License version
+** 2.1 or 3.0 as published by the Free Software Foundation.
+**
+** This library is distributed in the hope that it will be useful, but
+** WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+** Lesser General Public License for more details:
+** https://www.gnu.org/licenses/lgpl-2.1.html
+** https://www.gnu.org/licenses/lgpl-3.0.html
+**
+** You should have received a copy of the GNU Lesser General Public
+** License along with this library; if not, write to the Free Software
+** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+** 02110-1301  USA
+**
+** Mozilla Public License Usage
+** Alternatively, this file is available under the Mozilla Public
+** License Version 1.1.  You may obtain a copy of the License at
+** http://www.mozilla.org/MPL/
+**
+** $KCL_END_LICENSE$
+**
+****************************************************************************/
+
 #include "KCL/templaterenderer.h"
 
 #include "KCL/filesystemutils.h"
 
-#define DIAGNOSTIC_OUTPUT
+//#define DIAGNOSTIC_OUTPUT
 #include "KCL/debug.h"
 
 TemplateRenderer::TemplateRenderer(QObject *parent) :
@@ -36,19 +70,22 @@ TemplateRenderer::TemplateRenderer(QObject *parent) :
     ignoredPropertyNames_ << "children";
 
     setIgnoredPropertyNames(ignoredPropertyNames_);
+
+    connect(this, SIGNAL(parentChanged()), this, SLOT(handleParentChanged()));
+    handleParentChanged();
 }
 
 TemplateRenderer::~TemplateRenderer()
 {
+    setParentRenderer(NULL);
 }
 
 void TemplateRenderer::setParentRenderer(TemplateRenderer *newParentRenderer)
 {
     if (registeredParentRenderer_)
     {
-        QPointer<TemplateRenderer> self(this);
         registeredParentRenderer_->subRenderersMap_.remove(name_);
-        registeredParentRenderer_->subRenderers_.removeAll(self);
+        registeredParentRenderer_->subRenderers_.removeAll(this);
         emit registeredParentRenderer_->subRenderersChanged();
 
         disconnect(registeredParentRenderer_, SIGNAL(topLevelRendererChanged()), this, SLOT(handleParentRendererTopLevelRendererChanged()));
@@ -59,9 +96,8 @@ void TemplateRenderer::setParentRenderer(TemplateRenderer *newParentRenderer)
 
     if (parentRenderer_)
     {
-        QPointer<TemplateRenderer> self(this);
-        parentRenderer_->subRenderersMap_.insert(name_, self);
-        parentRenderer_->subRenderers_.append(self);
+        parentRenderer_->subRenderersMap_.insert(name_, QPointer<TemplateRenderer>(this));
+        parentRenderer_->subRenderers_.prepend(this);
         emit parentRenderer_->subRenderersChanged();
 
         registeredParentRenderer_ = newParentRenderer;
@@ -330,7 +366,7 @@ void TemplateRenderer::dumpRendererStructure(const QString &indent)
 {
     int itemNr = 0;
 
-    foreach (QPointer<TemplateRenderer> renderer, subRenderers_)
+    foreach (TemplateRenderer *renderer, subRenderers_)
     {
         if (renderer)
         {
@@ -455,6 +491,11 @@ void TemplateRenderer::setTopLevelRenderer(TemplateRenderer *renderer)
     }
 }
 
+DeclarativeListProperty<TemplateRenderer> TemplateRenderer::subRenderers()
+{
+    return DeclarativeListProperty<TemplateRenderer>(this, subRenderers_);
+}
+
 DeclarativeListProperty<QObject> TemplateRenderer::children()
 {
     return DeclarativeListProperty<QObject>(this, this,
@@ -465,15 +506,6 @@ DeclarativeListProperty<QObject> TemplateRenderer::children()
     );
 }
 
-QList<TemplateRenderer *> TemplateRenderer::subRenderers() const
-{
-    QList<TemplateRenderer *> result;
-
-    foreach (const QPointer<TemplateRenderer> &renderer, subRenderers_)
-        result.append(renderer.data());
-
-    return result;
-}
 
 void TemplateRenderer::appendChild(DeclarativeListProperty<QObject> *list, QObject *child)
 {

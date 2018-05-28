@@ -115,7 +115,7 @@ PropertyChangeObserver {
     onTemplateTextChanged: _TemplateRenderer_handleTemplateChanged()
     onTemplateSourceChanged:
     {
-        template = ""; // Force reload
+        templateText = ""; // Force reload
         _TemplateRenderer_handleTemplateChanged();
     }
 
@@ -263,7 +263,7 @@ PropertyChangeObserver {
 
         if (!found)
         {
-            newChildren.push(childRenderer);
+            newChildren.unshift(childRenderer);
 
             childRenderer.Component.destruction.connect(function()
             {
