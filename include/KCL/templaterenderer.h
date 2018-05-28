@@ -40,6 +40,8 @@
 #include <QObject>
 #include <QMap>
 #include <QPointer>
+#include <QUrl>
+#include <QTimer>
 
 #ifdef KCL_QTQUICK2
     #include <QtQuick>
