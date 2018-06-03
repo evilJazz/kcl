@@ -168,7 +168,6 @@ private:
     QStringList ignoredPropertyNames_;
 
     QPointer<TemplateRenderer> parentRenderer_;
-    QPointer<TemplateRenderer> registeredParentRenderer_;
 
     QString name_;
     QString childPrefix_;
@@ -189,6 +188,9 @@ private:
     static int childrenCount(DeclarativeListProperty<QObject> *);
     static QObject *child(DeclarativeListProperty<QObject> *, int index);
     static void clearChildren(DeclarativeListProperty<QObject> *);
+
+    void removeRenderer(TemplateRenderer *childRenderer);
+    void addRenderer(TemplateRenderer *childRenderer);
 
     QMap<QString, QPointer<TemplateRenderer> > subRenderersMap_;
     QList<TemplateRenderer *> subRenderers_;

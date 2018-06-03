@@ -42,7 +42,6 @@
 TemplateRenderer::TemplateRenderer(QObject *parent) :
     PropertyChangeObserver(parent),
     parentRenderer_(NULL),
-    registeredParentRenderer_(NULL),
     name_(),
     childPrefix_(),
     templateText_(),
@@ -80,28 +79,35 @@ TemplateRenderer::~TemplateRenderer()
     setParentRenderer(NULL);
 }
 
+void TemplateRenderer::removeRenderer(TemplateRenderer *childRenderer)
+{
+    subRenderersMap_.remove(childRenderer->name());
+    subRenderers_.removeAll(childRenderer);
+    emit subRenderersChanged();
+}
+
+void TemplateRenderer::addRenderer(TemplateRenderer *childRenderer)
+{
+    subRenderersMap_.insert(childRenderer->name(), QPointer<TemplateRenderer>(childRenderer));
+    subRenderers_.prepend(childRenderer);
+    emit subRenderersChanged();
+}
+
 void TemplateRenderer::setParentRenderer(TemplateRenderer *newParentRenderer)
 {
-    if (registeredParentRenderer_)
+    if (parentRenderer_)
     {
-        registeredParentRenderer_->subRenderersMap_.remove(name_);
-        registeredParentRenderer_->subRenderers_.removeAll(this);
-        emit registeredParentRenderer_->subRenderersChanged();
-
-        disconnect(registeredParentRenderer_, SIGNAL(topLevelRendererChanged()), this, SLOT(handleParentRendererTopLevelRendererChanged()));
-        registeredParentRenderer_.clear();
+        disconnect(parentRenderer_, SIGNAL(topLevelRendererChanged()), this, SLOT(handleParentRendererTopLevelRendererChanged()));
+        parentRenderer_->removeRenderer(this);
+        parentRenderer_.clear();
     }
 
     parentRenderer_ = newParentRenderer;
 
     if (parentRenderer_)
     {
-        parentRenderer_->subRenderersMap_.insert(name_, QPointer<TemplateRenderer>(this));
-        parentRenderer_->subRenderers_.prepend(this);
-        emit parentRenderer_->subRenderersChanged();
-
-        registeredParentRenderer_ = newParentRenderer;
-        connect(registeredParentRenderer_, SIGNAL(topLevelRendererChanged()), this, SLOT(handleParentRendererTopLevelRendererChanged()));
+        parentRenderer_->addRenderer(this);
+        connect(parentRenderer_, SIGNAL(topLevelRendererChanged()), this, SLOT(handleParentRendererTopLevelRendererChanged()));
     }
 
     emit parentRendererChanged();
@@ -351,7 +357,7 @@ bool TemplateRenderer::isTemplateRenderer(QObject *item)
 
 void TemplateRenderer::dumpRendererStructure()
 {
-    DPRINTF("%s name: %s childPrefix: %s identifier: %s contentDirty: %s",
+    kaPrintf("%s name: %s childPrefix: %s identifier: %s contentDirty: %s",
         metaObject()->className(),
         name().toUtf8().constData(),
         childPrefix().toUtf8().constData(),
@@ -370,7 +376,7 @@ void TemplateRenderer::dumpRendererStructure(const QString &indent)
     {
         if (renderer)
         {
-            DPRINTF("%s %d: %s name: %s childPrefix: %s identifier: %s contentDirty: %s topLevelRenderer: %s",
+            kaPrintf("%s %d: %s name: %s childPrefix: %s identifier: %s contentDirty: %s topLevelRenderer: %s",
                 indent.toUtf8().constData(),
                 itemNr,
                 renderer->metaObject()->className(),
@@ -506,7 +512,6 @@ DeclarativeListProperty<QObject> TemplateRenderer::children()
     );
 }
 
-
 void TemplateRenderer::appendChild(DeclarativeListProperty<QObject> *list, QObject *child)
 {
     TemplateRenderer *renderer = static_cast<TemplateRenderer *>(list->data);
@@ -531,12 +536,5 @@ QObject *TemplateRenderer::child(DeclarativeListProperty<QObject> *list, int ind
 void TemplateRenderer::clearChildren(DeclarativeListProperty<QObject> *list)
 {
     TemplateRenderer *renderer = static_cast<TemplateRenderer *>(list->data);
-
-    foreach (QObject *child, renderer->children_)
-    {
-        if (renderer->isTemplateRenderer(child))
-            qobject_cast<TemplateRenderer *>(child)->setParentRenderer(NULL);
-    }
-
     renderer->children_.clear();
 }

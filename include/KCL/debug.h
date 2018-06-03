@@ -71,6 +71,7 @@ KCL_EXPORT void kaDebugExitMethod(const QString &name);
 KCL_EXPORT void kaDebugEnterMethod(const char *fileName, int line, const char *functionSignature, const QString &text = QString::null);
 KCL_EXPORT void kaDebugExitMethod(const char *fileName, int line, const char *functionSignature, const QString &text = QString::null);
 KCL_EXPORT void kaDebug(const QString &msg);
+#define kaPrintf(...) kaDebug(QString().sprintf(__VA_ARGS__))
 KCL_EXPORT void kaFatal(const QString &msg);
 KCL_EXPORT void kaPrintMemStat();
 KCL_EXPORT void kaPrintBacktrace(); // requires -rdynamic gcc param for maximal effect...
