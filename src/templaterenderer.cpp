@@ -110,8 +110,6 @@ void TemplateRenderer::setParentRenderer(TemplateRenderer *newParentRenderer)
         connect(parentRenderer_, SIGNAL(topLevelRendererChanged()), this, SLOT(handleParentRendererTopLevelRendererChanged()));
     }
 
-    emit parentRendererChanged();
-
     TemplateRenderer *newTopLevel = this;
     TemplateRenderer *renderer = parentRenderer_;
 
@@ -122,6 +120,8 @@ void TemplateRenderer::setParentRenderer(TemplateRenderer *newParentRenderer)
     }
 
     setTopLevelRenderer(newTopLevel);
+
+    emit parentRendererChanged();
 }
 
 TemplateRenderer *TemplateRenderer::parentRenderer() const
@@ -163,7 +163,10 @@ QString TemplateRenderer::identifier() const
 
 QString TemplateRenderer::childPrefix() const
 {
-    return childPrefix_;
+    if (childPrefix_.length() > 0)
+        return childPrefix_;
+    else
+        return parentRenderer_ ? parentRenderer_->childPrefix() : "";
 }
 
 void TemplateRenderer::setChildPrefix(const QString &childPrefix)
@@ -346,7 +349,7 @@ bool TemplateRenderer::isTemplateRenderer(QObject *item)
 {
     if (item)
     {
-        DPRINTF("class name: %s objectName: %s isTemplateRenderer: %s",
+        DPRINTF("class name: %s, objectName: %s, isTemplateRenderer: %s",
             item->metaObject()->className(),
             item->objectName().toUtf8().constData(),
             qobject_cast<TemplateRenderer *>(item) ? "true" : "false"
@@ -357,7 +360,7 @@ bool TemplateRenderer::isTemplateRenderer(QObject *item)
 
 void TemplateRenderer::dumpRendererStructure()
 {
-    kaPrintf("%s name: %s childPrefix: %s identifier: %s contentDirty: %s",
+    kaPrintf("%s name: %s, childPrefix: %s, identifier: %s, contentDirty: %s",
         metaObject()->className(),
         name().toUtf8().constData(),
         childPrefix().toUtf8().constData(),
@@ -376,7 +379,7 @@ void TemplateRenderer::dumpRendererStructure(const QString &indent)
     {
         if (renderer)
         {
-            kaPrintf("%s %d: %s name: %s childPrefix: %s identifier: %s contentDirty: %s topLevelRenderer: %s",
+            kaPrintf("%s %d: %s name: %s, childPrefix: %s, identifier: %s, contentDirty: %s, topLevelRenderer: %s (%s)",
                 indent.toUtf8().constData(),
                 itemNr,
                 renderer->metaObject()->className(),
@@ -384,7 +387,8 @@ void TemplateRenderer::dumpRendererStructure(const QString &indent)
                 renderer->childPrefix().toUtf8().constData(),
                 renderer->identifier().toUtf8().constData(),
                 renderer->contentDirty() ? "true" : "false",
-                renderer->topLevelRenderer()->metaObject()->className()
+                renderer->topLevelRenderer()->metaObject()->className(),
+                renderer->topLevelRenderer()->identifier().toUtf8().constData()
             );
 
             renderer->dumpRendererStructure(indent + "    ");
@@ -483,9 +487,9 @@ void TemplateRenderer::markContentDirty()
 void TemplateRenderer::handleParentRendererTopLevelRendererChanged()
 {
     if (parentRenderer_)
-        topLevelRenderer_ = parentRenderer_->topLevelRenderer_;
+        setTopLevelRenderer(parentRenderer_->topLevelRenderer());
     else
-        topLevelRenderer_ = this;
+        setTopLevelRenderer(this);
 }
 
 void TemplateRenderer::setTopLevelRenderer(TemplateRenderer *renderer)

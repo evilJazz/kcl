@@ -60,7 +60,7 @@ class TemplateRenderer : public PropertyChangeObserver
 {
     Q_OBJECT
     Q_PROPERTY(TemplateRenderer *parentRenderer READ parentRenderer WRITE setParentRenderer NOTIFY parentRendererChanged)
-    Q_PROPERTY(TemplateRenderer *topLevelRenderer READ topLevelRenderer NOTIFY topLevelRendererChanged)
+    Q_PROPERTY(TemplateRenderer *topLevelRenderer READ topLevelRenderer WRITE setTopLevelRenderer NOTIFY topLevelRendererChanged)
 
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString identifier READ identifier NOTIFY identifierChanged)

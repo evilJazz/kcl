@@ -293,7 +293,7 @@ PropertyChangeObserver {
 
     function dumpRendererStructure()
     {
-        Debug.print(renderer + " name: " + renderer.name + " childPrefix: " + renderer.childPrefix + " identifier: " + renderer.identifier + " contentDirty: " + renderer.contentDirty);
+        Debug.print(renderer + " name: " + renderer.name + ", childPrefix: " + renderer.childPrefix + ", identifier: " + renderer.identifier + ", contentDirty: " + renderer.contentDirty);
         _dumpRendererStructure("    ");
     }
 
@@ -308,7 +308,7 @@ PropertyChangeObserver {
             var child = subRenderers[i];
             if (isTemplateRenderer(child))
             {
-                Debug.print(indent + itemNr + ": " + child + " name: " + child.name + " childPrefix: " + child.childPrefix + " identifier: " + child.identifier + " contentDirty: " + child.contentDirty);
+                Debug.print(indent + itemNr + ": " + child + " name: " + child.name + ", childPrefix: " + child.childPrefix + ", identifier: " + child.identifier + ", contentDirty: " + child.contentDirty + ", topLevelRenderer: " + child.topLevelRenderer + " (" + child.topLevelRenderer.identifier + ")");
                 child._dumpRendererStructure(indent + "    ");
                 ++itemNr;
             }
