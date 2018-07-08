@@ -163,6 +163,7 @@ private slots:
     void markContentDirty();
 
     void handleParentRendererTopLevelRendererChanged();
+    void handleParentRendererChildPrefixChanged();
 
 private:
     QStringList ignoredPropertyNames_;

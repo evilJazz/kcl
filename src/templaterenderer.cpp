@@ -98,6 +98,7 @@ void TemplateRenderer::setParentRenderer(TemplateRenderer *newParentRenderer)
     if (parentRenderer_)
     {
         disconnect(parentRenderer_, SIGNAL(topLevelRendererChanged()), this, SLOT(handleParentRendererTopLevelRendererChanged()));
+        disconnect(parentRenderer_, SIGNAL(childPrefixChanged()), this, SLOT(handleParentRendererChildPrefixChanged()));
         parentRenderer_->removeRenderer(this);
         parentRenderer_.clear();
     }
@@ -107,6 +108,7 @@ void TemplateRenderer::setParentRenderer(TemplateRenderer *newParentRenderer)
     if (parentRenderer_)
     {
         parentRenderer_->addRenderer(this);
+        connect(parentRenderer_, SIGNAL(childPrefixChanged()), this, SLOT(handleParentRendererChildPrefixChanged()));
         connect(parentRenderer_, SIGNAL(topLevelRendererChanged()), this, SLOT(handleParentRendererTopLevelRendererChanged()));
     }
 
@@ -122,6 +124,9 @@ void TemplateRenderer::setParentRenderer(TemplateRenderer *newParentRenderer)
     setTopLevelRenderer(newTopLevel);
 
     emit parentRendererChanged();
+
+    emit identifierChanged();
+    emit childPrefixChanged();
 }
 
 TemplateRenderer *TemplateRenderer::parentRenderer() const
@@ -490,6 +495,12 @@ void TemplateRenderer::handleParentRendererTopLevelRendererChanged()
         setTopLevelRenderer(parentRenderer_->topLevelRenderer());
     else
         setTopLevelRenderer(this);
+}
+
+void TemplateRenderer::handleParentRendererChildPrefixChanged()
+{
+    emit childPrefixChanged();
+    emit identifierChanged();
 }
 
 void TemplateRenderer::setTopLevelRenderer(TemplateRenderer *renderer)
