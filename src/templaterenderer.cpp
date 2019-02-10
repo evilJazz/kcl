@@ -42,7 +42,6 @@
 TemplateRenderer::TemplateRenderer(QObject *parent) :
     PropertyChangeObserver(parent),
     parentRenderer_(NULL),
-    name_(),
     childPrefix_(),
     templateText_(),
     templateSource_(),
@@ -53,6 +52,8 @@ TemplateRenderer::TemplateRenderer(QObject *parent) :
     renderTimer_(NULL),
     topLevelRenderer_(this)
 {
+    setName(createUniqueID());
+
     setRenderDelay(10);
     connect(this, SIGNAL(propertyChanged(QString)), this, SLOT(markContentDirty()));
     connect(this, SIGNAL(subRendererTemplateChanged(TemplateRenderer*)), this, SLOT(notifyParentRenderer()));
@@ -268,6 +269,12 @@ void TemplateRenderer::setRenderDelay(int delay)
             renderTimer_.clear();
         }
     }
+}
+
+const QString TemplateRenderer::createUniqueID()
+{
+    QString uuid = QUuid::createUuid().toString();
+    return QString(QCryptographicHash::hash(uuid.toUtf8(), QCryptographicHash::Sha1).toHex()).left(10);
 }
 
 void TemplateRenderer::updateContent()

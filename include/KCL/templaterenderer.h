@@ -119,6 +119,8 @@ public:
     int renderDelay() const;
     void setRenderDelay(int delay);
 
+    Q_INVOKABLE static const QString createUniqueID();
+
     Q_INVOKABLE void updateContent();
     Q_INVOKABLE TemplateRenderer *findTemplateRendererByName(const QString &name);
     Q_INVOKABLE bool isTemplateRenderer(QObject *item);
