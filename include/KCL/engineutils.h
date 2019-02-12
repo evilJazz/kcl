@@ -38,11 +38,14 @@
 #include "KCL/kcl_global.h"
 
 #include <QObject>
+#include <QVariant>
 
 #ifdef KCL_QTQUICK2
 class QQmlEngine;
+class QQmlComponent;
 #else
 class QDeclarativeEngine;
+class QDeclarativeComponent;
 class QScriptEngine;
 class QScriptContextInfo;
 #endif
@@ -66,6 +69,17 @@ public:
     Q_INVOKABLE void clearNetworkCache();
 
     Q_INVOKABLE void clearPixmapCache();
+
+    Q_INVOKABLE void setContextProperty(QObject *target, const QString &propertyName, QVariant value);
+    Q_INVOKABLE void setContextProperty(QObject *target, const QString &propertyName, QObject *value);
+
+    Q_INVOKABLE void setContextObject(QObject *target, QObject *source);
+
+#ifdef KCL_QTQUICK2
+    Q_INVOKABLE QObject *createObjectWithContextObject(QQmlComponent *component, QObject *contextObject);
+#else
+    Q_INVOKABLE QObject *createObjectWithContextObject(QDeclarativeComponent *component, QObject *contextObject);
+#endif
 
 private:
 #ifdef KCL_QTQUICK2
