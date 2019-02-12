@@ -60,6 +60,11 @@ class KCL_EXPORT PropertyChangeObserver :
     Q_OBJECT
     Q_PROPERTY(QObject *parent READ parent WRITE setParent NOTIFY parentChanged)
     Q_PROPERTY(QStringList ignoredPropertyNames READ ignoredPropertyNames WRITE setIgnoredPropertyNames NOTIFY ignoredPropertyNamesChanged)
+#ifdef KCL_QTQUICK2
+    Q_INTERFACES(QQmlParserStatus)
+#else
+    Q_INTERFACES(QDeclarativeParserStatus)
+#endif
 public:
     explicit PropertyChangeObserver(QObject *parent = 0);
     virtual ~PropertyChangeObserver();

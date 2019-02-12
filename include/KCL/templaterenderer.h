@@ -79,10 +79,15 @@ class TemplateRenderer : public PropertyChangeObserver
 
     Q_PROPERTY(QStringList _TemplateRenderer_ignoredPropertyNames READ _TemplateRenderer_ignoredPropertyNames CONSTANT)
 
-    Q_PROPERTY(DeclarativeListProperty<TemplateRenderer> subRenderers READ subRenderers NOTIFY subRenderersChanged)
-
-    Q_PROPERTY(DeclarativeListProperty<QObject> children READ children)
-    Q_INTERFACES(DeclarativeParserStatus)
+#ifdef KCL_QTQUICK2
+    Q_PROPERTY(QQmlListProperty<TemplateRenderer> subRenderers READ subRenderers NOTIFY subRenderersChanged)
+    Q_PROPERTY(QQmlListProperty<QObject> children READ children)
+    Q_INTERFACES(QQmlParserStatus)
+#else
+    Q_PROPERTY(QDeclarativeListProperty<TemplateRenderer> subRenderers READ subRenderers NOTIFY subRenderersChanged)
+    Q_PROPERTY(QDeclarativeListProperty<QObject> children READ children)
+    Q_INTERFACES(QDeclarativeParserStatus)
+#endif
 
     Q_CLASSINFO("DefaultProperty", "children")
 public:

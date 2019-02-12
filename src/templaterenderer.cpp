@@ -34,6 +34,9 @@
 
 #include "KCL/templaterenderer.h"
 
+#include <QUuid>
+#include <QCryptographicHash>
+
 #include "KCL/filesystemutils.h"
 
 //#define DIAGNOSTIC_OUTPUT
@@ -90,7 +93,14 @@ void TemplateRenderer::removeRenderer(TemplateRenderer *childRenderer)
 void TemplateRenderer::addRenderer(TemplateRenderer *childRenderer)
 {
     subRenderersMap_.insert(childRenderer->name(), QPointer<TemplateRenderer>(childRenderer));
+
+    // The order of how child items are added changed between Qt Quick 1 and 2, so account for that...
+#ifdef VIRIDITY_USE_QTQUICK1
+    subRenderers_.append(childRenderer);
+#else
     subRenderers_.prepend(childRenderer);
+#endif
+
     emit subRenderersChanged();
 }
 
@@ -101,7 +111,7 @@ void TemplateRenderer::setParentRenderer(TemplateRenderer *newParentRenderer)
         disconnect(parentRenderer_, SIGNAL(topLevelRendererChanged()), this, SLOT(handleParentRendererTopLevelRendererChanged()));
         disconnect(parentRenderer_, SIGNAL(childPrefixChanged()), this, SLOT(handleParentRendererChildPrefixChanged()));
         parentRenderer_->removeRenderer(this);
-        parentRenderer_.clear();
+        parentRenderer_ = NULL;
     }
 
     parentRenderer_ = newParentRenderer;
@@ -266,7 +276,7 @@ void TemplateRenderer::setRenderDelay(int delay)
         else if (renderTimer_)
         {
             renderTimer_->deleteLater();
-            renderTimer_.clear();
+            renderTimer_ = NULL;
         }
     }
 }
@@ -538,7 +548,12 @@ void TemplateRenderer::appendChild(DeclarativeListProperty<QObject> *list, QObje
 {
     TemplateRenderer *renderer = static_cast<TemplateRenderer *>(list->data);
 
+    // The order of how child items are added changed between Qt Quick 1 and 2, so account for that...
+#ifdef VIRIDITY_USE_QTQUICK1
     renderer->children_.append(child);
+#else
+    renderer->children_.prepend(child);
+#endif
     if (renderer->isTemplateRenderer(child))
         qobject_cast<TemplateRenderer *>(child)->setParentRenderer(renderer);
 }
