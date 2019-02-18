@@ -147,6 +147,17 @@ QString FileSystemUtils::pathAppend(const QString &path1, const QString &path2)
         return path1 + "/" + path2;
 }
 
+QString FileSystemUtils::makeRelativeFilePath(const QString &base, const QString &target)
+{
+    QDir baseDir(base);
+    QUrl targetUrl(target);
+
+    if (targetUrl.isValid() && targetUrl.isRelative())
+        return baseDir.relativeFilePath(target);
+    else
+        return target;
+}
+
 QDateTime FileSystemUtils::lastModified(const QString &path)
 {
     return QFileInfo(path).lastModified();

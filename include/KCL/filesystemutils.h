@@ -81,6 +81,8 @@ public:
 
     Q_INVOKABLE static QString pathAppend(const QString &path1, const QString &path2);
 
+    Q_INVOKABLE static QString makeRelativeFilePath(const QString &base, const QString &target);
+
     Q_INVOKABLE static QDateTime lastModified(const QString &path);
     Q_INVOKABLE static QDateTime created(const QString &path);
 
