@@ -310,41 +310,62 @@ void TemplateRenderer::updateContent()
         QString replacement;
         QVariant replacementVar;
 
-        if (this->hasOwnProperty(name))
+        int methodIndex = name.indexOf(' ');
+
+        if (methodIndex > -1)
         {
-            if (!QMetaObject::invokeMethod(
+            QString methodName = name.left(methodIndex);
+            QString param = name.mid(methodIndex + 1);
+
+            if (QMetaObject::invokeMethod(
                     this,
-                    "replaceMarkerForProperty",
+                    methodName.toUtf8().constData(),
                     Q_RETURN_ARG(QVariant, replacementVar),
-                    Q_ARG(QVariant, name)
+                    Q_ARG(QVariant, param)
                 ))
-            {
-                replacement = _TemplateRenderer_replaceMarkerForProperty(name);
-            }
-            else
             {
                 replacement = replacementVar.toString();
             }
         }
-        else
-        {
-            TemplateRenderer *subRenderer = findTemplateRendererByName(name);
-            if (subRenderer)
-            {
-                if (subRenderer->contentDirty())
-                    subRenderer->updateContent();
 
+        if (!replacementVar.isValid())
+        {
+            if (this->hasOwnProperty(name))
+            {
                 if (!QMetaObject::invokeMethod(
-                        subRenderer,
-                        "replaceMarkerForContent",
-                        Q_RETURN_ARG(QVariant, replacementVar)
+                        this,
+                        "replaceMarkerForProperty",
+                        Q_RETURN_ARG(QVariant, replacementVar),
+                        Q_ARG(QVariant, name)
                     ))
                 {
-                    replacement = _TemplateRenderer_replaceMarkerForContent();
+                    replacement = _TemplateRenderer_replaceMarkerForProperty(name);
                 }
                 else
                 {
                     replacement = replacementVar.toString();
+                }
+            }
+            else
+            {
+                TemplateRenderer *subRenderer = findTemplateRendererByName(name);
+                if (subRenderer)
+                {
+                    if (subRenderer->contentDirty())
+                        subRenderer->updateContent();
+
+                    if (!QMetaObject::invokeMethod(
+                            subRenderer,
+                            "replaceMarkerForContent",
+                            Q_RETURN_ARG(QVariant, replacementVar)
+                        ))
+                    {
+                        replacement = _TemplateRenderer_replaceMarkerForContent();
+                    }
+                    else
+                    {
+                        replacement = replacementVar.toString();
+                    }
                 }
             }
         }
