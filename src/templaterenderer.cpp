@@ -255,6 +255,11 @@ bool TemplateRenderer::contentDirty() const
     return contentDirty_;
 }
 
+void TemplateRenderer::invalidateContent()
+{
+    markContentDirty();
+}
+
 int TemplateRenderer::renderDelay() const
 {
     return renderDelay_;

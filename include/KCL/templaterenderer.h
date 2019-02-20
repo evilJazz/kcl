@@ -120,6 +120,7 @@ public:
 
     QString content() const;
     bool contentDirty() const;
+    Q_INVOKABLE void invalidateContent();
 
     int renderDelay() const;
     void setRenderDelay(int delay);
