@@ -292,6 +292,74 @@ const QString TemplateRenderer::createUniqueID()
     return QString(QCryptographicHash::hash(uuid.toUtf8(), QCryptographicHash::Sha1).toHex()).left(10);
 }
 
+QString TemplateRenderer::getContentForMarker(const QString &name)
+{
+    QString replacement;
+    QVariant replacementVar;
+
+    int methodIndex = name.indexOf(' ');
+
+    if (methodIndex > -1)
+    {
+        QString methodName = name.left(methodIndex);
+        QString param = name.mid(methodIndex + 1);
+
+        if (QMetaObject::invokeMethod(
+                this,
+                methodName.toUtf8().constData(),
+                Q_RETURN_ARG(QVariant, replacementVar),
+                Q_ARG(QVariant, param)
+            ))
+        {
+            replacement = replacementVar.toString();
+        }
+    }
+
+    if (!replacementVar.isValid())
+    {
+        if (this->hasOwnProperty(name))
+        {
+            if (!QMetaObject::invokeMethod(
+                    this,
+                    "replaceMarkerForProperty",
+                    Q_RETURN_ARG(QVariant, replacementVar),
+                    Q_ARG(QVariant, name)
+                ))
+            {
+                replacement = _TemplateRenderer_replaceMarkerForProperty(name);
+            }
+            else
+            {
+                replacement = replacementVar.toString();
+            }
+        }
+        else
+        {
+            TemplateRenderer *subRenderer = findTemplateRendererByName(name);
+            if (subRenderer)
+            {
+                if (subRenderer->contentDirty())
+                    subRenderer->updateContent();
+
+                if (!QMetaObject::invokeMethod(
+                        subRenderer,
+                        "replaceMarkerForContent",
+                        Q_RETURN_ARG(QVariant, replacementVar)
+                    ))
+                {
+                    replacement = _TemplateRenderer_replaceMarkerForContent();
+                }
+                else
+                {
+                    replacement = replacementVar.toString();
+                }
+            }
+        }
+    }
+
+    return replacement;
+}
+
 void TemplateRenderer::updateContent()
 {
     DGUARDMETHODTIMED;
@@ -303,83 +371,19 @@ void TemplateRenderer::updateContent()
 
     QRegExp rx(templateRegEx_);
     rx.setMinimal(true);
-    int startPos = 0;
-    int currentPos = 0;
+    int markerLastEndPos = 0;
+    int markerStartPos = 0;
 
-    while ((currentPos = rx.indexIn(templateText_, startPos)) != -1)
+    while ((markerStartPos = rx.indexIn(templateText_, markerLastEndPos)) != -1)
     {
-        newContent += templateText_.mid(startPos, currentPos - startPos);
-        startPos = currentPos + rx.matchedLength();
+        newContent += templateText_.mid(markerLastEndPos, markerStartPos - markerLastEndPos);
+        markerLastEndPos = markerStartPos + rx.matchedLength();
 
-        QString name = rx.cap(1);
-        QString replacement;
-        QVariant replacementVar;
-
-        int methodIndex = name.indexOf(' ');
-
-        if (methodIndex > -1)
-        {
-            QString methodName = name.left(methodIndex);
-            QString param = name.mid(methodIndex + 1);
-
-            if (QMetaObject::invokeMethod(
-                    this,
-                    methodName.toUtf8().constData(),
-                    Q_RETURN_ARG(QVariant, replacementVar),
-                    Q_ARG(QVariant, param)
-                ))
-            {
-                replacement = replacementVar.toString();
-            }
-        }
-
-        if (!replacementVar.isValid())
-        {
-            if (this->hasOwnProperty(name))
-            {
-                if (!QMetaObject::invokeMethod(
-                        this,
-                        "replaceMarkerForProperty",
-                        Q_RETURN_ARG(QVariant, replacementVar),
-                        Q_ARG(QVariant, name)
-                    ))
-                {
-                    replacement = _TemplateRenderer_replaceMarkerForProperty(name);
-                }
-                else
-                {
-                    replacement = replacementVar.toString();
-                }
-            }
-            else
-            {
-                TemplateRenderer *subRenderer = findTemplateRendererByName(name);
-                if (subRenderer)
-                {
-                    if (subRenderer->contentDirty())
-                        subRenderer->updateContent();
-
-                    if (!QMetaObject::invokeMethod(
-                            subRenderer,
-                            "replaceMarkerForContent",
-                            Q_RETURN_ARG(QVariant, replacementVar)
-                        ))
-                    {
-                        replacement = _TemplateRenderer_replaceMarkerForContent();
-                    }
-                    else
-                    {
-                        replacement = replacementVar.toString();
-                    }
-                }
-            }
-        }
-
-        newContent += replacement;
+        newContent += getContentForMarker(rx.cap(1));
     }
 
-    if (currentPos == -1)
-        newContent += templateText_.mid(startPos, templateText_.length() - startPos);
+    if (markerStartPos == -1)
+        newContent += templateText_.mid(markerLastEndPos, templateText_.length() - markerLastEndPos);
 
     content_ = newContent;
     contentDirty_ = false;
@@ -484,13 +488,13 @@ void TemplateRenderer::handleTemplateChanged()
 
     QRegExp rx(templateRegEx_);
     rx.setMinimal(true);
-    int startPos = 0;
-    int currentPos = 0;
+    int markerLastEndPos = 0;
+    int markerStartPos = 0;
     DPRINTF("rx.errorString(): %s", rx.errorString().toUtf8().constData());
 
-    while ((currentPos = rx.indexIn(templateText_, startPos)) != -1)
+    while ((markerStartPos = rx.indexIn(templateText_, markerLastEndPos)) != -1)
     {
-        startPos = currentPos + rx.matchedLength();
+        markerLastEndPos = markerStartPos + rx.matchedLength();
         QString name = rx.cap(1);
         ++makersUsed[name];
     }

@@ -163,6 +163,9 @@ signals:
     void subRendererTemplateChanged(TemplateRenderer *renderer);
     void subRenderersChanged();
 
+protected:
+    QString getContentForMarker(const QString &name);
+
 private slots:
     void handleTemplateChanged();
     void handleParentChanged();
