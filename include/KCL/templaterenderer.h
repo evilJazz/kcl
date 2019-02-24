@@ -80,11 +80,11 @@ class TemplateRenderer : public PropertyChangeObserver
     Q_PROPERTY(QStringList _TemplateRenderer_ignoredPropertyNames READ _TemplateRenderer_ignoredPropertyNames CONSTANT)
 
 #ifdef KCL_QTQUICK2
-    Q_PROPERTY(QQmlListProperty<TemplateRenderer> subRenderers READ subRenderers NOTIFY subRenderersChanged)
+    Q_PROPERTY(QQmlListProperty<TemplateRenderer> subRenderers READ subRenderers)
     Q_PROPERTY(QQmlListProperty<QObject> children READ children)
     Q_INTERFACES(QQmlParserStatus)
 #else
-    Q_PROPERTY(QDeclarativeListProperty<TemplateRenderer> subRenderers READ subRenderers NOTIFY subRenderersChanged)
+    Q_PROPERTY(QDeclarativeListProperty<TemplateRenderer> subRenderers READ subRenderers)
     Q_PROPERTY(QDeclarativeListProperty<QObject> children READ children)
     Q_INTERFACES(QDeclarativeParserStatus)
 #endif
@@ -163,8 +163,14 @@ signals:
     void subRendererTemplateChanged(TemplateRenderer *renderer);
     void subRenderersChanged();
 
+    void childrenChanged();
+
 protected:
     QString getContentForMarker(const QString &name);
+
+    // QDeclarativeParserStatus interface
+    void classBegin();
+    void componentComplete();
 
 private slots:
     void handleTemplateChanged();
@@ -177,6 +183,7 @@ private slots:
     void handleParentRendererChildPrefixChanged();
 
 private:
+    bool declarativeConstructionRunning_;
     QStringList ignoredPropertyNames_;
 
     QPointer<TemplateRenderer> parentRenderer_;
@@ -195,17 +202,23 @@ private:
     int renderDelay_;
     QPointer<QTimer> renderTimer_;
 
-    QList<QObject *> children_;
-    static void appendChild(DeclarativeListProperty<QObject> *, QObject *);
-    static int childrenCount(DeclarativeListProperty<QObject> *);
-    static QObject *child(DeclarativeListProperty<QObject> *, int index);
-    static void clearChildren(DeclarativeListProperty<QObject> *);
-
-    void removeRenderer(TemplateRenderer *childRenderer);
-    void addRenderer(TemplateRenderer *childRenderer);
-
     QMap<QString, QPointer<TemplateRenderer> > subRenderersMap_;
     QList<TemplateRenderer *> subRenderers_;
+    void removeSubRenderer(TemplateRenderer *childRenderer);
+    void addSubRenderer(TemplateRenderer *childRenderer);
+
+    static void declarativeAppendSubRenderer(DeclarativeListProperty<TemplateRenderer> *, TemplateRenderer *);
+    static int declarativeSubRenderersCount(DeclarativeListProperty<TemplateRenderer> *);
+    static TemplateRenderer *declarativeGetSubRenderer(DeclarativeListProperty<TemplateRenderer> *, int index);
+    static void declarativeClearSubRenderers(DeclarativeListProperty<TemplateRenderer> *);
+
+    QList<QObject *> children_;
+
+    static void declarativeAppendChild(DeclarativeListProperty<QObject> *, QObject *);
+    static int declarativeChildrenCount(DeclarativeListProperty<QObject> *);
+    static QObject *declarativeGetChild(DeclarativeListProperty<QObject> *, int index);
+    static void declarativeClearChildren(DeclarativeListProperty<QObject> *);
+
     QPointer<TemplateRenderer> topLevelRenderer_;
 
     void setTopLevelRenderer(TemplateRenderer *);

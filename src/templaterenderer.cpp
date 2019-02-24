@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2018 Andre Beckedorf
+** Copyright (C) 2018-2019 Andre Beckedorf
 ** Contact: <evilJazz _AT_ katastrophos _DOT_ net>
 **
 ** This file is part of the Katastrophos.net Component Library (KCL)
@@ -44,6 +44,7 @@
 
 TemplateRenderer::TemplateRenderer(QObject *parent) :
     PropertyChangeObserver(parent),
+    declarativeConstructionRunning_(false),
     parentRenderer_(NULL),
     childPrefix_(),
     templateText_(),
@@ -83,23 +84,33 @@ TemplateRenderer::~TemplateRenderer()
     setParentRenderer(NULL);
 }
 
-void TemplateRenderer::removeRenderer(TemplateRenderer *childRenderer)
+void TemplateRenderer::classBegin()
+{
+    PropertyChangeObserver::classBegin();
+    declarativeConstructionRunning_ = true;
+}
+
+void TemplateRenderer::componentComplete()
+{
+    PropertyChangeObserver::componentComplete();
+    declarativeConstructionRunning_ = false;
+}
+
+void TemplateRenderer::removeSubRenderer(TemplateRenderer *childRenderer)
 {
     subRenderersMap_.remove(childRenderer->name());
     subRenderers_.removeAll(childRenderer);
     emit subRenderersChanged();
 }
 
-void TemplateRenderer::addRenderer(TemplateRenderer *childRenderer)
+void TemplateRenderer::addSubRenderer(TemplateRenderer *childRenderer)
 {
     subRenderersMap_.insert(childRenderer->name(), QPointer<TemplateRenderer>(childRenderer));
 
-    // The order of how child items are added changed between Qt Quick 1 and 2, so account for that...
-#ifdef VIRIDITY_USE_QTQUICK1
-    subRenderers_.append(childRenderer);
-#else
-    subRenderers_.prepend(childRenderer);
-#endif
+    if (declarativeConstructionRunning_)
+        subRenderers_.prepend(childRenderer);
+    else
+        subRenderers_.append(childRenderer);
 
     emit subRenderersChanged();
 }
@@ -110,7 +121,7 @@ void TemplateRenderer::setParentRenderer(TemplateRenderer *newParentRenderer)
     {
         disconnect(parentRenderer_, SIGNAL(topLevelRendererChanged()), this, SLOT(handleParentRendererTopLevelRendererChanged()));
         disconnect(parentRenderer_, SIGNAL(childPrefixChanged()), this, SLOT(handleParentRendererChildPrefixChanged()));
-        parentRenderer_->removeRenderer(this);
+        parentRenderer_->removeSubRenderer(this);
         parentRenderer_ = NULL;
     }
 
@@ -118,7 +129,7 @@ void TemplateRenderer::setParentRenderer(TemplateRenderer *newParentRenderer)
 
     if (parentRenderer_)
     {
-        parentRenderer_->addRenderer(this);
+        parentRenderer_->addSubRenderer(this);
         connect(parentRenderer_, SIGNAL(childPrefixChanged()), this, SLOT(handleParentRendererChildPrefixChanged()));
         connect(parentRenderer_, SIGNAL(topLevelRendererChanged()), this, SLOT(handleParentRendererTopLevelRendererChanged()));
     }
@@ -559,49 +570,94 @@ void TemplateRenderer::setTopLevelRenderer(TemplateRenderer *renderer)
     }
 }
 
+
+/* Declarative list property methods for subRenderers */
+
 DeclarativeListProperty<TemplateRenderer> TemplateRenderer::subRenderers()
 {
-    return DeclarativeListProperty<TemplateRenderer>(this, subRenderers_);
+    return DeclarativeListProperty<TemplateRenderer>(this, this,
+        &TemplateRenderer::declarativeAppendSubRenderer,
+        &TemplateRenderer::declarativeSubRenderersCount,
+        &TemplateRenderer::declarativeGetSubRenderer,
+        &TemplateRenderer::declarativeClearSubRenderers
+    );
 }
+
+void TemplateRenderer::declarativeAppendSubRenderer(DeclarativeListProperty<TemplateRenderer> *list, TemplateRenderer *subRenderer)
+{
+    if (subRenderer)
+    {
+        TemplateRenderer *renderer = static_cast<TemplateRenderer *>(list->data);
+        subRenderer->setParentRenderer(renderer);
+    }
+}
+
+int TemplateRenderer::declarativeSubRenderersCount(DeclarativeListProperty<TemplateRenderer> *list)
+{
+    TemplateRenderer *renderer = static_cast<TemplateRenderer *>(list->data);
+    return renderer->subRenderers_.count();
+}
+
+TemplateRenderer *TemplateRenderer::declarativeGetSubRenderer(DeclarativeListProperty<TemplateRenderer> *list, int index)
+{
+    TemplateRenderer *renderer = static_cast<TemplateRenderer *>(list->data);
+    return renderer->subRenderers_.at(index);
+}
+
+void TemplateRenderer::declarativeClearSubRenderers(DeclarativeListProperty<TemplateRenderer> *list)
+{
+    TemplateRenderer *renderer = static_cast<TemplateRenderer *>(list->data);
+
+    foreach (TemplateRenderer *child, renderer->subRenderers_)
+        child->setParentRenderer(NULL);
+}
+
+/* Declarative list property methods for children */
 
 DeclarativeListProperty<QObject> TemplateRenderer::children()
 {
     return DeclarativeListProperty<QObject>(this, this,
-        &TemplateRenderer::appendChild,
-        &TemplateRenderer::childrenCount,
-        &TemplateRenderer::child,
-        &TemplateRenderer::clearChildren
+        &TemplateRenderer::declarativeAppendChild,
+        &TemplateRenderer::declarativeChildrenCount,
+        &TemplateRenderer::declarativeGetChild,
+        &TemplateRenderer::declarativeClearChildren
     );
 }
 
-void TemplateRenderer::appendChild(DeclarativeListProperty<QObject> *list, QObject *child)
+void TemplateRenderer::declarativeAppendChild(DeclarativeListProperty<QObject> *list, QObject *child)
 {
     TemplateRenderer *renderer = static_cast<TemplateRenderer *>(list->data);
 
-    // The order of how child items are added changed between Qt Quick 1 and 2, so account for that...
-#ifdef VIRIDITY_USE_QTQUICK1
-    renderer->children_.append(child);
-#else
-    renderer->children_.prepend(child);
-#endif
+    if (renderer->declarativeConstructionRunning_)
+        renderer->children_.prepend(child);
+    else
+        renderer->children_.append(child);
+
     if (renderer->isTemplateRenderer(child))
         qobject_cast<TemplateRenderer *>(child)->setParentRenderer(renderer);
 }
 
-int TemplateRenderer::childrenCount(DeclarativeListProperty<QObject> *list)
+int TemplateRenderer::declarativeChildrenCount(DeclarativeListProperty<QObject> *list)
 {
     TemplateRenderer *renderer = static_cast<TemplateRenderer *>(list->data);
     return renderer->children_.count();
 }
 
-QObject *TemplateRenderer::child(DeclarativeListProperty<QObject> *list, int index)
+QObject *TemplateRenderer::declarativeGetChild(DeclarativeListProperty<QObject> *list, int index)
 {
     TemplateRenderer *renderer = static_cast<TemplateRenderer *>(list->data);
     return renderer->children_.at(index);
 }
 
-void TemplateRenderer::clearChildren(DeclarativeListProperty<QObject> *list)
+void TemplateRenderer::declarativeClearChildren(DeclarativeListProperty<QObject> *list)
 {
     TemplateRenderer *renderer = static_cast<TemplateRenderer *>(list->data);
+
+    foreach (QObject *child, renderer->children_)
+    {
+        if (renderer->isTemplateRenderer(child))
+            qobject_cast<TemplateRenderer *>(child)->setParentRenderer(NULL);
+    }
+
     renderer->children_.clear();
 }
