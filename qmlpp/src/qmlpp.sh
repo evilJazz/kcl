@@ -59,7 +59,7 @@ processor()
 
 preprocess()
 {
-    "$findCmd" "$@" -type f \( -name "*.qml" -or -name "*.js" \) -print0 | processor
+    "$findCmd" "$@" -type f \( -name "*.qml" -o -name "*.js" \) -print0 | processor
 }
 
 usage()
