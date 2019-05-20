@@ -96,7 +96,9 @@ void EngineUtils::setContextObject(QObject *target, QObject *source)
 
 QObject *EngineUtils::createObjectWithContextObject(QDeclarativeComponent *component, QObject *contextObject)
 {
-    QDeclarativeContext *rootContext = engine_->rootContext();
+    QDeclarativeContext *rootContext = QDeclarativeEngine::contextForObject(contextObject);
+    if (!rootContext)
+        rootContext = engine_->rootContext();
 
     QDeclarativeContext *itemContext = new QDeclarativeContext(rootContext);
     itemContext->setContextObject(contextObject);
