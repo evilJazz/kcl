@@ -34,6 +34,9 @@
 
 #include "KCL/webcall.h"
 
+#include <QThread>
+#include <QEventLoop>
+
 #ifdef KCL_QTQUICK2
     #include <QQmlEngine>
     #include <QQmlContext>
@@ -50,12 +53,23 @@ WebCall::WebCall(QObject *parent) :
     QObject(parent),
     manager_(NULL),
     errorCode_(0),
+    statusCode_(0),
     autoDelete_(false)
 {
+    resetState();
 }
 
 WebCall::~WebCall()
 {
+}
+
+void WebCall::resetState()
+{
+    errorCode_ = 0;
+    statusCode_ = 0;
+    errorText_.clear();
+    reasonPhrase_.clear();
+    replyData_.clear();
 }
 
 void WebCall::get(QString url)
@@ -70,6 +84,8 @@ void WebCall::post(QString url, const QByteArray &rawData)
 
 void WebCall::get(QUrl url)
 {
+    resetState();
+
     QNetworkRequest request(url);
     setHeadersOnRequest(&request);
 
@@ -84,6 +100,8 @@ void WebCall::get(QUrl url)
 
 void WebCall::post(QUrl url, const QByteArray &rawData)
 {
+    resetState();
+
     QNetworkRequest request(url);
     setHeadersOnRequest(&request);
 
@@ -95,6 +113,17 @@ void WebCall::post(QUrl url, const QByteArray &rawData)
     data.rawData = rawData;
 
     requestData_.insert(reply, data);
+}
+
+void WebCall::waitUntilFinished()
+{
+    QEventLoop el;
+
+    while (!finished())
+    {
+        QThread::yieldCurrentThread();
+        el.processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
 }
 
 void WebCall::setHeadersOnRequest(QNetworkRequest *request)

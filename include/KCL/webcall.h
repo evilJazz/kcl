@@ -57,6 +57,7 @@ class KCL_EXPORT WebCall : public QObject
     Q_PROPERTY(int errorCode READ errorCode NOTIFY error)
     Q_PROPERTY(QString errorText READ errorText NOTIFY error)
     Q_PROPERTY(int statusCode READ statusCode NOTIFY attributesChanged)
+    Q_PROPERTY(bool finished READ finished NOTIFY attributesChanged)
     Q_PROPERTY(QString reasonPhrase READ reasonPhrase NOTIFY attributesChanged)
     Q_PROPERTY(bool autoDelete READ autoDelete WRITE setAutoDelete NOTIFY autoDeleteChanged)
 public:
@@ -69,6 +70,8 @@ public:
     void get(QUrl url);
     void post(QUrl url, const QByteArray &rawData);
 
+    Q_INVOKABLE void waitUntilFinished();
+
     Q_INVOKABLE void setRequestHeader(const QByteArray &key, const QByteArray &value);
     Q_INVOKABLE void clearRequestHeaders();
 
@@ -79,6 +82,8 @@ public:
 
     int statusCode() const { return statusCode_; }
     QString reasonPhrase() const { return reasonPhrase_; }
+
+    bool finished() const { return statusCode_ != 0 || errorCode_ != 0; }
 
     bool autoDelete() const;
     void setAutoDelete(bool value);
@@ -109,6 +114,7 @@ private:
     QMultiMap<QByteArray, QByteArray> requestHeaders_;
 
     void setHeadersOnRequest(QNetworkRequest *request);
+    void resetState();
 };
 
 #endif // WEBCALL_H
