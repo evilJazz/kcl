@@ -42,6 +42,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QPointer>
 
 class RequestCapturedData
 {
@@ -70,7 +71,7 @@ public:
     void get(QUrl url);
     void post(QUrl url, const QByteArray &rawData);
 
-    Q_INVOKABLE void waitUntilFinished();
+    Q_INVOKABLE void waitUntilFinished(int timeoutInMs = 0);
 
     Q_INVOKABLE void setRequestHeader(const QByteArray &key, const QByteArray &value);
     Q_INVOKABLE void clearRequestHeaders();
@@ -83,7 +84,7 @@ public:
     int statusCode() const { return statusCode_; }
     QString reasonPhrase() const { return reasonPhrase_; }
 
-    bool finished() const { return statusCode_ != 0 || errorCode_ != 0; }
+    bool finished() const { return finished_; }
 
     bool autoDelete() const;
     void setAutoDelete(bool value);
@@ -96,6 +97,7 @@ signals:
     void error(int errorCode, const QString &errorText);
     void autoDeleteChanged();
     void attributesChanged();
+    void requestFinished();
 
 private slots:
     void handleReplyFinished();
@@ -103,6 +105,8 @@ private slots:
 private:
     QNetworkAccessManager *manager_;
     QByteArray replyData_;
+    bool finished_;
+    QPointer<QNetworkReply> pendingRequest_;
     int errorCode_;
     QString errorText_;
     int statusCode_;

@@ -35,6 +35,7 @@
 #include "KCL/webcall.h"
 
 #include <QThread>
+#include <QTimer>
 #include <QEventLoop>
 
 #ifdef KCL_QTQUICK2
@@ -52,6 +53,8 @@
 WebCall::WebCall(QObject *parent) :
     QObject(parent),
     manager_(NULL),
+    finished_(false),
+    pendingRequest_(NULL),
     errorCode_(0),
     statusCode_(0),
     autoDelete_(false)
@@ -65,6 +68,8 @@ WebCall::~WebCall()
 
 void WebCall::resetState()
 {
+    finished_ = false;
+    pendingRequest_.clear();
     errorCode_ = 0;
     statusCode_ = 0;
     errorText_.clear();
@@ -91,6 +96,7 @@ void WebCall::get(QUrl url)
 
     QNetworkReply *reply = networkAccessManager()->get(request);
     connect(reply, SIGNAL(finished()), this, SLOT(handleReplyFinished()));
+    pendingRequest_ = reply;
 
     RequestCapturedData data;
     data.method = "GET";
@@ -107,6 +113,7 @@ void WebCall::post(QUrl url, const QByteArray &rawData)
 
     QNetworkReply *reply = networkAccessManager()->post(request, rawData);
     connect(reply, SIGNAL(finished()), this, SLOT(handleReplyFinished()));
+    pendingRequest_ = reply;
 
     RequestCapturedData data;
     data.method = "POST";
@@ -115,15 +122,24 @@ void WebCall::post(QUrl url, const QByteArray &rawData)
     requestData_.insert(reply, data);
 }
 
-void WebCall::waitUntilFinished()
+void WebCall::waitUntilFinished(int timeoutInMs)
 {
-    QEventLoop el;
+    if (!pendingRequest_ || finished_)
+        return;
 
-    while (!finished())
+    QTimer timer;
+    QEventLoop el;
+    connect(this, SIGNAL(requestFinished()), &el, SLOT(quit()));
+
+    if (timeoutInMs > 0)
     {
-        QThread::yieldCurrentThread();
-        el.processEvents(QEventLoop::ExcludeUserInputEvents);
+        timer.setInterval(timeoutInMs);
+        timer.setSingleShot(true);
+        connect(&timer, SIGNAL(timeout()), &el, SLOT(quit()));
+        timer.start();
     }
+
+    el.exec(QEventLoop::ExcludeUserInputEvents);
 }
 
 void WebCall::setHeadersOnRequest(QNetworkRequest *request)
@@ -171,6 +187,7 @@ void WebCall::handleReplyFinished()
                 get(possibleRedirectUrl);
 
             reply->deleteLater();
+            requestData_.remove(reply);
 
             return;
         }
@@ -182,7 +199,6 @@ void WebCall::handleReplyFinished()
 
         statusCode_ = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         reasonPhrase_ = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-        emit attributesChanged();
 
         if (reply->error() != QNetworkReply::NoError)
         {
@@ -196,7 +212,14 @@ void WebCall::handleReplyFinished()
             emit success(replyData_);
         }
 
+        finished_ = true;
+        emit requestFinished();
+
+        emit attributesChanged();
+
+        pendingRequest_.clear();
         reply->deleteLater();
+        requestData_.remove(reply);
     }
     else
         emit error(-1, "Invalid reply received.");
