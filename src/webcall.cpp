@@ -69,7 +69,7 @@ WebCall::~WebCall()
 void WebCall::resetState()
 {
     finished_ = false;
-    pendingRequest_.clear();
+    pendingRequest_ = NULL;
     errorCode_ = 0;
     statusCode_ = 0;
     errorText_.clear();
@@ -217,7 +217,7 @@ void WebCall::handleReplyFinished()
 
         emit attributesChanged();
 
-        pendingRequest_.clear();
+        pendingRequest_ = NULL;
         reply->deleteLater();
         requestData_.remove(reply);
     }
