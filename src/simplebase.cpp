@@ -444,13 +444,19 @@ bool SimpleBase::save(const QString &key, const QVariant &value, bool saveOnlyIf
         if (saveOnlyIfModified)
         {
             QSqlQuery loadQuery = executeLoadQuery(key, "`value`, `date_created`");
-            oldValue = loadQuery.value(0).toString();
-            created = loadQuery.value(1);
+
+            if (loadQuery.isValid() && loadQuery.isActive())
+            {
+                oldValue = loadQuery.value(0).toString();
+                created = loadQuery.value(1);
+            }
         }
         else
         {
             QSqlQuery loadQuery = executeLoadQuery(key, "`date_created`");
-            created = loadQuery.value(0);
+
+            if (loadQuery.isValid() && loadQuery.isActive())
+                created = loadQuery.value(0);
         }
 
         if (saveOnlyIfModified && newValue == oldValue)
