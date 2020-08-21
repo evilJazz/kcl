@@ -52,6 +52,10 @@
     #endif
 #endif
 
+#ifdef KCL_WITH_EXEC
+    #include <QProcess>
+#endif
+
 SystemUtils::SystemUtils(QObject *parent) :
     QObject(parent)
 {
@@ -97,3 +101,17 @@ void SystemUtils::trimProcessMemoryUsage()
 #endif
 #endif
 }
+
+#ifdef KCL_WITH_EXEC
+QVariant SystemUtils::execute(const QString &command, bool blocking)
+{
+#ifndef Q_OS_WINRT
+    if (blocking)
+        return QProcess::execute(command);
+    else
+        return QProcess::startDetached(command);
+#else
+    return false;
+#endif
+}
+#endif

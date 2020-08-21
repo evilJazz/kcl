@@ -51,6 +51,10 @@ public:
 #endif
 
     Q_INVOKABLE static void trimProcessMemoryUsage();
+
+#ifdef KCL_WITH_EXEC
+    Q_INVOKABLE QVariant execute(const QString &command, bool blocking);
+#endif
 };
 
 #endif // SYSTEMUTILS_H
