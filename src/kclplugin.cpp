@@ -228,6 +228,10 @@ void KCLPlugin::registerTypes(const char *uri)
     qmlRegisterType<KeyEventFilter>();
 #endif
 
+#ifdef KCL_logging
+    qmlRegisterType<Logging>();
+#endif
+
 #ifdef KCL_declarativedebug
     qmlRegisterType<DeclarativeDebug>();
 #endif
@@ -300,6 +304,10 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 #ifdef KCL_nativedialogs
     NativeDialogs *nativeDialogs = new NativeDialogs(engine);
     engine->rootContext()->setContextProperty("NativeDialogs", nativeDialogs);
+#endif
+
+#ifdef KCL_logging
+    engine->rootContext()->setContextProperty("Logging", &globalLogging);
 #endif
 
 #ifdef KCL_declarativedebug

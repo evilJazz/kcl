@@ -39,29 +39,33 @@
 
 #include <QObject>
 
-class KCL_EXPORT Logging
+class KCL_EXPORT Logging: public QObject
 {
+    Q_OBJECT
+    Q_PROPERTY(bool logWindowEnabled READ isLogWindowEnabled NOTIFY logWindowEnabledChanged)
 public:
     static Logging& singleton();
 #	define globalLogging Logging::singleton()
 
-    void registerHandler();
-    void unregisterHandler();
+    Q_INVOKABLE void registerHandler();
+    Q_INVOKABLE void unregisterHandler();
 
+    bool isLogWindowEnabled() const;
+
+    Q_INVOKABLE void enableLogFile(const QString &fileName);
+    Q_INVOKABLE void disableLogFile();
+
+    Q_INVOKABLE bool isEnabled() const;
+    Q_INVOKABLE QString logFileName() const;
+
+signals:
+    void logWindowEnabledChanged();
+
+public slots:
 #ifdef KCL_WIDGETS
     void enableLogWindow();
     void disableLogWindow();
 #endif
-
-    void enableLogFile(const QString &fileName);
-    void disableLogFile();
-
-    bool isEnabled() const;
-    QString logFileName() const;
-
-signals:
-
-public slots:
 
 protected:
     explicit Logging();

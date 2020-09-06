@@ -36,6 +36,8 @@
 #include "KCL/debug.h"
 
 #include <QFile>
+#include <QObject>
+#include <QPointer>
 
 static Logging *loggingInstance = NULL;
 static bool loggingEnabled_ = true;
@@ -43,7 +45,7 @@ static QFile *logFile_ = NULL;
 
 #ifdef KCL_WIDGETS
 #include <QTextEdit>
-static QTextEdit *logWindow_ = NULL;
+static QPointer<QTextEdit> logWindow_ = NULL;
 #endif
 
 Logging &Logging::singleton()
@@ -87,11 +89,17 @@ void Logging::enableLogWindow()
         font.setFamily("Courier");
         font.setPixelSize(10);
 
+        logWindow_->setAttribute(Qt::WA_DeleteOnClose, true);
         logWindow_->setFont(font);
         logWindow_->setWindowTitle("Log Window");
-        logWindow_->document()->setMaximumBlockCount(200);
+        logWindow_->document()->setMaximumBlockCount(1000);
+        logWindow_->resize(QSize(800, 500));
         logWindow_->setReadOnly(true);
         logWindow_->show();
+
+        connect(logWindow_.data(), SIGNAL(destroyed()), this, SLOT(disableLogWindow()));
+
+        emit logWindowEnabledChanged();
     }
 }
 
@@ -101,8 +109,15 @@ void Logging::disableLogWindow()
     {
         QTextEdit *temp = logWindow_;
         logWindow_ = NULL;
-        delete temp;
+        temp->deleteLater();
+
+        emit logWindowEnabledChanged();
     }
+}
+
+bool Logging::isLogWindowEnabled() const
+{
+    return logWindow_;
 }
 #endif
 
