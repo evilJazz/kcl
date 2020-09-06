@@ -117,7 +117,7 @@ void Logging::disableLogWindow()
 
 bool Logging::isLogWindowEnabled() const
 {
-    return logWindow_;
+    return !logWindow_.isNull();
 }
 #endif
 
