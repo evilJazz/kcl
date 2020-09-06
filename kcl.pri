@@ -39,6 +39,7 @@ isEmpty(kcl): kcl = \
     cookiejarinterface \
     filescanner \
     filesystemutils \
+    filesystemwatcher \
     history \
     progressmanager \
     performancedatamanager \
@@ -97,6 +98,7 @@ HEADERS     += $$KCL_INC_PATH/KCL/kcl_global.h
 
 kclConditionalAddModule(filescanner)
 kclConditionalAddModule(filesystemutils)
+kclConditionalAddModule(filesystemwatcher)
 kclConditionalAddModule(history)
 kclConditionalAddModule(progressmanager)
 kclConditionalAddModule(performancedatamanager)

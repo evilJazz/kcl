@@ -77,6 +77,10 @@
     #include "KCL/filescanner.h"
 #endif
 
+#ifdef KCL_filesystemwatcher
+    #include "KCL/filesystemwatcher.h"
+#endif
+
 #ifdef KCL_binaryfiledownloader
     #include "KCL/binaryfiledownloader.h"
 #endif
@@ -183,6 +187,10 @@ void KCLPlugin::registerTypes(const char *uri)
 
 #ifdef KCL_filescanner
     qmlRegisterType<FileScanner>(uri, 1, 0, "FileScanner");
+#endif
+
+#ifdef KCL_filesystemwatcher
+    qmlRegisterType<FileSystemWatcher>(uri, 1, 0, "FileSystemWatcher");
 #endif
 
 #ifdef KCL_cursorarea
