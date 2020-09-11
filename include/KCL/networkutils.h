@@ -67,6 +67,7 @@ private slots:
 private:
     QNetworkConfigurationManager *network_;
     QNetworkSession *session_;
+    QNetworkConfiguration currentConfig_;
 
     void newNetworkSession();
     void connectToNetworkConfigurationManager();

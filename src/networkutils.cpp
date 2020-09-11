@@ -137,9 +137,13 @@ void NetworkUtils::deferredUpdateNetworkConfigurations()
 void NetworkUtils::handleNetworkUpdateCompleted()
 {
     DGUARDMETHODTIMED;
-    DOP(dumpNetworkConfigurations());
-    newNetworkSession();
-    emit onlineStateChanged();
+
+    if (currentConfig_ != network_->defaultConfiguration())
+    {
+        DOP(dumpNetworkConfigurations());
+        newNetworkSession();
+        emit onlineStateChanged();
+    }
 }
 
 void NetworkUtils::newNetworkSession()
@@ -151,7 +155,8 @@ void NetworkUtils::newNetworkSession()
     if (session_)
         delete session_;
 
-    session_ = new QNetworkSession(network_->defaultConfiguration(), this);
+    currentConfig_ = network_->defaultConfiguration();
+    session_ = new QNetworkSession(currentConfig_, this);
 }
 
 bool NetworkUtils::isOnline()
