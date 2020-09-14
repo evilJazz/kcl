@@ -16,7 +16,7 @@ class FileSystemWatcher : public QObject, private UpdateLocker
 
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
 public:
-    FileSystemWatcher(QObject *parent = nullptr);
+    FileSystemWatcher(QObject *parent = NULL);
     ~FileSystemWatcher();
 
     bool enabled() const { return enabled_; }

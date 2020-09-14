@@ -3,7 +3,7 @@
 FileSystemWatcher::FileSystemWatcher(QObject *parent) :
     QObject(parent),
     enabled_(false),
-    d(nullptr)
+    d(NULL)
 {
     setEnabled(true);
 }
@@ -30,7 +30,7 @@ void FileSystemWatcher::setEnabled(bool enabled)
         else if (!enabled_ && d)
         {
             d->deleteLater();
-            d = nullptr;
+            d = NULL;
         }
 
         emit enabledChanged();
