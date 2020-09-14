@@ -51,6 +51,9 @@ void SingletonRegistry::registerInitializer(SingletonInitializerFunc myFunction)
 void SingletonRegistry::initialize()
 {
     DGUARDMETHODTIMED;
-    foreach (SingletonInitializerFunc initializer, initializers_)
+    for (int i = 0; i < initializers_.count(); ++i)
+    {
+        SingletonInitializerFunc initializer = initializers_.at(i);
         initializer();
+    }
 }
