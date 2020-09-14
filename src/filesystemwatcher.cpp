@@ -64,7 +64,13 @@ bool FileSystemWatcher::addPath(const QString &file)
     pathsToWatch_.append(file);
 
     if (d)
+    {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         result = d->addPath(file);
+#else
+        d->addPath(file);
+#endif
+    }
 
     if (!updating())
         emit changed();
@@ -79,7 +85,13 @@ QStringList FileSystemWatcher::addPaths(const QStringList &files)
     beginUpdate();
 
     if (d)
-        QStringList result = d->addPaths(files);
+    {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        result = d->addPaths(files);
+#else
+        d->addPaths(files);
+#endif
+    }
 
     endUpdate();
 
@@ -93,7 +105,13 @@ bool FileSystemWatcher::removePath(const QString &file)
     pathsToWatch_.removeOne(file);
 
     if (d)
+    {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         result = d->removePath(file);
+#else
+        d->removePath(file);
+#endif
+    }
 
     if (!updating())
         emit changed();
@@ -108,7 +126,13 @@ QStringList FileSystemWatcher::removePaths(const QStringList &files)
     beginUpdate();
 
     if (d)
+    {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         result = d->removePaths(files);
+#else
+        d->removePaths(files);
+#endif
+    }
 
     endUpdate();
 

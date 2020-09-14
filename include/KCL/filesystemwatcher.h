@@ -2,6 +2,7 @@
 #define FILESYSTEMWATCHER_H
 
 #include <QObject>
+#include <QStringList>
 #include <QFileSystemWatcher>
 #include <KCL/updatelocker.h>
 
