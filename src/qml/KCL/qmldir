@@ -1,3 +1,5 @@
+module KCL
+
 QtObjectWithChildren 1.0 QtObjectWithChildren.qml
 
 Action 1.0 Action.qml
@@ -39,3 +41,9 @@ GroupedItemGrid 1.0 GroupedItemGrid.qml
 CountdownTimer 1.0 CountdownTimer.qml
 
 TemplateRenderer 1.0 TemplateRenderer.qml
+
+ArrayHelpers 1.0 ArrayHelpers.js
+DeferredExecution 1.0 DeferredExecution.js
+JSONHelpers 1.0 JSONHelpers.js
+NumericHelpers 1.0 NumericHelpers.js
+StringHelpers 1.0 StringHelpers.js
