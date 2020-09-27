@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2011-2016 Andre Beckedorf
+** Copyright (C) 2011-2020 Andre Beckedorf
 ** Contact: <evilJazz _AT_ katastrophos _DOT_ net>
 **
 ** This file is part of the Katastrophos.net Component Library (KCL)
@@ -48,6 +48,127 @@
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
+
+/* DeclarativeIODeviceWrapper */
+
+IODevice::IODevice(QIODevice *source, QObject *parent) :
+    QObject(parent),
+    d(source)
+{
+    if (isValid())
+    {
+        connect(source, SIGNAL(readyRead()), this, SIGNAL(readyRead()));
+        connect(source, SIGNAL(channelReadyRead(int)), this, SIGNAL(channelReadyRead(int)));
+        connect(source, SIGNAL(bytesWritten(qint64)), this, SIGNAL(bytesWritten(qint64)));
+        connect(source, SIGNAL(channelBytesWritten(int, qint64)), this, SIGNAL(channelBytesWritten(qint64)));
+        connect(source, SIGNAL(aboutToClose()), this, SIGNAL(aboutToClose()));
+        connect(source, SIGNAL(readChannelFinished()), this, SIGNAL(readChannelFinished()));
+    }
+}
+
+bool IODevice::open(IODevice::OpenMode mode)
+{
+    return d ? d->open((QIODevice::OpenModeFlag)(mode)) : false;
+}
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+int IODevice::readChannelCount() const { return d ? d->readChannelCount() : 0; }
+int IODevice::writeChannelCount() const { return d ? d->writeChannelCount() : 0; }
+int IODevice::currentReadChannel() const { return d ? d->currentReadChannel() : 0; }
+void IODevice::setCurrentReadChannel(int channel) { if (d) d->setCurrentReadChannel(channel); }
+int IODevice::currentWriteChannel() const { return d ? d->currentWriteChannel() : 0; }
+void IODevice::setCurrentWriteChannel(int channel) { if (d) d->setCurrentReadChannel(channel); }
+#else
+int IODevice::readChannelCount() const { return d ? 1 : 0; }
+int IODevice::writeChannelCount() const { return d ? 1 : 0; }
+int IODevice::currentReadChannel() const { return d ? 0 : 0; }
+void IODevice::setCurrentReadChannel(int channel) {}
+int IODevice::currentWriteChannel() const { return d ? 0 : 0; }
+void IODevice::setCurrentWriteChannel(int channel) {}
+#endif
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+qint64 IODevice::skip(qint64 maxSize)
+{
+    return d ? d->skip(maxSize) : 0;
+}
+#else
+qint64 IODevice::skip(qint64 maxSize)
+{
+    return 0;
+}
+#endif
+
+/* DeclarativeFileWrapper */
+
+FileDevice::FileDevice(QFile *source, QObject *parent) :
+    IODevice(source, parent)
+{
+}
+
+FileDevice::FileDevice(const QString &fileName, QObject *parent) :
+    IODevice(NULL, parent)
+{
+    d = new QFile(fileName, this);
+}
+
+void FileDevice::setFileName(const QString &name)
+{
+    if (d && name != fileName())
+    {
+        static_cast<QFile *>(d.data())->setFileName(name);
+        emit fileNameChanged();
+    }
+}
+
+
+/* FileInfo */
+
+FileInfo::FileInfo(const QString &fileName) :
+    QObject(0),
+    QFileInfo(fileName)
+{
+}
+
+FileInfo::~FileInfo()
+{
+}
+
+QDateTime FileInfo::fileTime(FileInfo::FileTime time)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+    return QFileInfo::fileTime((QFile::FileTime)time);
+#else
+    switch (time)
+    {
+        case FileAccessTime: return lastRead();
+        case FileBirthTime: return birthTime();
+        case FileMetadataChangeTime: return metadataChangeTime();
+        case FileModificationTime: return lastModified();
+    }
+#endif
+}
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+bool FileInfo::isNativePath() const
+{
+    return !(fileName().startsWith(":/") || fileName().startsWith("qrc:/"));
+}
+#endif
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+QDateTime FileInfo::birthTime() const
+{
+    return created();
+}
+
+QDateTime FileInfo::metadataChangeTime() const
+{
+    return lastModified();
+}
+#endif
+
+/* FileSystemUtils */
 
 FileSystemUtils::FileSystemUtils(QObject *parent) :
     QObject(parent)
@@ -99,12 +220,12 @@ QString FileSystemUtils::extractCompleteSuffix(const QString &filename)
     return QFileInfo(filename).completeSuffix();
 }
 
-QVariant FileSystemUtils::absoluteFilePath(const QString &filePath)
+QString FileSystemUtils::absoluteFilePath(const QString &filePath)
 {
     return QFileInfo(filePath).absoluteFilePath();
 }
 
-QVariant FileSystemUtils::canonicalFilePath(const QString &filePath)
+QString FileSystemUtils::canonicalFilePath(const QString &filePath)
 {
     return QFileInfo(filePath).canonicalFilePath();
 }
@@ -192,6 +313,11 @@ QString FileSystemUtils::findNextParent(const QString &path)
     return parent;
 }
 
+qint64 FileSystemUtils::fileSize(const QString &path)
+{
+    return QFileInfo(path).size();
+}
+
 QString FileSystemUtils::formatFileSize(long long fileSize)
 {
     QString result;
@@ -204,6 +330,16 @@ QString FileSystemUtils::formatFileSize(long long fileSize)
         result = QString().sprintf("%.1f KB", (float)fileSize / 1024);
 
     return result;
+}
+
+FileInfo *FileSystemUtils::getFileInfo(const QString &fileName)
+{
+    return new FileInfo(fileName);
+}
+
+FileDevice *FileSystemUtils::getFile(const QString &fileName)
+{
+    return new FileDevice(fileName);
 }
 
 QString FileSystemUtils::md5HashFile(const QString &fileName)
@@ -275,6 +411,34 @@ bool FileSystemUtils::removeDirectoryRecursively(const QString &dirName)
         result = dir.rmdir(dirName);
     }
 
+    return result;
+}
+
+bool FileSystemUtils::cd(const QString &path)
+{
+    return QDir::setCurrent(path);
+}
+
+QString FileSystemUtils::pwd()
+{
+    return QDir::currentPath();
+}
+
+QStringList FileSystemUtils::dirList(const QStringList &nameFilters, QDir::Filters filter, QDir::SortFlags sort)
+{
+    return QDir::current().entryList(nameFilters, filter, sort);
+}
+
+QStringList FileSystemUtils::dirList(QDir::Filters filter, QDir::SortFlags sort)
+{
+    return QDir::current().entryList(filter, sort);
+}
+
+FileScanner *FileSystemUtils::find(const QStringList &targetDirectories, const QStringList &nameFilters)
+{
+    FileScanner *result = new FileScanner(0);
+    result->setTargetDirectories(targetDirectories);
+    result->setFilters(nameFilters);
     return result;
 }
 

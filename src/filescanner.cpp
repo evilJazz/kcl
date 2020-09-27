@@ -214,7 +214,7 @@ bool FileScanner::startScan()
     return true;
 }
 
-void FileScanner::setTargetDirectories(const QStringList targetDirectories)
+void FileScanner::setTargetDirectories(const QStringList &targetDirectories)
 {
     if (targetDirectories != targetDirectories_)
     {
@@ -223,7 +223,7 @@ void FileScanner::setTargetDirectories(const QStringList targetDirectories)
     }
 }
 
-void FileScanner::setFilters(const QStringList filters)
+void FileScanner::setFilters(const QStringList &filters)
 {
     if (filters != filters_)
     {

@@ -185,6 +185,23 @@ void KCLPlugin::registerTypes(const char *uri)
     qmlRegisterType<SettingsGroup>(uri, 1, 0, "SettingsGroup");
 #endif
 
+#ifdef KCL_filesystemutils
+    qmlRegisterUncreatableType<FileInfo>(uri, 1, 0, "FileInfo", "Use FsUtils::getFileInfo to create a FileInfo.");
+    qmlRegisterUncreatableType<IODevice>(uri, 1, 0, "IODevice", "Use FsUtils::getFile to create a IODevice.");
+    qmlRegisterUncreatableType<FileDevice>(uri, 1, 0, "FileDevice", "Use FsUtils::getFile to create a FileDevice.");
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+    qRegisterMetaType<QFile::FileTime>("QFile::FileTime");
+#endif
+    qRegisterMetaType<QFile::Permissions>("QFile::Permissions");
+
+    qRegisterMetaType<QDir::Filters>("QDir::Filters");
+    qRegisterMetaType<QDir::SortFlags>("QDir::SortFlags");
+
+    qRegisterMetaType<QIODevice::OpenMode>("QIODevice::OpenMode");
+    qRegisterMetaType<QFile::FileError>("QFile::FileError");
+#endif
+
 #ifdef KCL_filescanner
     qmlRegisterType<FileScanner>(uri, 1, 0, "FileScanner");
 #endif

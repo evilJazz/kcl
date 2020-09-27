@@ -80,10 +80,10 @@ public:
 
     Q_INVOKABLE bool startScan();
 
-    void setTargetDirectories(const QStringList targetDirectories);
+    void setTargetDirectories(const QStringList &targetDirectories);
     QStringList targetDirectories() const { return targetDirectories_; }
 
-    void setFilters(const QStringList filters);
+    void setFilters(const QStringList &filters);
     QStringList filters() const { return filters_; }
 
     QVariantList results() const { return results_; }
