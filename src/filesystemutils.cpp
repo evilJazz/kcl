@@ -342,6 +342,11 @@ FileDevice *FileSystemUtils::getFile(const QString &fileName)
     return new FileDevice(fileName);
 }
 
+CryptographicHash *FileSystemUtils::getHasher(CryptographicHash::Algorithm algorithm)
+{
+    return new CryptographicHash(algorithm);
+}
+
 QString FileSystemUtils::md5HashFile(const QString &fileName)
 {
     QFile file(fileName);

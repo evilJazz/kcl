@@ -49,6 +49,10 @@
     #include "KCL/objectutils.h"
 #endif
 
+#ifdef KCL_bytearrayutils
+    #include "KCL/bytearrayutils.h"
+#endif
+
 #ifdef KCL_cursorarea
     #include "KCL/cursorarea.h"
 #endif
@@ -186,6 +190,7 @@ void KCLPlugin::registerTypes(const char *uri)
 #endif
 
 #ifdef KCL_filesystemutils
+    qmlRegisterUncreatableType<CryptographicHash>(uri, 1, 0, "CryptographicHash", "Use FsUtils::getHasher to create a CryptographicHash.");
     qmlRegisterUncreatableType<FileInfo>(uri, 1, 0, "FileInfo", "Use FsUtils::getFileInfo to create a FileInfo.");
     qmlRegisterUncreatableType<IODevice>(uri, 1, 0, "IODevice", "Use FsUtils::getFile to create a IODevice.");
     qmlRegisterUncreatableType<FileDevice>(uri, 1, 0, "FileDevice", "Use FsUtils::getFile to create a FileDevice.");
@@ -200,6 +205,8 @@ void KCLPlugin::registerTypes(const char *uri)
 
     qRegisterMetaType<QIODevice::OpenMode>("QIODevice::OpenMode");
     qRegisterMetaType<QFile::FileError>("QFile::FileError");
+
+    qRegisterMetaType<CryptographicHash::Algorithm>("CryptographicHash::Algorithm");
 #endif
 
 #ifdef KCL_filescanner
@@ -281,6 +288,11 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 #ifdef KCL_objectutils
     ObjectUtils *objectUtils = new ObjectUtils(engine);
     engine->rootContext()->setContextProperty("ObjectUtils", objectUtils);
+#endif
+
+#ifdef KCL_bytearrayutils
+    ByteArrayUtils *byteArrayUtils = new ByteArrayUtils(engine);
+    engine->rootContext()->setContextProperty("ByteArrayUtils", byteArrayUtils);
 #endif
 
 #ifdef KCL_colorutils

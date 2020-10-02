@@ -46,6 +46,8 @@
 #include <QFile>
 #include <QFileInfo>
 
+#include <QCryptographicHash>
+
 #include "KCL/filescanner.h"
 
 class KCL_EXPORT IODevice : public QObject
@@ -176,6 +178,55 @@ protected:
     inline QFile *f() const { return static_cast<QFile *>(d.data()); }
 };
 
+class KCL_EXPORT CryptographicHash : public QObject
+{
+    Q_OBJECT
+    Q_ENUMS(Algorithm)
+    Q_PROPERTY(QByteArray result READ result)
+public:
+    enum Algorithm {
+        Md4,
+        Md5,
+
+        Sha1 = 2
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        ,
+        Sha224,
+        Sha256,
+        Sha384,
+        Sha512
+#endif
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 9, 2)
+        ,
+        Keccak_224 = 7,
+        Keccak_256,
+        Keccak_384,
+        Keccak_512,
+        RealSha3_224 = 11,
+        RealSha3_256,
+        RealSha3_384,
+        RealSha3_512,
+        Sha3_224 = RealSha3_224,
+        Sha3_256 = RealSha3_256,
+        Sha3_384 = RealSha3_384,
+        Sha3_512 = RealSha3_512
+#endif
+    };
+    Q_ENUM(Algorithm)
+
+    CryptographicHash(Algorithm method) : QObject(0), hasher_((QCryptographicHash::Algorithm)method) {}
+    ~CryptographicHash() {}
+
+    Q_INVOKABLE void addData(const QByteArray &data) { hasher_.addData(data); }
+    Q_INVOKABLE bool addData(IODevice *device) { return hasher_.addData(device->device()); }
+
+    Q_INVOKABLE QByteArray result() const { return hasher_.result(); }
+private:
+    QCryptographicHash hasher_;
+};
+
 class KCL_EXPORT FileInfo : public QObject, public QFileInfo
 {
     Q_OBJECT
@@ -302,9 +353,11 @@ public:
     Q_INVOKABLE static FileInfo *getFileInfo(const QString &fileName);
     Q_INVOKABLE static FileDevice* getFile(const QString &fileName);
 
-    Q_INVOKABLE static QString md5HashFile(const QString &fileName);
     Q_INVOKABLE static QByteArray getContents(const QString &fileName);
     Q_INVOKABLE static bool putContents(const QString &fileName, const QByteArray &contents, bool append = false);
+
+    Q_INVOKABLE static QString md5HashFile(const QString &fileName);
+    Q_INVOKABLE static CryptographicHash *getHasher(CryptographicHash::Algorithm algorithm);
 
     Q_INVOKABLE static bool forceDirectory(const QString &dirName);
     Q_INVOKABLE static bool removeDirectoryRecursively(const QString &dirName);
@@ -323,7 +376,7 @@ public:
     Q_INVOKABLE static void syncToDisk();
 
     static QString homeLocation();
-    static QString documentsLocation();    
+    static QString documentsLocation();
     static QString desktopLocation();
     static QString picturesLocation();
     static QString musicLocation();

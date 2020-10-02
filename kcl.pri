@@ -1,6 +1,8 @@
 # Enable if you want to debug KCL...
 #DEFINES += KCL_DEBUG
 
+DEFINES += KCL_AVAILABLE
+
 contains(QT_VERSION, ^4\\.[0-6]\\..*) {
     message("KCL: Cannot build using Qt version $${QT_VERSION}.")
     error("Use at least Qt 4.7.")
@@ -55,6 +57,7 @@ isEmpty(kcl): kcl = \
     colorutils \
     graphicsutils \
     objectutils \
+    bytearrayutils \
     nativedialogs \
     declarativedebug \
     engineutils \
@@ -109,6 +112,7 @@ kclConditionalAddModule(translationenumerator)
 kclConditionalAddModule(sleepaid)
 kclConditionalAddModule(backgroundtasks)
 kclConditionalAddModule(objectutils)
+kclConditionalAddModule(bytearrayutils)
 kclConditionalAddModule(datetimeutils)
 kclConditionalAddModule(updatelocker)
 kclConditionalAddModule(sortfiltermodel)
