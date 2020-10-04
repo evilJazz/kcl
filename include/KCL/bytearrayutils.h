@@ -48,6 +48,9 @@ public:
 
     Q_INVOKABLE static QByteArray toBase64(const QByteArray &data) { return data.toBase64(); }
     Q_INVOKABLE static QByteArray fromBase64(const QByteArray &data) { return QByteArray::fromBase64(data); }
+
+    Q_INVOKABLE static QString stringFromUtf8(const QByteArray &data) { return QString::fromUtf8(data); }
+    Q_INVOKABLE static QByteArray stringToUtf8(const QString &data) { return data.toUtf8(); }
 };
 
 #endif // BYTEARRAYUTILS_H
