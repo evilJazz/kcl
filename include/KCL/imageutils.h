@@ -43,6 +43,10 @@
 #include <QVariant>
 #include <QColor>
 
+#ifdef KCL_filesystemutils
+#include "filesystemutils.h"
+#endif
+
 class KCL_EXPORT ImageUtils : public QObject
 {
     Q_OBJECT
@@ -64,8 +68,17 @@ public:
     /* Image methods for use in JavaScript - all require QImage::Format_ARGB32 */
 
     Q_INVOKABLE static QVariant empty(const QSize &size);
+
+    static QVariant load(QIODevice *device, const QSize &requestedSize = QSize(), bool returnExactSize = false);
+    static bool save(const QVariant &image, QIODevice *device, const QString &format = QString::null, int quality = -1);
+
     Q_INVOKABLE static QVariant load(const QString &fileName, const QSize &requestedSize = QSize(), bool returnExactSize = false);
     Q_INVOKABLE static bool save(const QVariant &image, const QString &fileName, const QString &format = QString::null, int quality = -1);
+
+#ifdef KCL_filesystemutils
+    Q_INVOKABLE static QVariant load(IODevice *device, const QSize &requestedSize = QSize(), bool returnExactSize = false);
+    Q_INVOKABLE bool save(const QVariant &image, IODevice *device, const QString &format, int quality);
+#endif
 
     Q_INVOKABLE static QVariant scaled(const QVariant &srcImage, const QSize &dstSize, int aspectMode = Qt::IgnoreAspectRatio, int mode = Qt::FastTransformation);
     Q_INVOKABLE static QVariant copy(const QVariant &srcImage, const QRect &srcRect);

@@ -273,6 +273,38 @@ QVariant ImageUtils::empty(const QSize &size)
     return QImage(size, QImage::Format_ARGB32);
 }
 
+QVariant ImageUtils::load(QIODevice *device, const QSize &requestedSize, bool returnExactSize)
+{
+    QImageReader reader;
+    reader.setDecideFormatFromContent(true);
+    reader.setDevice(device);
+
+    if (returnExactSize)
+    {
+        QSize fittedSize(reader.size());
+        fittedSize.scale(requestedSize, Qt::KeepAspectRatio);
+        reader.setScaledSize(fittedSize);
+    }
+
+    QImage result = reader.read();
+    if (result.isNull())
+    {
+        qDebug("ImageUtils::load: %s", reader.errorString().toLatin1().constData());
+        return QVariant(false);
+    }
+
+    return result;
+}
+
+bool ImageUtils::save(const QVariant &image, QIODevice *device, const QString &format, int quality)
+{
+    QImage img;
+    if (imageFromVariant(image, &img) && !img.isNull())
+        return img.save(device, format.isNull() ? 0 : format.toLatin1().constData(), quality);
+
+    return false;
+}
+
 QVariant ImageUtils::load(const QString &fileName, const QSize &requestedSize, bool returnExactSize)
 {
     QImageReader reader;
@@ -311,6 +343,18 @@ bool ImageUtils::save(const QVariant &image, const QString &fileName, const QStr
 
     return false;
 }
+
+#ifdef KCL_filesystemutils
+QVariant ImageUtils::load(IODevice *device, const QSize &requestedSize, bool returnExactSize)
+{
+    return load(device->device(), requestedSize, returnExactSize);
+}
+
+bool ImageUtils::save(const QVariant &image, IODevice *device, const QString &format, int quality)
+{
+    return save(image, device->device(), format, quality);
+}
+#endif
 
 QVariant ImageUtils::scaled(const QVariant &srcImage, const QSize &dstSize, int aspectMode, int mode)
 {
