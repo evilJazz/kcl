@@ -1,6 +1,7 @@
 #include "../include/KCL/engineutils.h"
 
 #include "KCL/debug.h"
+#include "KCL/objectutils.h"
 
 #include <QPixmapCache>
 #include <QNetworkAccessManager>
@@ -10,6 +11,8 @@
     #include <QQmlEngine>
     #include <QQmlContext>
     #include <QQmlComponent>
+    #include <QQmlProperty>
+    #include <QQmlExpression>
     #define QDeclarativeEngine QQmlEngine
     #define QDeclarativeComponent QQmlComponent
     #define QDeclarativeContext QQmlContext
@@ -110,3 +113,68 @@ QObject *EngineUtils::createObjectWithContextObject(QDeclarativeComponent *compo
 
     return object;
 }
+
+#ifdef KCL_EXPERIMENTAL
+#ifdef KCL_QTQUICK2
+
+QVariantMap EngineUtils::getMetaObjectInfo(QJSValue value, QObject *contextObject)
+{
+    QVariantMap result;
+
+    if (value.isString())
+    {
+        /*
+        QQmlProperty prop(engine_->rootContext()->contextObject(), value.toString(), engine_->rootContext());
+
+        result.insert("name", prop.name());
+        result.insert("isValid", prop.isValid());
+        result.insert("isProperty", prop.isProperty());
+        result.insert("propertyType", prop.propertyType());
+        result.insert("propertyTypeName", prop.propertyTypeName());
+        */
+
+        QQmlContext *context = engine_->rootContext();
+
+        if (contextObject)
+            context = QDeclarativeEngine::contextForObject(contextObject);
+        else
+            contextObject = engine_->rootContext()->contextObject();
+
+        QQmlExpression *expr = new QQmlExpression(context, contextObject, value.toString());
+        QVariant ev = expr->evaluate();
+
+        result.insert("error", expr->error().description());
+        result.insert("hasError", expr->hasError());
+
+        if (!expr->hasError() && ev.isValid())
+        {
+            QObject *evObj = ObjectUtils::objectify(ev);
+            if (evObj)
+            {
+                result.insert("resultTypeName", QString(evObj->metaObject()->className()));
+            }
+            else
+            {
+                result.insert("resultTypeName", ev.typeName());
+            }
+        }
+
+        delete expr;
+    }
+    /*
+    else if (value.isQMetaObject())
+    {
+        //result << value.toQMetaObject()->className();
+    }
+    */
+    else
+    {
+        result.insert("error", "Unknown type.");
+        result.insert("hasError", true);
+    }
+
+    return result;
+}
+
+#endif
+#endif

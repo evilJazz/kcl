@@ -39,10 +39,12 @@
 
 #include <QObject>
 #include <QVariant>
+#include <QVariantMap>
 
 #ifdef KCL_QTQUICK2
 class QQmlEngine;
 class QQmlComponent;
+#include <QJSValue>
 #else
 class QDeclarativeEngine;
 class QDeclarativeComponent;
@@ -79,6 +81,12 @@ public:
     Q_INVOKABLE QObject *createObjectWithContextObject(QQmlComponent *component, QObject *contextObject);
 #else
     Q_INVOKABLE QObject *createObjectWithContextObject(QDeclarativeComponent *component, QObject *contextObject);
+#endif
+
+#ifdef KCL_EXPERIMENTAL
+#ifdef KCL_QTQUICK2
+    Q_INVOKABLE QVariantMap getMetaObjectInfo(QJSValue value, QObject *contextObject = NULL);
+#endif
 #endif
 
 private:
