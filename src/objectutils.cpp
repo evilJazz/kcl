@@ -36,6 +36,11 @@
 
 #include "KCL/debug.h"
 
+#include <QMetaType>
+#include <QMetaObject>
+#include <QMetaMethod>
+#include <QMetaProperty>
+
 ObjectUtils::ObjectUtils(QObject *parent) :
     QObject(parent)
 {
@@ -94,6 +99,163 @@ void ObjectUtils::dumpParentTree(QObject *target)
         target = target->parent();
         ++level;
     }
+}
+
+QStringList ObjectUtils::toStringList(const QList<QByteArray> &list)
+{
+    QStringList strings;
+
+    foreach (const QByteArray &item, list)
+        strings.append(QString::fromLocal8Bit(item));
+
+    return strings;
+}
+
+void ObjectUtils::insertMetaMethod(QVariantMap &info, const QMetaMethod &method)
+{
+    QString name = QString::fromLatin1(method.name());
+    QString typeName = QString::fromLatin1(method.typeName());
+
+    info.insert("name", name);
+    info.insert("typeName", typeName);
+    info.insert("signature", QString::fromLatin1(method.methodSignature()));
+
+    QStringList paramNames = toStringList(method.parameterNames());
+    QStringList paramTypes = toStringList(method.parameterTypes());
+
+    info.insert("parameterNames", paramNames);
+    info.insert("parameterTypes", paramTypes);
+
+    QStringList params;
+    int paramCount = method.parameterCount();
+    for (int i = 0; i < paramCount; ++i)
+        params << paramTypes.at(i) + " " + paramNames.at(i);
+
+    QString fullSignature = QString("%1(%2)")
+        .arg(name)
+        .arg(params.join(", "));
+
+    info.insert("fullSignature",
+        (method.methodType() != QMetaMethod::Signal ?
+            typeName + " " : "") + fullSignature);
+}
+
+QVariantList ObjectUtils::getAllMethods(QObject *object)
+{
+    if (!object) return QVariantList();
+    return getAllMethods(object->metaObject());
+}
+
+QVariantList ObjectUtils::getAllMethods(const QMetaObject *metaObject)
+{
+    QVariantList methods;
+
+    for (int i = metaObject->methodOffset(); i < metaObject->methodCount(); ++i)
+    {
+        QMetaMethod method = metaObject->method(i);
+
+        if (method.methodType() != QMetaMethod::Signal &&
+            method.access() == QMetaMethod::Public)
+        {
+            QVariantMap info;
+            insertMetaMethod(info, method);
+            methods << info;
+        }
+    }
+
+    return methods;
+}
+
+QVariantList ObjectUtils::getAllSignals(QObject *object)
+{
+    if (!object) return QVariantList();
+    return getAllSignals(object->metaObject());
+}
+
+QVariantList ObjectUtils::getAllSignals(const QMetaObject *metaObject)
+{
+    QVariantList methods;
+
+    for (int i = metaObject->methodOffset(); i < metaObject->methodCount(); ++i)
+    {
+        QMetaMethod method = metaObject->method(i);
+
+        if (method.methodType() == QMetaMethod::Signal &&
+            method.access() == QMetaMethod::Public)
+        {
+            QVariantMap info;
+            insertMetaMethod(info, method);
+            methods << info;
+        }
+    }
+
+    return methods;
+}
+
+QVariantList ObjectUtils::getAllProperties(QObject *object)
+{
+    if (!object) return QVariantList();
+    return getAllProperties(object->metaObject());
+}
+
+QVariantList ObjectUtils::getAllProperties(const QMetaObject *metaObject)
+{
+    QVariantList properties;
+
+    for (int i = metaObject->propertyOffset(); i < metaObject->propertyCount(); ++i)
+    {
+        QMetaProperty prop = metaObject->property(i);
+
+        QVariantMap info;
+
+        QString name = QString::fromLatin1(prop.name());
+        QString typeName = QString::fromLatin1(prop.typeName());
+
+        info.insert("name", name);
+        info.insert("typeName", typeName);
+
+        QString signature = QString("%1 %2")
+            .arg(typeName)
+            .arg(name);
+
+        QString fullSignature = QString("%1property %2")
+            .arg(!prop.isWritable() ? "readonly " : "")
+            .arg(signature);
+
+        info.insert("signature", signature);
+        info.insert("fullSignature", fullSignature);
+
+        properties << info;
+    }
+
+    return properties;
+}
+
+QVariantMap ObjectUtils::introspectClass(const QString &className)
+{
+    QVariantMap result;
+
+    int typeId = QMetaType::type(className.toUtf8());
+
+    if (typeId != QMetaType::UnknownType)
+    {
+        result.insert("typeName", QMetaType::typeName(typeId));
+
+        const QMetaObject *metaObj = QMetaType::metaObjectForType(typeId);
+        if (metaObj)
+        {
+            result.insert("className", metaObj->className());
+            result.insert("properties", getAllProperties(metaObj));
+            result.insert("methods", getAllMethods(metaObj));
+            result.insert("signals", getAllSignals(metaObj));
+        }
+    }
+    else
+    {
+        result.insert("error", "Unknown type");
+    }
+
+    return result;
 }
 
 void ObjectUtils::dumpObjectTreeRecursive(int level, QObject *object)

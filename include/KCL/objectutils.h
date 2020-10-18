@@ -38,7 +38,9 @@
 #include "KCL/kcl_global.h"
 
 #include <QObject>
+#include <QByteArray>
 #include <QVariant>
+#include <QVariantList>
 
 class KCL_EXPORT ObjectUtils : public QObject
 {
@@ -60,10 +62,23 @@ public:
     Q_INVOKABLE static void dumpObjectTree(QObject *target);
     Q_INVOKABLE static void dumpParentTree(QObject *target);
 
+    Q_INVOKABLE static QVariantList getAllMethods(QObject *object);
+    static QVariantList getAllMethods(const QMetaObject *metaObject);
+
+    Q_INVOKABLE static QVariantList getAllSignals(QObject *object);
+    static QVariantList getAllSignals(const QMetaObject *metaObject);
+
+    Q_INVOKABLE static QVariantList getAllProperties(QObject *object);
+    static QVariantList getAllProperties(const QMetaObject *metaObject);
+
+    Q_INVOKABLE static QVariantMap introspectClass(const QString &className);
+
     Q_INVOKABLE static QObject *findObjectByObjectName(QObject *rootElement, const QString &objectName);
 
 private:
     static void dumpObjectTreeRecursive(int level, QObject *object);
+    static QStringList toStringList(const QList<QByteArray> &list);
+    static void insertMetaMethod(QVariantMap &info, const QMetaMethod &method);
 };
 
 #endif // OBJECTUTILS_H
