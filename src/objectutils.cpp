@@ -113,12 +113,20 @@ QStringList ObjectUtils::toStringList(const QList<QByteArray> &list)
 
 void ObjectUtils::insertMetaMethod(QVariantMap &info, const QMetaMethod &method)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QString signature = QString::fromLatin1(method.methodSignature());
     QString name = QString::fromLatin1(method.name());
+#else
+    QString signature = QString::fromLatin1(method.signature());
+    int paramStartIndex = signature.indexOf('(');
+    QString name = paramStartIndex > -1 ? signature.left(paramStartIndex + 1) : signature;
+#endif
+
     QString typeName = QString::fromLatin1(method.typeName());
 
     info.insert("name", name);
     info.insert("typeName", typeName);
-    info.insert("signature", QString::fromLatin1(method.methodSignature()));
+    info.insert("signature", signature);
 
     QStringList paramNames = toStringList(method.parameterNames());
     QStringList paramTypes = toStringList(method.parameterTypes());
@@ -127,7 +135,8 @@ void ObjectUtils::insertMetaMethod(QVariantMap &info, const QMetaMethod &method)
     info.insert("parameterTypes", paramTypes);
 
     QStringList params;
-    int paramCount = method.parameterCount();
+    int paramCount = paramNames.count();
+
     for (int i = 0; i < paramCount; ++i)
         params << paramTypes.at(i) + " " + paramNames.at(i);
 
@@ -237,11 +246,17 @@ QVariantMap ObjectUtils::introspectClass(const QString &className)
 
     int typeId = QMetaType::type(className.toUtf8());
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     if (typeId != QMetaType::UnknownType)
+#else
+    if (typeId != 0)
+#endif
     {
         result.insert("typeName", QMetaType::typeName(typeId));
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         const QMetaObject *metaObj = QMetaType::metaObjectForType(typeId);
+
         if (metaObj)
         {
             result.insert("className", metaObj->className());
@@ -249,6 +264,9 @@ QVariantMap ObjectUtils::introspectClass(const QString &className)
             result.insert("methods", getAllMethods(metaObj));
             result.insert("signals", getAllSignals(metaObj));
         }
+#else
+        result.insert("error", "Not implemented yet for Qt 4.");
+#endif
     }
     else
     {

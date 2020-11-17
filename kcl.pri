@@ -10,6 +10,7 @@ contains(QT_VERSION, ^4\\.[0-6]\\..*) {
 
 contains(QT_VERSION, ^4\\..*) {
     CONFIG += kcl_qt4
+    DEFINES += KCL_QT4
 
     contains(QT, declarative): CONFIG += kcl_qtquick1 kcl_declarative
     contains(QT, gui): CONFIG += kcl_widgets
@@ -19,6 +20,7 @@ contains(QT_VERSION, ^4\\..*) {
 
 contains(QT_VERSION, ^5\\..*) {
     CONFIG += kcl_qt5
+    DEFINES += KCL_QT5
     QT += concurrent
 
     contains(QT, quick): CONFIG += kcl_qtquick2 kcl_declarative

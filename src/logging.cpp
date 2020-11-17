@@ -119,6 +119,14 @@ bool Logging::isLogWindowEnabled() const
 {
     return !logWindow_.isNull();
 }
+
+#else
+
+bool Logging::isLogWindowEnabled() const
+{
+    return false;
+}
+
 #endif
 
 void Logging::enableLogFile(const QString &fileName)

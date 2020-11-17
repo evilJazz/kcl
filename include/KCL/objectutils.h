@@ -38,6 +38,7 @@
 #include "KCL/kcl_global.h"
 
 #include <QObject>
+#include <QStringList>
 #include <QByteArray>
 #include <QVariant>
 #include <QVariantList>

@@ -184,19 +184,17 @@ class KCL_EXPORT CryptographicHash : public QObject
     Q_ENUMS(Algorithm)
     Q_PROPERTY(QByteArray result READ result)
 public:
+
+#if KCL_QT5
     enum Algorithm {
         Md4,
         Md5,
 
-        Sha1 = 2
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-        ,
+        Sha1 = 2,
         Sha224,
         Sha256,
         Sha384,
         Sha512
-#endif
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 9, 2)
         ,
@@ -214,13 +212,22 @@ public:
         Sha3_512 = RealSha3_512
 #endif
     };
-    Q_ENUM(Algorithm)
+#else
+    enum Algorithm {
+        Md4,
+        Md5,
+
+        Sha1 = 2
+    };
+#endif
 
     CryptographicHash(Algorithm method) : QObject(0), hasher_((QCryptographicHash::Algorithm)method) {}
     ~CryptographicHash() {}
 
     Q_INVOKABLE void addData(const QByteArray &data) { hasher_.addData(data); }
+#if KCL_QT5
     Q_INVOKABLE bool addData(IODevice *device) { return hasher_.addData(device->device()); }
+#endif
 
     Q_INVOKABLE QByteArray result() const { return hasher_.result(); }
 private:
