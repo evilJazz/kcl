@@ -1,5 +1,5 @@
 # ccache available?
-*g++* {
+*g++*|*clang* {
     system(ccache -V): CONFIG += kcl_ccache_available
 
     kcl_ccache_available {
