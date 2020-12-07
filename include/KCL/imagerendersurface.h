@@ -78,6 +78,10 @@ public:
 
     Q_INVOKABLE Status status() const { return status_; }
 
+    Q_INVOKABLE void setImage(QImage image);
+    Q_INVOKABLE void setImage(QVariant image);
+    Q_INVOKABLE void clearImage();
+
 protected:
 #ifdef KCL_QTQUICK2
     virtual void paint(QPainter *);
@@ -88,10 +92,11 @@ protected:
 
 signals:
     void sourceChanged();
+    void imageChanged();
     void statusChanged();
 
 private slots:
-    void updateSurface();
+    void updateSurfaceFromSource();
 
 private:
     friend class RenderTask;

@@ -34,6 +34,7 @@
 
 #include "KCL/backgroundtasks.h"
 #include "KCL/imagerendersurface.h"
+#include "KCL/imageutils.h"
 
 #include <QPainter>
 #include <QSize>
@@ -73,7 +74,7 @@ public:
         QSize newSize = image.size();
         newSize.scale(requestedSize, Qt::KeepAspectRatio);
 
-        QImage dstImage(newSize, QImage::Format_ARGB32_Premultiplied);      
+        QImage dstImage(newSize, QImage::Format_ARGB32_Premultiplied);
         dstImage.fill(0);
 
         QPainter painter(&dstImage);
@@ -129,10 +130,34 @@ void ImageRenderSurface::setSource(QUrl source)
             setStatus(ImageRenderSurface::Null);
         }
         else
-            updateSurface();
+            updateSurfaceFromSource();
 
         emit sourceChanged();
     }
+}
+
+void ImageRenderSurface::setImage(QImage image)
+{
+    if (image != surface_)
+    {
+        setSource(QUrl());
+        surface_ = image;
+        setStatus(ImageRenderSurface::Rendered);
+        update();
+        emit imageChanged();
+    }
+}
+
+void ImageRenderSurface::setImage(QVariant image)
+{
+    QImage src;
+    if (ImageUtils::imageFromVariant(image, &src) && !src.isNull())
+        setImage(src);
+}
+
+void ImageRenderSurface::clearImage()
+{
+    setImage(QImage());
 }
 
 #ifdef KCL_QTQUICK2
@@ -144,20 +169,25 @@ void ImageRenderSurface::paint(QPainter *painter, const QStyleOptionGraphicsItem
     if (surface_.isNull())
         return;
 
-    QRect dstRect = surface_.rect();
-    dstRect.moveCenter(boundingRect().center().toPoint());
-    painter->drawImage(dstRect.topLeft(), surface_);
+    if (source_.isEmpty())
+        painter->drawImage(0, 0, surface_);
+    else
+    {
+        QRect dstRect = surface_.rect();
+        dstRect.moveCenter(boundingRect().center().toPoint());
+        painter->drawImage(dstRect.topLeft(), surface_);
+    }
 }
 
 void ImageRenderSurface::geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry)
 {
     if (newGeometry.size() != oldGeometry.size())
-        updateSurface();
+        updateSurfaceFromSource();
 
     QDeclarativeItem::geometryChanged(newGeometry, oldGeometry);
 }
 
-void ImageRenderSurface::updateSurface()
+void ImageRenderSurface::updateSurfaceFromSource()
 {
     DGUARDMETHODTIMED;
 
