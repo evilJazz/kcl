@@ -38,6 +38,8 @@ var debug = false;
 var cCacheExpiryTimeInMinutes = 2 * 7 * 1440; // two weeks
 var cCacheMaxEntriesToKeep = 1000;
 
+var requestHeaders = {};
+
 /* useCache constants */
 var NoCache = false;
 var UseCache = true;
@@ -225,6 +227,9 @@ function webCall(url, params, action, callbackObject, useCache)
     {
         var bfl = Qt.createQmlObject('import KCL 1.0; BinaryFileDownloader { autoDelete: true; }',  Qt.hasOwnProperty("application") ? Qt.application : app);
 
+        for (var header in requestHeaders)
+            bfl.setRequestHeader(header, requestHeaders[header]);
+
         if (typeof(successCallbackFunction) !== "undefined")
             bfl.downloaded.connect(function(data)
             {
@@ -342,6 +347,9 @@ function webCall(url, params, action, callbackObject, useCache)
                 }
             }
         }
+
+        for (header in requestHeaders)
+            xhr.setRequestHeader(header, requestHeaders[header]);
 
         if (action === "GET")
             xhr.send();
