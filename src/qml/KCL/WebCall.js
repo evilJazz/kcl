@@ -179,6 +179,12 @@ function webCall(url, params, action, callbackObject, useCache)
     if (typeof(action) == 'undefined' || action === null)
         action = "GET";
 
+    var shallDecode = true;
+    if (action === "GETBINARY" || action === "POSTBINARY")
+    {
+        shallDecode = false;
+    }
+
     if (useCache === UseCache && typeof(successCallbackFunction) !== "undefined")
     {
         var cachedData = getFromCache(url, params, action);
@@ -186,7 +192,7 @@ function webCall(url, params, action, callbackObject, useCache)
         {
             cachedData.responseXML = null;
             cachedData.responseText = cachedData.response;
-            returnResponseToCallbackFunction(successCallbackFunction, cachedData);
+            returnResponseToCallbackFunction(successCallbackFunction, cachedData, shallDecode);
             return;
         }
     }
@@ -239,7 +245,7 @@ function webCall(url, params, action, callbackObject, useCache)
                     insertIntoCache(url, params, action, data);
 
                 if (typeof(successCallbackFunction) !== "undefined")
-                    returnResponseToCallbackFunction(successCallbackFunction, bfl);
+                    returnResponseToCallbackFunction(successCallbackFunction, bfl, shallDecode);
 
                 //bfl.destroy(); // not necessary because we are autoDeleting above...
             });
@@ -343,7 +349,7 @@ function webCall(url, params, action, callbackObject, useCache)
                         insertIntoCache(url, params, action, xhr.responseText);
 
                     if (typeof(successCallbackFunction) !== "undefined")
-                        returnResponseToCallbackFunction(successCallbackFunction, xhr);
+                        returnResponseToCallbackFunction(successCallbackFunction, xhr, shallDecode);
                 }
             }
         }
@@ -358,7 +364,7 @@ function webCall(url, params, action, callbackObject, useCache)
     }
 };
 
-function returnResponseToCallbackFunction(successCallbackFunction, xhr)
+function returnResponseToCallbackFunction(successCallbackFunction, xhr, decode)
 {
     var data;
 
@@ -373,6 +379,7 @@ function returnResponseToCallbackFunction(successCallbackFunction, xhr)
         else
             data = xhr.downloadedData;
 
+        if (decode)
         try
         {
             data = JSON.parse(data);
