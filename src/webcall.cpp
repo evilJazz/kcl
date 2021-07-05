@@ -170,6 +170,33 @@ void WebCall::clearRequestHeaders()
     requestHeaders_.clear();
 }
 
+QVariantMap WebCall::requestHeaders()
+{
+    QVariantMap result;
+
+    foreach (const QByteArray &key, requestHeaders_.keys())
+    {
+        QList<QByteArray> values = requestHeaders_.values(key);
+
+        QString combinedValues;
+
+        foreach (const QByteArray &value, values)
+            combinedValues += value + ',';
+
+        if (combinedValues.length() > 0)
+            combinedValues.chop(1);
+
+        result.insert(key, combinedValues);
+    }
+
+    return result;
+}
+
+QVariantMap WebCall::responseHeaders()
+{
+    return replyHeaders_;
+}
+
 void WebCall::handleReplyFinished()
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
@@ -199,6 +226,12 @@ void WebCall::handleReplyFinished()
 
         statusCode_ = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         reasonPhrase_ = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+
+        const QList<QNetworkReply::RawHeaderPair> headers = reply->rawHeaderPairs();
+        replyHeaders_.clear();
+
+        foreach (const QNetworkReply::RawHeaderPair header, headers)
+            replyHeaders_.insert(QString::fromUtf8(header.first).toLower(), QString::fromUtf8(header.second));
 
         if (reply->error() != QNetworkReply::NoError)
         {
@@ -258,7 +291,7 @@ bool WebCall::autoDelete() const
 
 void WebCall::setAutoDelete(bool value)
 {
-    if(autoDelete_ != value)
+    if (autoDelete_ != value)
     {
         autoDelete_ = value;
         emit autoDeleteChanged();

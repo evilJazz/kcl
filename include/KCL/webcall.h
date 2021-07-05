@@ -55,6 +55,7 @@ class KCL_EXPORT WebCall : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QByteArray replyData READ replyData NOTIFY success)
+    Q_PROPERTY(QVariantMap replyHeaders READ responseHeaders NOTIFY success)
     Q_PROPERTY(int errorCode READ errorCode NOTIFY error)
     Q_PROPERTY(QString errorText READ errorText NOTIFY error)
     Q_PROPERTY(int statusCode READ statusCode NOTIFY attributesChanged)
@@ -75,6 +76,10 @@ public:
 
     Q_INVOKABLE void setRequestHeader(const QByteArray &key, const QByteArray &value);
     Q_INVOKABLE void clearRequestHeaders();
+
+    Q_INVOKABLE QVariantMap requestHeaders();
+    Q_INVOKABLE QVariantMap responseHeaders();
+    Q_INVOKABLE QVariantMap getAllResponseHeaders() { return responseHeaders(); }
 
     Q_INVOKABLE QByteArray replyData() const { return replyData_; }
 
@@ -105,6 +110,7 @@ private slots:
 private:
     QNetworkAccessManager *manager_;
     QByteArray replyData_;
+    QVariantMap replyHeaders_;
     bool finished_;
     QPointer<QNetworkReply> pendingRequest_;
     int errorCode_;

@@ -146,6 +146,43 @@ function getFromCache(url, params, method)
     return response;
 }
 
+function createReplyShim(xhr)
+{
+    var reply = {
+        xhr: xhr,
+        getAllResponseHeaders: function()
+        {
+            var result = xhr.getAllResponseHeaders();
+
+            // convert XMLHttpRequest's string headers to object
+            if (typeof(result) === "string")
+            {
+                // Convert the header string into an array
+                // of individual headers
+                var arr = result.trim().split(/[\r\n]+/);
+
+                // Create a map of header names to values
+                var headerMap = {};
+
+                for (var i = 0; i < arr.length; ++i)
+                {
+                    var line = arr[i];
+                    var parts = line.split(': ');
+                    var header = parts.shift();
+                    var value = parts.join(': ');
+                    headerMap[header] = value;
+                }
+
+                result = headerMap;
+            }
+
+            return result;
+        }
+    };
+
+    return reply;
+}
+
 function get(url, params, callbackObject, useCache)
 {
     webCall(url, params, "GET", callbackObject, useCache);
@@ -256,7 +293,7 @@ function webCall(url, params, action, callbackObject, useCache)
                 var result = {};
                 result.status = errorCode;
                 result.statusText = errorText;
-                failureCallbackFunction(result);
+                failureCallbackFunction(result, createReplyShim(bfl));
             });
 
         if (action === "GETBINARY")
@@ -333,7 +370,7 @@ function webCall(url, params, action, callbackObject, useCache)
                         result.status = xhr.status;
                         result.statusText = xhr.statusText;
 
-                        failureCallbackFunction(result);
+                        failureCallbackFunction(result, createReplyShim(xhr));
                     }
                 }
                 else
@@ -390,5 +427,5 @@ function returnResponseToCallbackFunction(successCallbackFunction, xhr, decode)
         }
     }
 
-    successCallbackFunction(data);
+    successCallbackFunction(data, createReplyShim(xhr));
 }
