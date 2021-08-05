@@ -462,6 +462,66 @@ bool FileSystemUtils::copyFile(const QString &srcFileName, const QString &destFi
     return QFile::copy(srcFileName, destFileName);
 }
 
+bool FileSystemUtils::copyRecursively(const QString &srcFilePath, const QString &destFilePath, bool ignoreErrors, QStringList *filesWithErrors)
+{
+    QFileInfo srcFileInfo(srcFilePath);
+
+    if (srcFileInfo.isDir())
+    {
+        if (!QDir(destFilePath).exists())
+        {
+            QDir targetDir(destFilePath);
+            targetDir.cdUp();
+
+            if (!targetDir.mkdir(QFile(destFilePath).fileName()))
+            {
+                if (filesWithErrors)
+                    filesWithErrors->append(srcFilePath);
+
+                if (!ignoreErrors)
+                    return false;
+            }
+        }
+
+        QDir sourceDir(srcFilePath);
+        QStringList fileNames = sourceDir.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden | QDir::System);
+
+        foreach (const QString &fileName, fileNames)
+        {
+            QString newSrcFilePath = pathAppend(srcFilePath, fileName);
+            QString newDestFilePath = pathAppend(destFilePath, fileName);
+
+            if (!copyRecursively(newSrcFilePath, newDestFilePath, ignoreErrors, filesWithErrors) && !ignoreErrors)
+                return false;
+        }
+    }
+    else
+    {
+        if (!QFile::copy(srcFilePath, destFilePath))
+        {
+            if (filesWithErrors)
+                filesWithErrors->append(srcFilePath);
+
+            if (!ignoreErrors)
+                return false;
+        }
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+        QFile destFile(destFilePath);
+        destFile.setPermissions(srcFileInfo.permissions());
+        destFile.setFileTime(srcFileInfo.fileTime(QFile::FileBirthTime), QFileDevice::FileBirthTime);
+        destFile.setFileTime(srcFileInfo.fileTime(QFile::FileAccessTime), QFileDevice::FileAccessTime);
+        destFile.setFileTime(srcFileInfo.fileTime(QFile::FileMetadataChangeTime), QFileDevice::FileMetadataChangeTime);
+        destFile.setFileTime(srcFileInfo.fileTime(QFile::FileModificationTime), QFileDevice::FileModificationTime);
+#endif
+    }
+
+    if (!ignoreErrors && filesWithErrors && !filesWithErrors->empty())
+        return false;
+
+    return true;
+}
+
 void FileSystemUtils::syncToDisk()
 {
 #ifdef Q_OS_LINUX

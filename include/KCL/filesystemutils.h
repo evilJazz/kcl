@@ -379,6 +379,7 @@ public:
     Q_INVOKABLE static bool removeFile(const QString &fileName);
     Q_INVOKABLE static bool renameFile(const QString &oldFileName, const QString &newFileName);
     Q_INVOKABLE static bool copyFile(const QString &srcFileName, const QString &destFileName);
+    Q_INVOKABLE static bool copyRecursively(const QString &srcFilePath, const QString &destFilePath, bool ignoreErrors = false, QStringList *filesWithErrors = NULL);
 
     Q_INVOKABLE static void syncToDisk();
 
