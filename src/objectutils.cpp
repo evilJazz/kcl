@@ -266,11 +266,13 @@ QVariantMap ObjectUtils::introspectClass(const QString &className)
         }
 #else
         result.insert("error", "Not implemented yet for Qt 4.");
+        result.insert("hasError", true);
 #endif
     }
     else
     {
         result.insert("error", "Unknown type");
+        result.insert("hasError", true);
     }
 
     return result;
