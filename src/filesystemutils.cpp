@@ -508,11 +508,16 @@ bool FileSystemUtils::copyRecursively(const QString &srcFilePath, const QString 
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
         QFile destFile(destFilePath);
-        destFile.setPermissions(srcFileInfo.permissions());
-        destFile.setFileTime(srcFileInfo.fileTime(QFile::FileBirthTime), QFileDevice::FileBirthTime);
-        destFile.setFileTime(srcFileInfo.fileTime(QFile::FileAccessTime), QFileDevice::FileAccessTime);
-        destFile.setFileTime(srcFileInfo.fileTime(QFile::FileMetadataChangeTime), QFileDevice::FileMetadataChangeTime);
-        destFile.setFileTime(srcFileInfo.fileTime(QFile::FileModificationTime), QFileDevice::FileModificationTime);
+        if (destFile.open(QIODevice::Append))
+        {
+            destFile.setPermissions(srcFileInfo.permissions());
+            destFile.setFileTime(srcFileInfo.fileTime(QFile::FileBirthTime), QFileDevice::FileBirthTime);
+            destFile.setFileTime(srcFileInfo.fileTime(QFile::FileAccessTime), QFileDevice::FileAccessTime);
+            destFile.setFileTime(srcFileInfo.fileTime(QFile::FileMetadataChangeTime), QFileDevice::FileMetadataChangeTime);
+            destFile.setFileTime(srcFileInfo.fileTime(QFile::FileModificationTime), QFileDevice::FileModificationTime);
+        }
+
+        destFile.close();
 #endif
     }
 
