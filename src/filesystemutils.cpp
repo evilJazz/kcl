@@ -515,9 +515,8 @@ bool FileSystemUtils::copyRecursively(const QString &srcFilePath, const QString 
             destFile.setFileTime(srcFileInfo.fileTime(QFile::FileAccessTime), QFileDevice::FileAccessTime);
             destFile.setFileTime(srcFileInfo.fileTime(QFile::FileMetadataChangeTime), QFileDevice::FileMetadataChangeTime);
             destFile.setFileTime(srcFileInfo.fileTime(QFile::FileModificationTime), QFileDevice::FileModificationTime);
+            destFile.close();
         }
-
-        destFile.close();
 #endif
     }
 
