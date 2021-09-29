@@ -169,24 +169,43 @@
     #include "KCL/templaterenderer.h"
 #endif
 
+template <typename T>
+inline int kclRegisterMetaType(const char *uri, int versionMajor, int versionMinor, const char *typeName)
+{
+    qmlRegisterType<T>(uri, versionMajor, versionMinor, typeName);
+    return qRegisterMetaType<T*>(typeName);
+}
+
 void KCLPlugin::registerTypes(const char *uri)
 {
     //@uri KCL
 
 #ifdef KCL_binaryfiledownloader
-    qmlRegisterType<BinaryFileDownloader>(uri, 1, 0, "BinaryFileDownloader");
+    kclRegisterMetaType<BinaryFileDownloader>(uri, 1, 0, "BinaryFileDownloader");
 #endif
 
 #ifdef KCL_propertychangeobserver
-    qmlRegisterType<PropertyChangeObserver>(uri, 1, 0, "PropertyChangeObserver");
+    kclRegisterMetaType<PropertyChangeObserver>(uri, 1, 0, "PropertyChangeObserver");
 #endif
 
 #ifdef KCL_templaterenderer
-    qmlRegisterType<TemplateRenderer>(uri, 1, 0, "NativeTemplateRenderer");
+    kclRegisterMetaType<TemplateRenderer>(uri, 1, 0, "NativeTemplateRenderer");
 #endif
 
 #ifdef KCL_settingsgroup
-    qmlRegisterType<SettingsGroup>(uri, 1, 0, "SettingsGroup");
+    kclRegisterMetaType<SettingsGroup>(uri, 1, 0, "SettingsGroup");
+#endif
+
+#ifdef KCL_objectutils
+    qRegisterMetaType<ObjectUtils *>();
+#endif
+
+#ifdef KCL_bytearrayutils
+    qRegisterMetaType<ByteArrayUtils *>();
+#endif
+
+#ifdef KCL_colorutils
+    qRegisterMetaType<ColorUtils *>();
 #endif
 
 #ifdef KCL_filesystemutils
@@ -194,6 +213,11 @@ void KCLPlugin::registerTypes(const char *uri)
     qmlRegisterUncreatableType<FileInfo>(uri, 1, 0, "FileInfo", "Use FsUtils::getFileInfo to create a FileInfo.");
     qmlRegisterUncreatableType<IODevice>(uri, 1, 0, "IODevice", "Use FsUtils::getFile to create a IODevice.");
     qmlRegisterUncreatableType<FileDevice>(uri, 1, 0, "FileDevice", "Use FsUtils::getFile to create a FileDevice.");
+
+    qRegisterMetaType<CryptographicHash *>();
+    qRegisterMetaType<FileInfo *>();
+    qRegisterMetaType<IODevice *>();
+    qRegisterMetaType<FileDevice *>();
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     qRegisterMetaType<QFile::FileTime>("QFile::FileTime");
@@ -210,31 +234,31 @@ void KCLPlugin::registerTypes(const char *uri)
 #endif
 
 #ifdef KCL_filescanner
-    qmlRegisterType<FileScanner>(uri, 1, 0, "FileScanner");
+    kclRegisterMetaType<FileScanner>(uri, 1, 0, "FileScanner");
 #endif
 
 #ifdef KCL_filesystemwatcher
-    qmlRegisterType<FileSystemWatcher>(uri, 1, 0, "FileSystemWatcher");
+    kclRegisterMetaType<FileSystemWatcher>(uri, 1, 0, "FileSystemWatcher");
 #endif
 
 #ifdef KCL_cursorarea
-    qmlRegisterType<CursorArea>(uri, 1, 0, "CursorArea");
+    kclRegisterMetaType<CursorArea>(uri, 1, 0, "CursorArea");
 #endif
 
 #ifdef KCL_touchdetector
-    qmlRegisterType<TouchDetector>(uri, 1, 0, "TouchDetector");
+    kclRegisterMetaType<TouchDetector>(uri, 1, 0, "TouchDetector");
 #endif
 
 #ifdef KCL_rawmousearea
     qmlRegisterType<DeclarativeMouseEvent>();
-    qmlRegisterType<RawMouseArea>(uri, 1, 0, "RawMouseArea");
+    kclRegisterMetaType<RawMouseArea>(uri, 1, 0, "RawMouseArea");
 #endif
 
 #ifdef KCL_imagerendersurface
-    qmlRegisterType<ImageRenderSurface>(uri, 1, 0, "ImageRenderSurface");
+    kclRegisterMetaType<ImageRenderSurface>(uri, 1, 0, "ImageRenderSurface");
 #endif
 
-    qmlRegisterType<QTimer>(uri, 1, 0, "QtTimer");
+    kclRegisterMetaType<QTimer>(uri, 1, 0, "QtTimer");
 
 #ifdef KCL_performancedatamanager
     qmlRegisterType<PerformanceData>();
@@ -262,7 +286,7 @@ void KCLPlugin::registerTypes(const char *uri)
 
 #ifdef KCL_sortfiltermodel
     qmlRegisterType<QAbstractItemModel>();
-    qmlRegisterType<SortFilterModel>(uri, 1, 0, "SortFilterModel");
+    kclRegisterMetaType<SortFilterModel>(uri, 1, 0, "SortFilterModel");
 #endif
 
 #ifdef KCL_simplebase
@@ -274,6 +298,14 @@ void KCLPlugin::registerTypes(const char *uri)
 #endif
 }
 
+template <typename T>
+inline int kclInitializeDeclarativeSingleton(QDeclarativeEngine *engine, const char *singletonName)
+{
+    qRegisterMetaType<T *>();
+    T *singleton = new T(engine);
+    engine->rootContext()->setContextProperty(singletonName, singleton);
+}
+
 void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 {
     Q_UNUSED(uri);
@@ -281,58 +313,47 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
     engine->addImportPath(":/"); // to allow "import KCL 1.0"
 
 #ifdef KCL_filesystemutils
-    FileSystemUtils *fsUtils = new FileSystemUtils(engine);
-    engine->rootContext()->setContextProperty("FsUtils", fsUtils);
+    kclInitializeDeclarativeSingleton<FileSystemUtils>(engine, "FsUtils");
 #endif
 
 #ifdef KCL_objectutils
-    ObjectUtils *objectUtils = new ObjectUtils(engine);
-    engine->rootContext()->setContextProperty("ObjectUtils", objectUtils);
+    kclInitializeDeclarativeSingleton<ObjectUtils>(engine, "ObjectUtils");
 #endif
 
 #ifdef KCL_bytearrayutils
-    ByteArrayUtils *byteArrayUtils = new ByteArrayUtils(engine);
-    engine->rootContext()->setContextProperty("ByteArrayUtils", byteArrayUtils);
+    kclInitializeDeclarativeSingleton<ByteArrayUtils>(engine, "ByteArrayUtils");
 #endif
 
 #ifdef KCL_colorutils
-    ColorUtils *colorUtils = new ColorUtils(engine);
-    engine->rootContext()->setContextProperty("ColorUtils", colorUtils);
+    kclInitializeDeclarativeSingleton<ColorUtils>(engine, "ColorUtils");
 #endif
 
 #ifdef KCL_graphicsutils
-    GraphicsUtils *graphicsUtils = new GraphicsUtils(engine);
-    engine->rootContext()->setContextProperty("GraphicsUtils", graphicsUtils);
+    kclInitializeDeclarativeSingleton<GraphicsUtils>(engine, "GraphicsUtils");
 #endif
 
 #ifdef KCL_imageutils
-    ImageUtils *imageUtils = new ImageUtils(engine);
-    engine->rootContext()->setContextProperty("ImageUtils", imageUtils);
+    kclInitializeDeclarativeSingleton<ImageUtils>(engine, "ImageUtils");
 #endif
 
 #ifdef KCL_sceneutils
-    SceneUtils *sceneUtils = new SceneUtils(engine);
-    engine->rootContext()->setContextProperty("SceneUtils", sceneUtils);
+    kclInitializeDeclarativeSingleton<SceneUtils>(engine, "SceneUtils");
 #endif
 
 #ifdef KCL_datetimeutils
-    DateTimeUtils *dateTimeUtils = new DateTimeUtils(engine);
-    engine->rootContext()->setContextProperty("DateTimeUtils", dateTimeUtils);
+    kclInitializeDeclarativeSingleton<DateTimeUtils>(engine, "DateTimeUtils");
 #endif
 
 #ifdef KCL_networkutils
-    NetworkUtils *networkUtils = new NetworkUtils(engine);
-    engine->rootContext()->setContextProperty("NetworkUtils", networkUtils);
+    kclInitializeDeclarativeSingleton<NetworkUtils>(engine, "NetworkUtils");
 #endif
 
 #ifdef KCL_cookiejarinterface
-    CookieJarInterface *cookieJarInterface = new CookieJarInterface(engine);
-    engine->rootContext()->setContextProperty("CookieJar", cookieJarInterface);
+    kclInitializeDeclarativeSingleton<CookieJarInterface>(engine, "CookieJar");
 #endif
 
 #ifdef KCL_nativedialogs
-    NativeDialogs *nativeDialogs = new NativeDialogs(engine);
-    engine->rootContext()->setContextProperty("NativeDialogs", nativeDialogs);
+    kclInitializeDeclarativeSingleton<NativeDialogs>(engine, "NativeDialogs");
 #endif
 
 #ifdef KCL_logging
@@ -340,8 +361,7 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 #endif
 
 #ifdef KCL_declarativedebug
-    DeclarativeDebug *declarativeDebug = new DeclarativeDebug(engine);
-    engine->rootContext()->setContextProperty("Debug", declarativeDebug);
+    kclInitializeDeclarativeSingleton<DeclarativeDebug>(engine, "Debug");
 #endif
 
 #ifdef KCL_performancedatamanager
@@ -361,20 +381,16 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 #endif
 
 #ifdef KCL_simplebase
-    SimpleBase *simpleBase = new SimpleBase(engine);
-    engine->rootContext()->setContextProperty("SimpleBase", simpleBase);
+    kclInitializeDeclarativeSingleton<SimpleBase>(engine, "SimpleBase");
 #endif
 
 #ifdef KCL_engineutils
-    EngineUtils *engineUtils = new EngineUtils(engine);
-    engine->rootContext()->setContextProperty("EngineUtils", engineUtils);
+    kclInitializeDeclarativeSingleton<EngineUtils>(engine, "EngineUtils");
 #endif
 
 #ifdef KCL_systemutils
-    SystemUtils *systemUtils = new SystemUtils(engine);
-    engine->rootContext()->setContextProperty("SystemUtils", systemUtils);
+    kclInitializeDeclarativeSingleton<SystemUtils>(engine, "SystemUtils");
 #endif
-
 }
 
 #if defined(KCL_PLUGIN) && QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
