@@ -86,6 +86,7 @@ public:
 #ifdef KCL_EXPERIMENTAL
 #ifdef KCL_QTQUICK2
     Q_INVOKABLE QVariantMap getMetaObjectInfo(QJSValue value, QObject *contextObject = NULL);
+    Q_INVOKABLE QVariantMap execute(const QString &codeSnippet, QObject *contextObject = NULL);
 #endif
 #endif
 

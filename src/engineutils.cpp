@@ -176,5 +176,26 @@ QVariantMap EngineUtils::getMetaObjectInfo(QJSValue value, QObject *contextObjec
     return result;
 }
 
+QVariantMap EngineUtils::execute(const QString &codeSnippet, QObject *contextObject)
+{
+    QVariantMap result;
+
+    QQmlContext *context = engine_->rootContext();
+
+    if (contextObject)
+        context = QDeclarativeEngine::contextForObject(contextObject);
+    else
+        contextObject = engine_->rootContext()->contextObject();
+
+    QScopedPointer<QQmlExpression> expr(new QQmlExpression(context, contextObject, codeSnippet));
+    QVariant ev = expr->evaluate();
+
+    result.insert("result", ev);
+    result.insert("error", expr->error().description());
+    result.insert("hasError", expr->hasError());
+
+    return result;
+}
+
 #endif
 #endif
