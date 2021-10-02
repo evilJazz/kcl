@@ -94,7 +94,7 @@ public:
     Q_INVOKABLE bool isValid() const { return d; }
     Q_INVOKABLE QIODevice* device() const { return d; }
 
-    Q_INVOKABLE QIODevice::OpenMode openMode() const { return d ? d->openMode() : QIODevice::NotOpen; }
+    Q_INVOKABLE IODevice::OpenMode openMode() const { return d ? (IODevice::OpenMode)d->openMode().operator unsigned int() : IODevice::NotOpen; }
 
     Q_INVOKABLE void setTextModeEnabled(bool enabled) { if (d) d->setTextModeEnabled(enabled); }
     Q_INVOKABLE bool isTextModeEnabled() const { return d ? d->isTextModeEnabled() : false; }
@@ -297,7 +297,7 @@ public:
         FileModificationTime
     };
 
-    Q_INVOKABLE QDateTime fileTime(FileTime time);
+    Q_INVOKABLE QDateTime fileTime(FileInfo::FileTime time);
     Q_INVOKABLE bool permission(QFile::Permissions permissions) const { return QFileInfo::permission(permissions); }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)

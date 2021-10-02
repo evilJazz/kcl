@@ -216,6 +216,7 @@ void KCLPlugin::registerTypes(const char *uri)
 
     qRegisterMetaType<CryptographicHash *>();
     qRegisterMetaType<FileInfo *>();
+    qRegisterMetaType<FileInfo::FileTime>("FileInfo::FileTime");
     qRegisterMetaType<IODevice *>();
     qRegisterMetaType<FileDevice *>();
 
