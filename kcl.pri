@@ -175,6 +175,11 @@ kcl_qtquick2 {
 kcl_declarative {
     message("KCL: Configuring declarative support classes")
 
+    contains(QT, quick-private) {
+        message("KCL: Configuring support for declarative private headers")
+        DEFINES += KCL_QTQUICK_PRIVATE
+    }
+
     HEADERS += $$KCL_INC_PATH/kclplugin.h
     SOURCES += $$KCL_SRC_PATH/kclplugin.cpp
 

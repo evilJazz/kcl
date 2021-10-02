@@ -16,6 +16,12 @@
     #define QDeclarativeEngine QQmlEngine
     #define QDeclarativeComponent QQmlComponent
     #define QDeclarativeContext QQmlContext
+    #include <QJSValueIterator>
+
+    #ifdef KCL_QTQUICK_PRIVATE
+    #include <private/qqmlcontext_p.h>
+    #include <private/qv4identifier_p.h>
+    #endif
 #else
     #include <QDeclarativeEngine>
     #include <QDeclarativeContext>
@@ -117,49 +123,96 @@ QObject *EngineUtils::createObjectWithContextObject(QDeclarativeComponent *compo
 #ifdef KCL_EXPERIMENTAL
 #ifdef KCL_QTQUICK2
 
+QJSValue EngineUtils::globalObject()
+{
+    return engine_->globalObject();
+}
+
+QVariantList EngineUtils::getContextPropertiesAndGlobals(QObject *contextObject)
+{
+    QVariantList result;
+    QVariantMap entry;
+
+    QQmlContext *context = engine_->rootContext();
+
+    if (contextObject)
+        context = QDeclarativeEngine::contextForObject(contextObject);
+    else
+        contextObject = engine_->rootContext()->contextObject();
+
+    if (context == engine_->rootContext())
+    {
+        // Get JS global objects / type prototypes
+        QJSValueIterator it(engine_->globalObject());
+
+        while (it.hasNext())
+        {
+            it.next();
+
+            entry.insert("name", it.name());
+            entry.insert("typeName", "JSGlobal");
+            result << entry;
+        }
+    }
+
+#ifdef KCL_QTQUICK_PRIVATE
+    if (context)
+    {
+        QQmlContextData *contextData = QQmlContextData::get(context);
+
+        if (contextData)
+        {
+            const QV4::IdentifierHash &propNames = contextData->propertyNames();
+
+            QV4::IdentifierHashEntry *e = propNames.d->entries;
+            QV4::IdentifierHashEntry *end = e + propNames.d->alloc;
+
+            while (e < end)
+            {
+                QString propName;
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 12, 0)
+                if (e->identifier)
+                    propName = e->identifier->string;
+#else
+                if (e->identifier.isValid())
+                    propName = e->identifier.toQString();
+#endif
+
+                if (!propName.isNull())
+                {
+                    entry.insert("name", propName);
+                    entry.insert("typeName", "QMLContextProperty");
+                    result << entry;
+                }
+
+                ++e;
+            }
+        }
+#endif
+    }
+
+    return result;
+}
+
 QVariantMap EngineUtils::getMetaObjectInfo(QJSValue value, QObject *contextObject)
 {
     QVariantMap result;
 
     if (value.isString())
     {
-        /*
-        QQmlProperty prop(engine_->rootContext()->contextObject(), value.toString(), engine_->rootContext());
+        result = EngineUtils::execute(value.toString(), contextObject);
+        QVariant ev = result.value("result");
 
-        result.insert("name", prop.name());
-        result.insert("isValid", prop.isValid());
-        result.insert("isProperty", prop.isProperty());
-        result.insert("propertyType", prop.propertyType());
-        result.insert("propertyTypeName", prop.propertyTypeName());
-        */
-
-        QQmlContext *context = engine_->rootContext();
-
-        if (contextObject)
-            context = QDeclarativeEngine::contextForObject(contextObject);
-        else
-            contextObject = engine_->rootContext()->contextObject();
-
-        QQmlExpression *expr = new QQmlExpression(context, contextObject, value.toString());
-        QVariant ev = expr->evaluate();
-
-        result.insert("error", expr->error().description());
-        result.insert("hasError", expr->hasError());
-
-        if (!expr->hasError() && ev.isValid())
+        if (!result.value("hasError").toBool() && ev.isValid())
         {
             QObject *evObj = ObjectUtils::objectify(ev);
-            if (evObj)
-            {
-                result.insert("resultTypeName", QString(evObj->metaObject()->className()));
-            }
-            else
-            {
-                result.insert("resultTypeName", ev.typeName());
-            }
-        }
 
-        delete expr;
+            if (evObj)
+                result.insert("resultTypeName", QString(evObj->metaObject()->className()));
+            else
+                result.insert("resultTypeName", ev.typeName());
+        }
     }
     /*
     else if (value.isQMetaObject())
