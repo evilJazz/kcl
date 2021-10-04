@@ -201,7 +201,7 @@ QVariantMap EngineUtils::getMetaObjectInfo(QJSValue value, QObject *contextObjec
 
     if (value.isString())
     {
-        result = EngineUtils::execute(value.toString(), contextObject);
+        result = EngineUtils::evaluateInContext(value.toString(), contextObject);
         QVariant ev = result.value("result");
 
         if (!result.value("hasError").toBool() && ev.isValid())
@@ -209,7 +209,10 @@ QVariantMap EngineUtils::getMetaObjectInfo(QJSValue value, QObject *contextObjec
             QObject *evObj = ObjectUtils::objectify(ev);
 
             if (evObj)
+            {
+                result = ObjectUtils::introspectObject(evObj);
                 result.insert("resultTypeName", QString(evObj->metaObject()->className()));
+            }
             else
                 result.insert("resultTypeName", ev.typeName());
         }
@@ -229,7 +232,12 @@ QVariantMap EngineUtils::getMetaObjectInfo(QJSValue value, QObject *contextObjec
     return result;
 }
 
-QVariantMap EngineUtils::execute(const QString &codeSnippet, QObject *contextObject)
+QJSValue EngineUtils::evaluate(const QString &codeSnippet)
+{
+    return engine_->evaluate(codeSnippet);
+}
+
+QVariantMap EngineUtils::evaluateInContext(const QString &codeSnippet, QObject *contextObject)
 {
     QVariantMap result;
 

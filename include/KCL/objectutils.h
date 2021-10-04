@@ -73,6 +73,8 @@ public:
     static QVariantList getAllProperties(const QMetaObject *metaObject);
 
     Q_INVOKABLE static QVariantMap introspectClass(const QString &className);
+    Q_INVOKABLE static QVariantMap introspectObject(QObject *object);
+    Q_INVOKABLE static QVariantMap introspectMetaObject(const QMetaObject *metaObj);
 
     Q_INVOKABLE static QObject *findObjectByObjectName(QObject *rootElement, const QString &objectName);
 

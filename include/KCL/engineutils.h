@@ -88,7 +88,8 @@ public:
     Q_INVOKABLE QJSValue globalObject();
     Q_INVOKABLE QVariantList getContextPropertiesAndGlobals(QObject *contextObject = NULL);
     Q_INVOKABLE QVariantMap getMetaObjectInfo(QJSValue value, QObject *contextObject = NULL);
-    Q_INVOKABLE QVariantMap execute(const QString &codeSnippet, QObject *contextObject = NULL);
+    Q_INVOKABLE QJSValue evaluate(const QString &codeSnippet);
+    Q_INVOKABLE QVariantMap evaluateInContext(const QString &codeSnippet, QObject *contextObject = NULL);
 #endif
 #endif
 

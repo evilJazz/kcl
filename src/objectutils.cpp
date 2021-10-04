@@ -256,18 +256,37 @@ QVariantMap ObjectUtils::introspectClass(const QString &className)
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         const QMetaObject *metaObj = QMetaType::metaObjectForType(typeId);
-
-        if (metaObj)
-        {
-            result.insert("className", metaObj->className());
-            result.insert("properties", getAllProperties(metaObj));
-            result.insert("methods", getAllMethods(metaObj));
-            result.insert("signals", getAllSignals(metaObj));
-        }
+        result = introspectMetaObject(metaObj);
 #else
         result.insert("error", "Not implemented yet for Qt 4.");
         result.insert("hasError", true);
 #endif
+    }
+    else
+    {
+        result.insert("error", "Unknown type");
+        result.insert("hasError", true);
+    }
+
+    return result;
+}
+
+QVariantMap ObjectUtils::introspectObject(QObject *object)
+{
+    return introspectMetaObject(object ? object->metaObject() : NULL);
+}
+
+QVariantMap ObjectUtils::introspectMetaObject(const QMetaObject *metaObj)
+{
+    QVariantMap result;
+
+    if (metaObj)
+    {
+        result.insert("typeName", metaObj->className());
+        result.insert("className", metaObj->className());
+        result.insert("properties", getAllProperties(metaObj));
+        result.insert("methods", getAllMethods(metaObj));
+        result.insert("signals", getAllSignals(metaObj));
     }
     else
     {
