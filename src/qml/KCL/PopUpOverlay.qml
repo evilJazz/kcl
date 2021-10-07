@@ -50,6 +50,7 @@ Item {
     property color backgroundColor: "transparent"
 
     property Item popUpParent: app
+    readonly property bool opened: overlay ? overlay.opened : false
 
     signal overlayCreated(variant item)
     signal aboutToPopUp(variant item)
@@ -141,6 +142,7 @@ Item {
             overlay = _createOverlay(function () { if (overlay !== null) setBoundedPosition(overlay.item, x, y); });
 
         overlay.open();
+        setBoundedPosition(overlay.item, x, y);
     }
 
     function close()
@@ -168,27 +170,65 @@ Item {
         item.y = pos.y;
     }
 
-    function _positionPopUpTopOrBottom(item)
+    function popUpMove(x, y)
     {
-        if (itemToPopupAt == null) return;
+        if (overlay && overlay.item)
+            setBoundedPosition(overlay.item, x, y);
+    }
 
-        var topPos = popUpParent.mapFromItem(itemToPopupAt, itemToPopupAt.width, 0);
-        var bottomPos = popUpParent.mapFromItem(itemToPopupAt, itemToPopupAt.width, itemToPopupAt.height);
+    function popUpMoveTopOrBottom(item, itemRect)
+    {
+        if (!overlay || !overlay.item) return;
+
+        var topPos = popUpParent.mapFromItem(item, itemRect.x + itemRect.width, itemRect.y);
+        var bottomPos = popUpParent.mapFromItem(item, itemRect.x + itemRect.width, itemRect.y + itemRect.height);
 
         var popUpParentWidth = popUpParent.width;
         var popUpParentHeight = popUpParent.height;
 
         var x, y;
 
-        if (bottomPos.y + item.height < popUpParentHeight)
+        if (bottomPos.y + overlay.item.height < popUpParentHeight)
         {
-            x = bottomPos.x - item.width;
+            x = bottomPos.x;
             y = bottomPos.y;
         }
         else
         {
-            x = topPos.x - item.width;
-            y = topPos.y - item.height;
+            x = topPos.x;
+            y = topPos.y - overlay.item.height;
+        }
+
+        setBoundedPosition(overlay.item, x, y);
+    }
+
+    function _positionPopUpTopOrBottom(item)
+    {
+        if (itemToPopupAt == null) return;
+        popUpMoveTopOrBottom(itemToPopupAt, Qt.rect(0, 0, itemToPopupAt.width, itemToPopupAt.height));
+    }
+
+    function popUpMoveLeftOrRight(item, itemRect)
+    {
+        if (!overlay || !overlay.item) return;
+
+        var topPos = popUpParent.mapFromItem(item, itemRect.x + itemRect.width, itemRect.y);
+        var bottomPos = popUpParent.mapFromItem(item, itemRect.x + itemRect.width, itemRect.y + itemRect.height);
+
+        var popUpParentWidth = popUpParent.width;
+        var popUpParentHeight = popUpParent.height;
+
+        var x, y;
+
+        if (topRightPos.x + overlay.item.width < popUpParentWidth)
+        {
+            x = topRightPos.x;
+            y = topRightPos.y;
+        }
+        else
+        {
+            x = topLeftPos.x - overlay.item.width;
+            y = topLeftPos.y;
         }
 
         setBoundedPosition(item, x, y);
@@ -197,26 +237,6 @@ Item {
     function _positionPopUpLeftOrRight(item)
     {
         if (itemToPopupAt == null) return;
-
-        var topLeftPos = popUpParent.mapFromItem(itemToPopupAt, 0, 0);
-        var topRightPos = popUpParent.mapFromItem(itemToPopupAt, itemToPopupAt.width, 0);
-
-        var popUpParentWidth = popUpParent.width;
-        var popUpParentHeight = popUpParent.height;
-
-        var x, y;
-
-        if (topRightPos.x + item.width < popUpParentWidth)
-        {
-            x = topRightPos.x;
-            y = topRightPos.y;
-        }
-        else
-        {
-            x = topLeftPos.x - item.width;
-            y = topLeftPos.y;
-        }
-
-        setBoundedPosition(item, x, y);
+        popUpMoveLeftOrRight(itemToPopupAt, Qt.rect(0, 0, itemToPopupAt.width, itemToPopupAt.height));
     }
 }
