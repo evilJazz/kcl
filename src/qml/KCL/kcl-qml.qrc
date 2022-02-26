@@ -29,6 +29,7 @@
         <file>ArrayHelpers.js</file>
         <file>DeferredExecution.js</file>
         <file>JSONHelpers.js</file>
+        <file>ObjectHelpers.js</file>
         <file>NumericHelpers.js</file>
         <file>StringHelpers.js</file>
         <file>WebCall.js</file>
