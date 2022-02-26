@@ -63,14 +63,14 @@ public:
     Q_INVOKABLE static void dumpObjectTree(QObject *target);
     Q_INVOKABLE static void dumpParentTree(QObject *target);
 
-    Q_INVOKABLE static QVariantList getAllMethods(QObject *object);
-    static QVariantList getAllMethods(const QMetaObject *metaObject);
+    Q_INVOKABLE static QVariantList getAllMethods(QObject *object, bool recurseSuperClasses = false, bool namesOnly = false);
+    static QVariantList getAllMethods(const QMetaObject *metaObject, bool namesOnly = false);
 
-    Q_INVOKABLE static QVariantList getAllSignals(QObject *object);
-    static QVariantList getAllSignals(const QMetaObject *metaObject);
+    Q_INVOKABLE static QVariantList getAllSignals(QObject *object, bool recurseSuperClasses = false, bool namesOnly = false);
+    static QVariantList getAllSignals(const QMetaObject *metaObject, bool namesOnly = false);
 
-    Q_INVOKABLE static QVariantList getAllProperties(QObject *object);
-    static QVariantList getAllProperties(const QMetaObject *metaObject);
+    Q_INVOKABLE static QVariantList getAllProperties(QObject *object, bool recurseSuperClasses = false, bool namesOnly = false);
+    static QVariantList getAllProperties(const QMetaObject *metaObject, bool namesOnly = false);
 
     Q_INVOKABLE static QVariantMap introspectClass(const QString &className);
     Q_INVOKABLE static QVariantMap introspectObject(QObject *object);
@@ -81,7 +81,7 @@ public:
 private:
     static void dumpObjectTreeRecursive(int level, QObject *object);
     static QStringList toStringList(const QList<QByteArray> &list);
-    static void insertMetaMethod(QVariantMap &info, const QMetaMethod &method);
+    static void insertMetaMethod(QVariantMap &info, const QMetaMethod &method, bool namesOnly);
 };
 
 #endif // OBJECTUTILS_H

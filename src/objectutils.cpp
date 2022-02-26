@@ -111,8 +111,10 @@ QStringList ObjectUtils::toStringList(const QList<QByteArray> &list)
     return strings;
 }
 
-void ObjectUtils::insertMetaMethod(QVariantMap &info, const QMetaMethod &method)
+void ObjectUtils::insertMetaMethod(QVariantMap &info, const QMetaMethod &method, bool namesOnly)
 {
+    QString className = method.enclosingMetaObject()->className();
+
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QString signature = QString::fromLatin1(method.methodSignature());
     QString name = QString::fromLatin1(method.name());
@@ -124,38 +126,54 @@ void ObjectUtils::insertMetaMethod(QVariantMap &info, const QMetaMethod &method)
 
     QString typeName = QString::fromLatin1(method.typeName());
 
+    info.insert("className", className);
     info.insert("name", name);
     info.insert("typeName", typeName);
     info.insert("signature", signature);
 
-    QStringList paramNames = toStringList(method.parameterNames());
-    QStringList paramTypes = toStringList(method.parameterTypes());
+    if (!namesOnly)
+    {
+        QStringList paramNames = toStringList(method.parameterNames());
+        QStringList paramTypes = toStringList(method.parameterTypes());
 
-    info.insert("parameterNames", paramNames);
-    info.insert("parameterTypes", paramTypes);
+        info.insert("parameterNames", paramNames);
+        info.insert("parameterTypes", paramTypes);
 
-    QStringList params;
-    int paramCount = paramNames.count();
+        QStringList params;
+        int paramCount = paramNames.count();
 
-    for (int i = 0; i < paramCount; ++i)
-        params << paramTypes.at(i) + " " + paramNames.at(i);
+        for (int i = 0; i < paramCount; ++i)
+            params << paramTypes.at(i) + " " + paramNames.at(i);
 
-    QString fullSignature = QString("%1(%2)")
-        .arg(name)
-        .arg(params.join(", "));
+        QString fullSignature = QString("%1(%2)")
+            .arg(name)
+            .arg(params.join(", "));
 
-    info.insert("fullSignature",
-        (method.methodType() != QMetaMethod::Signal ?
-            typeName + " " : "") + fullSignature);
+        info.insert("fullSignature",
+            (method.methodType() != QMetaMethod::Signal ?
+                typeName + " " : "") + fullSignature);
+    }
 }
 
-QVariantList ObjectUtils::getAllMethods(QObject *object)
+QVariantList ObjectUtils::getAllMethods(QObject *object, bool recurseSuperClasses, bool namesOnly)
 {
     if (!object) return QVariantList();
     return getAllMethods(object->metaObject());
+
+    QVariantList result;
+    const QMetaObject *metaObj = object->metaObject();
+
+    do
+    {
+        result.append(getAllMethods(metaObj));
+        metaObj = metaObj->superClass();
+    }
+    while (metaObj && !recurseSuperClasses);
+
+    return result;
 }
 
-QVariantList ObjectUtils::getAllMethods(const QMetaObject *metaObject)
+QVariantList ObjectUtils::getAllMethods(const QMetaObject *metaObject, bool namesOnly)
 {
     QVariantList methods;
 
@@ -167,7 +185,7 @@ QVariantList ObjectUtils::getAllMethods(const QMetaObject *metaObject)
             method.access() == QMetaMethod::Public)
         {
             QVariantMap info;
-            insertMetaMethod(info, method);
+            insertMetaMethod(info, method, namesOnly);
             methods << info;
         }
     }
@@ -175,13 +193,24 @@ QVariantList ObjectUtils::getAllMethods(const QMetaObject *metaObject)
     return methods;
 }
 
-QVariantList ObjectUtils::getAllSignals(QObject *object)
+QVariantList ObjectUtils::getAllSignals(QObject *object, bool recurseSuperClasses, bool namesOnly)
 {
     if (!object) return QVariantList();
-    return getAllSignals(object->metaObject());
+
+    QVariantList result;
+    const QMetaObject *metaObj = object->metaObject();
+
+    do
+    {
+        result.append(getAllSignals(metaObj, namesOnly));
+        metaObj = metaObj->superClass();
+    }
+    while (metaObj && !recurseSuperClasses);
+
+    return result;
 }
 
-QVariantList ObjectUtils::getAllSignals(const QMetaObject *metaObject)
+QVariantList ObjectUtils::getAllSignals(const QMetaObject *metaObject, bool namesOnly)
 {
     QVariantList methods;
 
@@ -193,7 +222,7 @@ QVariantList ObjectUtils::getAllSignals(const QMetaObject *metaObject)
             method.access() == QMetaMethod::Public)
         {
             QVariantMap info;
-            insertMetaMethod(info, method);
+            insertMetaMethod(info, method, namesOnly);
             methods << info;
         }
     }
@@ -201,15 +230,27 @@ QVariantList ObjectUtils::getAllSignals(const QMetaObject *metaObject)
     return methods;
 }
 
-QVariantList ObjectUtils::getAllProperties(QObject *object)
+QVariantList ObjectUtils::getAllProperties(QObject *object, bool recurseSuperClasses, bool namesOnly)
 {
     if (!object) return QVariantList();
-    return getAllProperties(object->metaObject());
+
+    QVariantList result;
+    const QMetaObject *metaObj = object->metaObject();
+
+    do
+    {
+        result.append(getAllProperties(metaObj, namesOnly));
+        metaObj = metaObj->superClass();
+    }
+    while (metaObj && recurseSuperClasses);
+
+    return result;
 }
 
-QVariantList ObjectUtils::getAllProperties(const QMetaObject *metaObject)
+QVariantList ObjectUtils::getAllProperties(const QMetaObject *metaObject, bool namesOnly)
 {
     QVariantList properties;
+    QString className = metaObject->className();
 
     for (int i = metaObject->propertyOffset(); i < metaObject->propertyCount(); ++i)
     {
@@ -220,19 +261,23 @@ QVariantList ObjectUtils::getAllProperties(const QMetaObject *metaObject)
         QString name = QString::fromLatin1(prop.name());
         QString typeName = QString::fromLatin1(prop.typeName());
 
+        info.insert("className", className);
         info.insert("name", name);
         info.insert("typeName", typeName);
 
-        QString signature = QString("%1 %2")
-            .arg(typeName)
-            .arg(name);
+        if (!namesOnly)
+        {
+            QString signature = QString("%1 %2")
+                .arg(typeName)
+                .arg(name);
 
-        QString fullSignature = QString("%1property %2")
-            .arg(!prop.isWritable() ? "readonly " : "")
-            .arg(signature);
+            QString fullSignature = QString("%1property %2")
+                .arg(!prop.isWritable() ? "readonly " : "")
+                .arg(signature);
 
-        info.insert("signature", signature);
-        info.insert("fullSignature", fullSignature);
+            info.insert("signature", signature);
+            info.insert("fullSignature", fullSignature);
+        }
 
         properties << info;
     }
