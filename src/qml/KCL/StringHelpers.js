@@ -35,3 +35,23 @@ String.prototype.escapeAttribute = function()
 {
     return this.replace(/[\\"]/g, "&quot;");
 }
+
+String.prototype.escapeHtml = function()
+{
+    return this
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+String.prototype.unescapeHtml = function()
+{
+    return this
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, "\"")
+        .replace(/&#039;/g, "'");
+}
