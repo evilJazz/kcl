@@ -25,3 +25,13 @@ String.prototype.lineFeedsToBreaks = function(s)
 {
     return this.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br/>$2');
 }
+
+String.prototype.escape = function()
+{
+    return this.replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
+}
+
+String.prototype.escapeAttribute = function()
+{
+    return this.replace(/[\\"]/g, "&quot;");
+}
