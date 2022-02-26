@@ -36,6 +36,7 @@
 #define PROPERTYCHANGEOBSERVER_H
 
 #include "KCL/kcl_global.h"
+#include "KCL/updatelocker.h"
 
 #include <QObject>
 #include <QEvent>
@@ -50,7 +51,7 @@
 #endif
 
 class KCL_EXPORT PropertyChangeObserver :
-    public QObject,
+    public QObject, public UpdateLocker,
 #ifdef KCL_QTQUICK2
     public QQmlParserStatus
 #else
@@ -60,6 +61,7 @@ class KCL_EXPORT PropertyChangeObserver :
     Q_OBJECT
     Q_PROPERTY(QObject *parent READ parent WRITE setParent NOTIFY parentChanged)
     Q_PROPERTY(QStringList ignoredPropertyNames READ ignoredPropertyNames WRITE setIgnoredPropertyNames NOTIFY ignoredPropertyNamesChanged)
+    Q_PROPERTY(bool blockedByUpdate READ blockedByUpdate NOTIFY blockedByUpdateChanged)
 #ifdef KCL_QTQUICK2
     Q_INTERFACES(QQmlParserStatus)
 #else
@@ -75,12 +77,17 @@ public:
     bool hasOwnProperty(const QString &propertyName);
     QVariant getProperty(const QString &propertyName);
 
+    bool blockedByUpdate() { return UpdateLocker::updating(); }
+
 public slots:
+    void beginUpdate() { UpdateLocker::beginUpdate(); }
+    void endUpdate() { UpdateLocker::endUpdate(); }
 
 signals:
     void propertyChanged(const QString &propertyName);
     void parentChanged();
     void ignoredPropertyNamesChanged();
+    void blockedByUpdateChanged();
 
 protected slots:
     void handleDeclarativePropertyChanged();
@@ -96,6 +103,9 @@ protected:
 
     void connectToNotifySignals();
     void emitPropertyChanged(const QString &propertyName);
+
+    void startedUpdate();
+    void finishUpdate();
 };
 
 #endif // PROPERTYCHANGEOBSERVER_H

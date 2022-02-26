@@ -139,8 +139,18 @@ void PropertyChangeObserver::connectToNotifySignals()
 
 void PropertyChangeObserver::emitPropertyChanged(const QString &propertyName)
 {
-    if (!ignoredPropertyNames_.contains(propertyName))
+    if (!updating() && !ignoredPropertyNames_.contains(propertyName))
         emit propertyChanged(propertyName);
+}
+
+void PropertyChangeObserver::startedUpdate()
+{
+    emit blockedByUpdateChanged();
+}
+
+void PropertyChangeObserver::finishUpdate()
+{
+    emit blockedByUpdateChanged();
 }
 
 void PropertyChangeObserver::handleDeclarativePropertyChanged()
