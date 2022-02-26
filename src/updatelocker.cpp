@@ -51,9 +51,13 @@ bool UpdateLocker::updating()
 void UpdateLocker::beginUpdate()
 {
     if (!updating())
+    {
         startingUpdate();
-
-    ++updateCount_;
+        ++updateCount_;
+        startedUpdate();
+    }
+    else
+        ++updateCount_;
 }
 
 void UpdateLocker::endUpdate()
@@ -65,6 +69,10 @@ void UpdateLocker::endUpdate()
 }
 
 void UpdateLocker::startingUpdate()
+{
+}
+
+void UpdateLocker::startedUpdate()
 {
 }
 

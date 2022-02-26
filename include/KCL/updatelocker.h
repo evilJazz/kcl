@@ -52,6 +52,7 @@ protected:
     int updateCount_;
 
     virtual void startingUpdate();
+    virtual void startedUpdate();
     virtual void finishUpdate();
 };
 
