@@ -169,31 +169,29 @@
     #include "KCL/templaterenderer.h"
 #endif
 
-template <typename T>
-inline int kclRegisterMetaType(const char *uri, int versionMajor, int versionMinor, const char *typeName)
-{
-    qmlRegisterType<T>(uri, versionMajor, versionMinor, typeName);
-    return qRegisterMetaType<T*>(typeName);
-}
+#define kclRegisterMetaType(T, uri, versionMajor, versionMinor, typeName) \
+    qmlRegisterType<T>(uri, versionMajor, versionMinor, typeName); \
+    qRegisterMetaType<T*>(typeName);
+
 
 void KCLPlugin::registerTypes(const char *uri)
 {
     //@uri KCL
 
 #ifdef KCL_binaryfiledownloader
-    kclRegisterMetaType<BinaryFileDownloader>(uri, 1, 0, "BinaryFileDownloader");
+    kclRegisterMetaType(BinaryFileDownloader, uri, 1, 0, "BinaryFileDownloader");
 #endif
 
 #ifdef KCL_propertychangeobserver
-    kclRegisterMetaType<PropertyChangeObserver>(uri, 1, 0, "PropertyChangeObserver");
+    kclRegisterMetaType(PropertyChangeObserver, uri, 1, 0, "PropertyChangeObserver");
 #endif
 
 #ifdef KCL_templaterenderer
-    kclRegisterMetaType<TemplateRenderer>(uri, 1, 0, "NativeTemplateRenderer");
+    kclRegisterMetaType(TemplateRenderer, uri, 1, 0, "NativeTemplateRenderer");
 #endif
 
 #ifdef KCL_settingsgroup
-    kclRegisterMetaType<SettingsGroup>(uri, 1, 0, "SettingsGroup");
+    kclRegisterMetaType(SettingsGroup, uri, 1, 0, "SettingsGroup");
 #endif
 
 #ifdef KCL_objectutils
@@ -235,31 +233,31 @@ void KCLPlugin::registerTypes(const char *uri)
 #endif
 
 #ifdef KCL_filescanner
-    kclRegisterMetaType<FileScanner>(uri, 1, 0, "FileScanner");
+    kclRegisterMetaType(FileScanner, uri, 1, 0, "FileScanner");
 #endif
 
 #ifdef KCL_filesystemwatcher
-    kclRegisterMetaType<FileSystemWatcher>(uri, 1, 0, "FileSystemWatcher");
+    kclRegisterMetaType(FileSystemWatcher, uri, 1, 0, "FileSystemWatcher");
 #endif
 
 #ifdef KCL_cursorarea
-    kclRegisterMetaType<CursorArea>(uri, 1, 0, "CursorArea");
+    kclRegisterMetaType(CursorArea, uri, 1, 0, "CursorArea");
 #endif
 
 #ifdef KCL_touchdetector
-    kclRegisterMetaType<TouchDetector>(uri, 1, 0, "TouchDetector");
+    kclRegisterMetaType(TouchDetector, uri, 1, 0, "TouchDetector");
 #endif
 
 #ifdef KCL_rawmousearea
     qmlRegisterType<DeclarativeMouseEvent>();
-    kclRegisterMetaType<RawMouseArea>(uri, 1, 0, "RawMouseArea");
+    kclRegisterMetaType(RawMouseArea, uri, 1, 0, "RawMouseArea");
 #endif
 
 #ifdef KCL_imagerendersurface
-    kclRegisterMetaType<ImageRenderSurface>(uri, 1, 0, "ImageRenderSurface");
+    kclRegisterMetaType(ImageRenderSurface, uri, 1, 0, "ImageRenderSurface");
 #endif
 
-    kclRegisterMetaType<QTimer>(uri, 1, 0, "QtTimer");
+    kclRegisterMetaType(QTimer, uri, 1, 0, "QtTimer");
 
 #ifdef KCL_performancedatamanager
     qmlRegisterType<PerformanceData>();
@@ -287,7 +285,7 @@ void KCLPlugin::registerTypes(const char *uri)
 
 #ifdef KCL_sortfiltermodel
     qmlRegisterType<QAbstractItemModel>();
-    kclRegisterMetaType<SortFilterModel>(uri, 1, 0, "SortFilterModel");
+    kclRegisterMetaType(SortFilterModel, uri, 1, 0, "SortFilterModel");
 #endif
 
 #ifdef KCL_simplebase
@@ -299,13 +297,10 @@ void KCLPlugin::registerTypes(const char *uri)
 #endif
 }
 
-template <typename T>
-inline int kclInitializeDeclarativeSingleton(QDeclarativeEngine *engine, const char *singletonName)
-{
-    qRegisterMetaType<T *>();
-    T *singleton = new T(engine);
-    engine->rootContext()->setContextProperty(singletonName, singleton);
-}
+#define kclInitializeDeclarativeSingleton(T, var, engine, singletonName) \
+    qRegisterMetaType<T *>(); \
+    T *var = new T(engine); \
+    engine->rootContext()->setContextProperty(singletonName, var);
 
 void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 {
@@ -314,47 +309,47 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
     engine->addImportPath(":/"); // to allow "import KCL 1.0"
 
 #ifdef KCL_filesystemutils
-    kclInitializeDeclarativeSingleton<FileSystemUtils>(engine, "FsUtils");
+    kclInitializeDeclarativeSingleton(FileSystemUtils, fsUtils, engine, "FsUtils");
 #endif
 
 #ifdef KCL_objectutils
-    kclInitializeDeclarativeSingleton<ObjectUtils>(engine, "ObjectUtils");
+    kclInitializeDeclarativeSingleton(ObjectUtils, objectUtils, engine, "ObjectUtils");
 #endif
 
 #ifdef KCL_bytearrayutils
-    kclInitializeDeclarativeSingleton<ByteArrayUtils>(engine, "ByteArrayUtils");
+    kclInitializeDeclarativeSingleton(ByteArrayUtils, byteArrayUtils, engine, "ByteArrayUtils");
 #endif
 
 #ifdef KCL_colorutils
-    kclInitializeDeclarativeSingleton<ColorUtils>(engine, "ColorUtils");
+    kclInitializeDeclarativeSingleton(ColorUtils, colorUtils, engine, "ColorUtils");
 #endif
 
 #ifdef KCL_graphicsutils
-    kclInitializeDeclarativeSingleton<GraphicsUtils>(engine, "GraphicsUtils");
+    kclInitializeDeclarativeSingleton(GraphicsUtils, graphicsUtils, engine, "GraphicsUtils");
 #endif
 
 #ifdef KCL_imageutils
-    kclInitializeDeclarativeSingleton<ImageUtils>(engine, "ImageUtils");
+    kclInitializeDeclarativeSingleton(ImageUtils, imageUtils, engine, "ImageUtils");
 #endif
 
 #ifdef KCL_sceneutils
-    kclInitializeDeclarativeSingleton<SceneUtils>(engine, "SceneUtils");
+    kclInitializeDeclarativeSingleton(SceneUtils, sceneUtils, engine, "SceneUtils");
 #endif
 
 #ifdef KCL_datetimeutils
-    kclInitializeDeclarativeSingleton<DateTimeUtils>(engine, "DateTimeUtils");
+    kclInitializeDeclarativeSingleton(DateTimeUtils, dateTimeUtils, engine, "DateTimeUtils");
 #endif
 
 #ifdef KCL_networkutils
-    kclInitializeDeclarativeSingleton<NetworkUtils>(engine, "NetworkUtils");
+    kclInitializeDeclarativeSingleton(NetworkUtils, networkUtils, engine, "NetworkUtils");
 #endif
 
 #ifdef KCL_cookiejarinterface
-    kclInitializeDeclarativeSingleton<CookieJarInterface>(engine, "CookieJar");
+    kclInitializeDeclarativeSingleton(CookieJarInterface, cookieJar, engine, "CookieJar");
 #endif
 
 #ifdef KCL_nativedialogs
-    kclInitializeDeclarativeSingleton<NativeDialogs>(engine, "NativeDialogs");
+    kclInitializeDeclarativeSingleton(NativeDialogs, nativeDialogs, engine, "NativeDialogs");
 #endif
 
 #ifdef KCL_logging
@@ -362,7 +357,7 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 #endif
 
 #ifdef KCL_declarativedebug
-    kclInitializeDeclarativeSingleton<DeclarativeDebug>(engine, "Debug");
+    kclInitializeDeclarativeSingleton(DeclarativeDebug, debug, engine, "Debug");
 #endif
 
 #ifdef KCL_performancedatamanager
@@ -382,15 +377,15 @@ void KCLPlugin::initializeEngine(QDeclarativeEngine *engine, const char *uri)
 #endif
 
 #ifdef KCL_simplebase
-    kclInitializeDeclarativeSingleton<SimpleBase>(engine, "SimpleBase");
+    kclInitializeDeclarativeSingleton(SimpleBase, simpleBase, engine, "SimpleBase");
 #endif
 
 #ifdef KCL_engineutils
-    kclInitializeDeclarativeSingleton<EngineUtils>(engine, "EngineUtils");
+    kclInitializeDeclarativeSingleton(EngineUtils, engineUtils, engine, "EngineUtils");
 #endif
 
 #ifdef KCL_systemutils
-    kclInitializeDeclarativeSingleton<SystemUtils>(engine, "SystemUtils");
+    kclInitializeDeclarativeSingleton(SystemUtils, systemUtils, engine, "SystemUtils");
 #endif
 }
 
