@@ -94,7 +94,7 @@ public:
     Q_INVOKABLE bool isValid() const { return d; }
     Q_INVOKABLE QIODevice* device() const { return d; }
 
-    Q_INVOKABLE IODevice::OpenMode openMode() const { return d ? (IODevice::OpenMode)d->openMode().operator unsigned int() : IODevice::NotOpen; }
+    Q_INVOKABLE IODevice::OpenMode openMode() const { return d ? (IODevice::OpenMode)(int)d->openMode() : IODevice::NotOpen; }
 
     Q_INVOKABLE void setTextModeEnabled(bool enabled) { if (d) d->setTextModeEnabled(enabled); }
     Q_INVOKABLE bool isTextModeEnabled() const { return d ? d->isTextModeEnabled() : false; }
