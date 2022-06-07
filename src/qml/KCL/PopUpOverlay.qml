@@ -50,7 +50,8 @@ Item {
     property color backgroundColor: "transparent"
 
     property Item popUpParent: app
-    readonly property bool opened: overlay ? overlay.opened : false
+    //property bool opened: overlay ? overlay.opened : false //@QtQuick1
+    readonly property bool opened: overlay ? overlay.opened : false //@QtQuick2
 
     signal overlayCreated(variant item)
     signal aboutToPopUp(variant item)
