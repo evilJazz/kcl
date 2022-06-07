@@ -220,18 +220,18 @@ Item {
 
         var x, y;
 
-        if (topRightPos.x + overlay.item.width < popUpParentWidth)
+        if (bottomPos.x + overlay.item.width < popUpParentWidth)
         {
-            x = topRightPos.x;
-            y = topRightPos.y;
+            x = bottomPos.x;
+            y = bottomPos.y;
         }
         else
         {
-            x = topLeftPos.x - overlay.item.width;
-            y = topLeftPos.y;
+            x = topPos.x - overlay.item.width;
+            y = topPos.y;
         }
 
-        setBoundedPosition(item, x, y);
+        setBoundedPosition(overlay.item, x, y);
     }
 
     function _positionPopUpLeftOrRight(item)
