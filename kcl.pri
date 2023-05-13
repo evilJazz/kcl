@@ -77,6 +77,7 @@ isEmpty(kcl): kcl = \
     updatelocker \
     sortfiltermodel \
     simplebase \
+    declarativesqlquerymodel \
     singletons \
     systemutils \
     templaterenderer \
@@ -133,6 +134,7 @@ kcl_sql {
     message("KCL: Configuring with SQL support")
 
     kclConditionalAddModule(simplebase)
+    kclConditionalAddModule(declarativesqlquerymodel)
 }
 
 kcl_gui {

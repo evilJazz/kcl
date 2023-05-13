@@ -157,6 +157,10 @@
     #include "KCL/simplebase.h"
 #endif
 
+#ifdef KCL_declarativesqlquerymodel
+    #include "KCL/declarativesqlquerymodel.h"
+#endif
+
 #ifdef KCL_engineutils
     #include "KCL/engineutils.h"
 #endif
@@ -290,6 +294,10 @@ void KCLPlugin::registerTypes(const char *uri)
 
 #ifdef KCL_simplebase
     qmlRegisterType<SimpleBase>();
+#endif
+
+#ifdef KCL_declarativesqlquerymodel
+    kclRegisterMetaType(DeclarativeSqlQueryModel, uri, 1, 0, "SqlQueryModel");
 #endif
 
 #ifdef KCL_engineutils
