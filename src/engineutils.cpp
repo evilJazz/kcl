@@ -162,7 +162,7 @@ QVariantList EngineUtils::getContextPropertiesAndGlobals(QObject *contextObject)
 
         if (contextData)
         {
-            const QV4::IdentifierHash &propNames = contextData->propertyNames();
+            const auto &propNames = contextData->propertyNames();
 
             QV4::IdentifierHashEntry *e = propNames.d->entries;
             QV4::IdentifierHashEntry *end = e + propNames.d->alloc;
