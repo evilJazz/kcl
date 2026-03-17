@@ -48,7 +48,7 @@ ObjectUtils::ObjectUtils(QObject *parent) :
 
 QString ObjectUtils::className(QObject *target)
 {
-    return target ? QString::fromLatin1(target->metaObject()->className()) : QString::null;
+    return target ? QString::fromLatin1(target->metaObject()->className()) : KCL_QSTRING_NULL;
 }
 
 bool ObjectUtils::sameClass(QObject *object1, QObject *object2)
@@ -78,7 +78,7 @@ QVariant ObjectUtils::objectToVariant(QObject *object)
 
 QString ObjectUtils::objectAsString(QObject *object)
 {
-    return object ? QString().sprintf("%s(%s%p)", object->metaObject()->className(), (!object->objectName().isEmpty() ? object->objectName() + " " : "").toLatin1().constData(), object) : QString("NULL");
+    return object ? kaSprintf("%s(%s%p)", object->metaObject()->className(), (!object->objectName().isEmpty() ? object->objectName() + " " : "").toLatin1().constData(), object) : QString("NULL");
 }
 
 void ObjectUtils::dumpObjectTree(QObject *target)

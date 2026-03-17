@@ -66,8 +66,8 @@ signals:
     void outputEnabledChanged();
 
 public slots:
-    void enterMethod(const QString &text = QString::null);
-    void exitMethod(const QString &text = QString::null);
+    void enterMethod(const QString &text = KCL_QSTRING_NULL);
+    void exitMethod(const QString &text = KCL_QSTRING_NULL);
 
     void print(const QString &text);
 

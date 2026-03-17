@@ -36,10 +36,16 @@
 
 #include <QHash>
 #include <QThread>
-#include <QDateTime>
-#include <QMutex>
-#include <QCoreApplication>
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    #include <QRecursiveMutex>
+    #define KclRecursiveMutex QRecursiveMutex
+#else
+    #include <QMutex>
+    #define KclRecursiveMutex QMutex
+#endif
+
+#include <QDateTime>
 #include <QCoreApplication>
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
@@ -48,6 +54,8 @@
 
 #include <stdio.h>
 #include <sys/types.h>
+
+#include <algorithm>
 
 #ifndef Q_OS_WIN
 #include <unistd.h>
@@ -62,14 +70,18 @@
 
 static int indentLevel_ = -1;
 static QElapsedTimer lastMsg_;
-static QMutex *lastMsgMutex_ = NULL;
+static KclRecursiveMutex *lastMsgMutex_ = NULL;
 
-QMutex *getMutex()
+KclRecursiveMutex *getMutex()
 {
     if (!lastMsgMutex_)
     {
         lastMsg_.restart();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        lastMsgMutex_ = new QRecursiveMutex();
+#else
         lastMsgMutex_ = new QMutex(QMutex::Recursive);
+#endif
     }
 
     return lastMsgMutex_;
@@ -145,7 +157,7 @@ QString kaFormatFunctionSignature(const char *fileName, int line, const char *fu
     if (lastSlash > -1)
         fileNameBA = fileNameBA.mid(lastSlash + 1);
 
-    QString result = QString().sprintf("[%s:%d] : %s", fileNameBA.constData(), line, functionSignature);
+    QString result = kaSprintf("[%s:%d] : %s", fileNameBA.constData(), line, functionSignature);
 
     if (!text.isEmpty())
         result += " : " + text;
@@ -209,7 +221,7 @@ void kaDebug(const QString &msg)
         int indent = indentLevel_ == -1 ? 0 : indentLevel_ * 3 + 3;
         QByteArray marker = (showTimestamps_ ? QByteArray::number(QDateTime::currentMSecsSinceEpoch()) + " " : "") +
                             (qApp ?
-                                QString().sprintf("%16s %0x",
+                                kaSprintf("%16s %0x",
                                     (qApp->thread() == QThread::currentThread() ?
                                         "Main Thread" :
                                         QThread::currentThread()->objectName()
@@ -219,7 +231,7 @@ void kaDebug(const QString &msg)
                                 "!"
                             );
 
-        QString message = QString().sprintf("%s: %*s%s", marker.constData(), indent, "", (const char*)msg.toUtf8());
+        QString message = kaSprintf("%s: %*s%s", marker.constData(), indent, "", (const char*)msg.toUtf8());
 
         if (customMessageHandler)
             customMessageHandler(message);
@@ -256,7 +268,7 @@ void kaPrintMemStat()
     sscanf(buf, "%u", &pages);
     mem_size = ((unsigned long)pages) * ((unsigned long)getpagesize());
 
-    kaDebug(QString().sprintf("Memory used: %d bytes / %d kbytes", mem_size, mem_size / 1024));
+    kaDebug(kaSprintf("Memory used: %d bytes / %d kbytes", mem_size, mem_size / 1024));
 #endif
 }
 
@@ -269,7 +281,7 @@ void kaPrintBacktrace()
     char **messages = backtrace_symbols(array, size);
 
     for (int i = 1; i < size && messages != NULL; ++i)
-        kaDebug(QString().sprintf("BT: (%d) %s", i, messages[i]));
+        kaDebug(kaSprintf("BT: (%d) %s", i, messages[i]));
 
     free(messages);
 #endif
@@ -307,7 +319,7 @@ KaDebugGuard::~KaDebugGuard()
         if (profile_)
             kaProfileAddRecord(string_, elapsed);
 
-        string_ += QString().sprintf(" - [Timing] %5lld ms", elapsed);
+        string_ += kaSprintf(" - [Timing] %5lld ms", elapsed);
         delete timer_;
         timer_ = NULL;
     }
@@ -357,7 +369,7 @@ void kaProfilePrintStat()
         return;
 
     QList<ProfileRecord> records = profileRecordsInstance().values();
-    qSort(records);
+    kaSort(records.begin(), records.end());
 
     kaDebug("");
     kaDebug("Profile stats:");
@@ -365,7 +377,7 @@ void kaProfilePrintStat()
     for (int i = 0; i < records.count(); ++i)
     {
         const ProfileRecord &record = records.at(i);
-        kaDebug(QString().sprintf("%5d -> %100s, times called: %6d,  total runtime: %8lld ms,  average runtime: %8.2f ms",
+        kaDebug(kaSprintf("%5d -> %100s, times called: %6d,  total runtime: %8lld ms,  average runtime: %8.2f ms",
             i + 1,
             record.name.toLatin1().constData(),
             record.timesCalled,

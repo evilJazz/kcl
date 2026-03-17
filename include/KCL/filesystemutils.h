@@ -307,6 +307,8 @@ public:
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
     QDateTime birthTime() const;
     QDateTime metadataChangeTime() const;
+#else
+    QDateTime created() const;
 #endif
 };
 

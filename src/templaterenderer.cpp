@@ -385,6 +385,7 @@ void TemplateRenderer::updateContent()
     int markerLastEndPos = 0;
     int markerStartPos = 0;
 
+
     while ((markerStartPos = rx.indexIn(templateText_, markerLastEndPos)) != -1)
     {
         newContent += templateText_.mid(markerLastEndPos, markerStartPos - markerLastEndPos);
@@ -592,13 +593,13 @@ void TemplateRenderer::declarativeAppendSubRenderer(DeclarativeListProperty<Temp
     }
 }
 
-int TemplateRenderer::declarativeSubRenderersCount(DeclarativeListProperty<TemplateRenderer> *list)
+ksizetype TemplateRenderer::declarativeSubRenderersCount(DeclarativeListProperty<TemplateRenderer> *list)
 {
     TemplateRenderer *renderer = static_cast<TemplateRenderer *>(list->data);
     return renderer->subRenderers_.count();
 }
 
-TemplateRenderer *TemplateRenderer::declarativeGetSubRenderer(DeclarativeListProperty<TemplateRenderer> *list, int index)
+TemplateRenderer *TemplateRenderer::declarativeGetSubRenderer(DeclarativeListProperty<TemplateRenderer> *list, ksizetype index)
 {
     TemplateRenderer *renderer = static_cast<TemplateRenderer *>(list->data);
     return renderer->subRenderers_.at(index);
@@ -637,13 +638,13 @@ void TemplateRenderer::declarativeAppendChild(DeclarativeListProperty<QObject> *
         qobject_cast<TemplateRenderer *>(child)->setParentRenderer(renderer);
 }
 
-int TemplateRenderer::declarativeChildrenCount(DeclarativeListProperty<QObject> *list)
+ksizetype TemplateRenderer::declarativeChildrenCount(DeclarativeListProperty<QObject> *list)
 {
     TemplateRenderer *renderer = static_cast<TemplateRenderer *>(list->data);
     return renderer->children_.count();
 }
 
-QObject *TemplateRenderer::declarativeGetChild(DeclarativeListProperty<QObject> *list, int index)
+QObject *TemplateRenderer::declarativeGetChild(DeclarativeListProperty<QObject> *list, ksizetype index)
 {
     TemplateRenderer *renderer = static_cast<TemplateRenderer *>(list->data);
     return renderer->children_.at(index);

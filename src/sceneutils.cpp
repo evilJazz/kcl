@@ -154,7 +154,7 @@ QVariantList SceneUtils::getAllItemsInScene(QQuickItem *item, qreal itemX, qreal
     {
         QObject *item = itemList.at(i);
         if (item)
-            result.append(qVariantFromValue(item));
+            result.append(QVariant::fromValue(item));
     }
 
     return result;
@@ -180,7 +180,7 @@ QVariantList SceneUtils::getItemsBelow(QQuickItem *item, qreal itemX, qreal item
         {
             QObject *item = itemList.at(i);
             if (item)
-                result.append(qVariantFromValue(item));
+                result.append(QVariant::fromValue(item));
         }
     }
 

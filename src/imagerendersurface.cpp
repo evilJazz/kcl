@@ -179,12 +179,20 @@ void ImageRenderSurface::paint(QPainter *painter, const QStyleOptionGraphicsItem
     }
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+void ImageRenderSurface::geometryChange(const QRectF & newGeometry, const QRectF & oldGeometry)
+#else
 void ImageRenderSurface::geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry)
+#endif
 {
     if (newGeometry.size() != oldGeometry.size())
         updateSurfaceFromSource();
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QQuickItem::geometryChange(newGeometry, oldGeometry);
+#else
     QDeclarativeItem::geometryChanged(newGeometry, oldGeometry);
+#endif
 }
 
 void ImageRenderSurface::updateSurfaceFromSource()

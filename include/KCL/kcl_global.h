@@ -47,4 +47,18 @@
     #endif
 #endif
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    #define KCL_QSTRING_NULL QString()
+#else
+    #define KCL_QSTRING_NULL QString::null
+#endif
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    #define kaSprintf(...) QString().sprintf(__VA_ARGS__)
+    #define kaSort(...) qSort(__VA_ARGS__)
+#else
+    #define kaSprintf(...) QString::asprintf(__VA_ARGS__)
+    #define kaSort(...) std::sort(__VA_ARGS__)
+#endif
+
 #endif // KCL_GLOBAL_H

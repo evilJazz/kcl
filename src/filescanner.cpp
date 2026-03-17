@@ -48,6 +48,15 @@
 
 #include <QCoreApplication>
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    #include <QRegExp>
+    #define QRegularExpression QRegExp
+    #define KCL_RegExp_CaseInsensitiveOption Qt::CaseInsensitive
+#else
+    #include <QRegularExpression>
+    #define KCL_RegExp_CaseInsensitiveOption QRegularExpression::CaseInsensitiveOption
+#endif
+
 /* FileScannerRunnable */
 
 FileScannerRunnable::FileScannerRunnable(FileScanner *fileScanner) :
@@ -79,10 +88,10 @@ void FileScannerRunnable::run()
     int maxFileSizeForHashSums = fileScanner_->maxFileSizeForHashSums();
 
     QString currentFilename;
-    QList<QRegExp> filters;
+    QList<QRegularExpression> filters;
 
     foreach (QString filter, filterStrings)
-        filters.append(QRegExp(filter, Qt::CaseInsensitive));
+        filters.append(QRegularExpression(filter, KCL_RegExp_CaseInsensitiveOption));
 
     // Execute...
     QVariantList results;
@@ -113,7 +122,7 @@ void FileScannerRunnable::run()
 
             if (filters.count() > 0)
             {
-                foreach (QRegExp filter, filters)
+                foreach (QRegularExpression filter, filters)
                     if (currentFilename.contains(filter))
                     {
                         addItem = true;
@@ -137,7 +146,11 @@ void FileScannerRunnable::run()
                     result.insert("fileName", formattedFilename);
                     result.insert("fileSize", fi.size());
                     result.insert("lastModified", fi.lastModified());
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+                    result.insert("created", fi.birthTime());
+#else
                     result.insert("created", fi.created());
+#endif
                     result.insert("lastRead", fi.lastRead());
 
                     if (hashSums && fi.size() < maxFileSizeForHashSums)

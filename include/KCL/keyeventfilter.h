@@ -57,7 +57,7 @@ public:
     DeclarativeKeyEvent(QEvent::Type type, int key, int modifiers, const QString &text=QString(), bool autorep=false, ushort count=1, bool spontaneous = true)
         : event(type, key, (Qt::KeyboardModifiers)modifiers, text, autorep, count), spontaneous_(spontaneous) { event.setAccepted(false); }
     DeclarativeKeyEvent(const QKeyEvent &ke)
-        : event(ke) { spontaneous_ = event.spontaneous(); event.setAccepted(false); }
+        : event(ke.type(), ke.key(), ke.modifiers(), ke.text(), ke.isAutoRepeat(), ke.count()) { spontaneous_ = ke.spontaneous(); event.setAccepted(false); }
 
     int key() const { return event.key(); }
     QString text() const { return event.text(); }

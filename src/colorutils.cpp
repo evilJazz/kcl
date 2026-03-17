@@ -42,9 +42,12 @@
 #include <QPixmap>
 #include <QScreen>
 #include <QApplication>
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QDesktopWidget>
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QGuiApplication>
+#endif
 #endif
 #endif
 
@@ -79,7 +82,7 @@ QVariantMap ColorUtils::colorComponents(const QColor &color, bool asFloat)
 
 QString ColorUtils::colorName(const QColor &color)
 {
-    return QString().sprintf("#%08X", color.rgba());
+    return kaSprintf("#%08X", color.rgba());
 }
 
 QColor ColorUtils::parseColor(const QString &colorString)
@@ -124,16 +127,24 @@ QColor ColorUtils::grabColorFromScreen(const QPoint &screenPos)
     if (p == QPoint(INT_MAX, INT_MAX))
         p = QCursor::pos();
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QScreen *screen = QGuiApplication::primaryScreen();
+
+    if (!screen)
+        return QColor();
+
+     const QPixmap pixmap = screen->grabWindow(0, p.x(), p.y(), 1, 1);
+#else
     const QDesktopWidget *desktop = QApplication::desktop();
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     const QPixmap pixmap = QGuiApplication::screens().at(desktop->screenNumber())->grabWindow(desktop->winId(), p.x(), p.y(), 1, 1);
-    QImage i = pixmap.toImage();
 #else
     const QPixmap pixmap = QPixmap::grabWindow(desktop->winId(), p.x(), p.y(), 1, 1);
-    QImage i = pixmap.toImage();
+#endif
 #endif
 
+    QImage i = pixmap.toImage();
     return i.pixel(0, 0);
 #else
     qWarning("ColorUtils::grabColorFromScreen is not implemented.");

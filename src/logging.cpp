@@ -161,7 +161,7 @@ bool Logging::isEnabled() const
 
 QString Logging::logFileName() const
 {
-    return (logFile_ ? logFile_->fileName() : QString::null);
+    return (logFile_ ? logFile_->fileName() : KCL_QSTRING_NULL);
 }
 
 Logging::Logging()

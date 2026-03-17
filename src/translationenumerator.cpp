@@ -37,6 +37,13 @@
 #include <QDir>
 #include <QLocale>
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    #include <QRegExp>
+    #define QRegularExpression QRegExp
+#else
+    #include <QRegularExpression>
+#endif
+
 #include "KCL/debug.h"
 
 TranslationEnumerator::TranslationEnumerator(const QStringList &translationPaths, QObject *parent) :
@@ -56,9 +63,10 @@ void TranslationEnumerator::updateList()
 
         foreach (QString qmFile, fileNames)
         {
-            QString languageAbbr = QString::null;
-            QRegExp re("[_-]([a-z]{2,2})([_-][A-Z]{2,3}){0,1}.qm$");
+            QString languageAbbr = KCL_QSTRING_NULL;
+            QRegularExpression re("[_-]([a-z]{2,2})([_-][A-Z]{2,3}){0,1}.qm$");
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
             if (re.indexIn(qmFile) > -1)
             {
                 QVariantMap translation;
@@ -68,6 +76,17 @@ void TranslationEnumerator::updateList()
 
                 languageAbbr = caps.at(1);
                 languageAbbr += caps.at(2);
+#else
+            QRegularExpressionMatch match = re.match(qmFile);
+
+            if (match.hasMatch())
+            {
+                QVariantMap translation;
+                translation.insert("qmFile", dir.filePath(qmFile));
+
+                languageAbbr = match.captured(1);
+                languageAbbr += match.captured(2);
+#endif
 
                 translation.insert("languageAbbr", languageAbbr);
 

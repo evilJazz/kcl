@@ -166,6 +166,11 @@ QDateTime FileInfo::metadataChangeTime() const
 {
     return lastModified();
 }
+#else
+QDateTime FileInfo::created() const
+{
+    return birthTime();
+}
 #endif
 
 /* FileSystemUtils */
@@ -286,7 +291,11 @@ QDateTime FileSystemUtils::lastModified(const QString &path)
 
 QDateTime FileSystemUtils::created(const QString &path)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+    return QFileInfo(path).birthTime();
+#else
     return QFileInfo(path).created();
+#endif
 }
 
 QString FileSystemUtils::findNextParent(const QString &path)
@@ -323,11 +332,11 @@ QString FileSystemUtils::formatFileSize(long long fileSize)
     QString result;
 
     if (fileSize > 1024 * 1024 * 1024)
-        result = QString().sprintf("%.2f GB", (float)fileSize / (1024 * 1024 * 1024));
+        result = kaSprintf("%.2f GB", (float)fileSize / (1024 * 1024 * 1024));
     else if (fileSize > 1024 * 1024)
-        result = QString().sprintf("%.2f MB", (float)fileSize / (1024 * 1024));
+        result = kaSprintf("%.2f MB", (float)fileSize / (1024 * 1024));
     else
-        result = QString().sprintf("%.1f KB", (float)fileSize / 1024);
+        result = kaSprintf("%.1f KB", (float)fileSize / 1024);
 
     return result;
 }
@@ -360,7 +369,7 @@ QString FileSystemUtils::md5HashFile(const QString &fileName)
         return crypto.result().toHex();
     }
 
-    return QString::null;
+    return KCL_QSTRING_NULL;
 }
 
 bool FileSystemUtils::putContents(const QString &fileName, const QByteArray &contents, bool append)
@@ -600,7 +609,9 @@ QString FileSystemUtils::tempLocation()
 
 QString FileSystemUtils::dataLocation()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
+    return QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/";
+#elif QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     return QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/";
 #else
     return QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/";

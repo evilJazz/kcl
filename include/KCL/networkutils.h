@@ -38,8 +38,14 @@
 #include "KCL/kcl_global.h"
 
 #include <QObject>
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 1, 0)
+#include <QNetworkInformation>
+#else
 #include <QNetworkConfigurationManager>
 #include <QNetworkSession>
+#endif
+
 #include <QRunnable>
 
 class KCL_EXPORT NetworkUtils : public QObject
@@ -59,12 +65,19 @@ signals:
     void onlineStateChanged();
 
 private slots:
+#if QT_VERSION >= QT_VERSION_CHECK(6, 1, 0)
+
+#else
     void initializeNetwork();
     void networkConfigurationManagerDone(QNetworkConfigurationManager *result);
     void deferredUpdateNetworkConfigurations();
     void handleNetworkUpdateCompleted();
+#endif
 
 private:
+#if QT_VERSION >= QT_VERSION_CHECK(6, 1, 0)
+    QNetworkInformation *netInfo_;
+#else
     QNetworkConfigurationManager *network_;
     QNetworkSession *session_;
     QNetworkConfiguration currentConfig_;
@@ -73,6 +86,7 @@ private:
     void connectToNetworkConfigurationManager();
 
     void dumpNetworkConfigurations();
+#endif
 };
 
 #endif // NETWORKUTILS_H

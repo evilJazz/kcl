@@ -54,6 +54,12 @@
     #define DeclarativeParserStatus QDeclarativeParserStatus
 #endif
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    #define ksizetype qsizetype
+#else
+    #define ksizetype int
+#endif
+
 #include "KCL/propertychangeobserver.h"
 
 class TemplateRenderer : public PropertyChangeObserver
@@ -208,15 +214,15 @@ private:
     void addSubRenderer(TemplateRenderer *childRenderer);
 
     static void declarativeAppendSubRenderer(DeclarativeListProperty<TemplateRenderer> *, TemplateRenderer *);
-    static int declarativeSubRenderersCount(DeclarativeListProperty<TemplateRenderer> *);
-    static TemplateRenderer *declarativeGetSubRenderer(DeclarativeListProperty<TemplateRenderer> *, int index);
+    static ksizetype declarativeSubRenderersCount(DeclarativeListProperty<TemplateRenderer> *);
+    static TemplateRenderer *declarativeGetSubRenderer(DeclarativeListProperty<TemplateRenderer> *, ksizetype index);
     static void declarativeClearSubRenderers(DeclarativeListProperty<TemplateRenderer> *);
 
     QList<QObject *> children_;
 
     static void declarativeAppendChild(DeclarativeListProperty<QObject> *, QObject *);
-    static int declarativeChildrenCount(DeclarativeListProperty<QObject> *);
-    static QObject *declarativeGetChild(DeclarativeListProperty<QObject> *, int index);
+    static ksizetype declarativeChildrenCount(DeclarativeListProperty<QObject> *);
+    static QObject *declarativeGetChild(DeclarativeListProperty<QObject> *, ksizetype index);
     static void declarativeClearChildren(DeclarativeListProperty<QObject> *);
 
     QPointer<TemplateRenderer> topLevelRenderer_;

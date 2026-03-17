@@ -118,7 +118,7 @@ public:
 #define globalPerformanceDataManager PerformanceDataManager::singleton()
     static PerformanceDataManager &singleton();
 
-    Q_INVOKABLE PerformanceData *addNewPerformanceData(const QString &name = QString::null);
+    Q_INVOKABLE PerformanceData *addNewPerformanceData(const QString &name = KCL_QSTRING_NULL);
 
     Q_INVOKABLE PerformanceData *data(const QString &name);
     Q_INVOKABLE PerformanceData *at(int index) { return perfDataList_[index]; }

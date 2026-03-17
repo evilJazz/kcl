@@ -133,17 +133,17 @@ QString SimpleBase::variantToString(const QVariant &v)
 #ifndef QT_NO_GEOM_VARIANT
         case QVariant::Rect: {
             QRect r = qvariant_cast<QRect>(v);
-            result = QString().sprintf("@Rect(%d %d %d %d)", r.x(), r.y(), r.width(), r.height());
+            result = kaSprintf("@Rect(%d %d %d %d)", r.x(), r.y(), r.width(), r.height());
             break;
         }
         case QVariant::Size: {
             QSize s = qvariant_cast<QSize>(v);
-            result = QString().sprintf("@Size(%d %d)", s.width(), s.height());
+            result = kaSprintf("@Size(%d %d)", s.width(), s.height());
             break;
         }
         case QVariant::Point: {
             QPoint p = qvariant_cast<QPoint>(v);
-            result = QString().sprintf("@Point(%d %d)", p.x(), p.y());
+            result = kaSprintf("@Point(%d %d)", p.x(), p.y());
             break;
         }
 #endif // !QT_NO_GEOM_VARIANT
@@ -346,7 +346,7 @@ SimpleBase::~SimpleBase()
 
 QVariant SimpleBase::load(const QString &key)
 {
-    QSqlQuery loadQuery = executeLoadQuery(key, QString::null);
+    QSqlQuery loadQuery = executeLoadQuery(key, KCL_QSTRING_NULL);
 
     if (loadQuery.isValid())
         return SimpleBase::stringToVariant(loadQuery.value(0).toString());

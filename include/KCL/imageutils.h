@@ -62,6 +62,7 @@ public:
     static bool hasAlphaValues(const QImage &srcImage, const QRect &srcRect = QRect());
 
     static bool convertToGrayscale(const QImage &srcImage, QImage &dstImage);
+    static bool alphaChannelToGrayscale(const QImage &srcImage, QImage &dstImage);
 
     static bool imageFromVariant(const QVariant &image, QImage *result = NULL);
 
@@ -70,10 +71,10 @@ public:
     Q_INVOKABLE static QVariant empty(const QSize &size);
 
     static QVariant load(QIODevice *device, const QSize &requestedSize = QSize(), bool returnExactSize = false);
-    static bool save(const QVariant &image, QIODevice *device, const QString &format = QString::null, int quality = -1);
+    static bool save(const QVariant &image, QIODevice *device, const QString &format = KCL_QSTRING_NULL, int quality = -1);
 
     Q_INVOKABLE static QVariant load(const QString &fileName, const QSize &requestedSize = QSize(), bool returnExactSize = false);
-    Q_INVOKABLE static bool save(const QVariant &image, const QString &fileName, const QString &format = QString::null, int quality = -1);
+    Q_INVOKABLE static bool save(const QVariant &image, const QString &fileName, const QString &format = KCL_QSTRING_NULL, int quality = -1);
 
 #ifdef KCL_filesystemutils
     Q_INVOKABLE static QVariant load(IODevice *device, const QSize &requestedSize = QSize(), bool returnExactSize = false);

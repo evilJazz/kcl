@@ -92,6 +92,9 @@ void WebCall::get(QUrl url)
     resetState();
 
     QNetworkRequest request(url);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
+#endif
     setHeadersOnRequest(&request);
 
     QNetworkReply *reply = networkAccessManager()->get(request);
@@ -109,6 +112,9 @@ void WebCall::post(QUrl url, const QByteArray &rawData)
     resetState();
 
     QNetworkRequest request(url);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
+#endif
     setHeadersOnRequest(&request);
 
     QNetworkReply *reply = networkAccessManager()->post(request, rawData);

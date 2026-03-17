@@ -30,6 +30,18 @@ contains(QT_VERSION, ^5\\..*) {
     message("KCL: Configuring for Qt 5, actual version: $${QT_VERSION}")
 }
 
+contains(QT_VERSION, ^6\\..*) {
+    CONFIG += kcl_qt5 kcl_qt6
+    DEFINES += KCL_QT5 KCL_QT6
+    QT += concurrent
+
+    contains(QT, quick): CONFIG += kcl_qtquick2 kcl_qtquick3 kcl_declarative
+    contains(QT, declarative): CONFIG += kcl_qtquick1 kcl_declarative
+    contains(QT, widgets): CONFIG += kcl_widgets
+
+    message("KCL: Configuring for Qt 6, actual version: $${QT_VERSION}")
+}
+
 contains(QT, sql): CONFIG += kcl_sql
 contains(QT, gui): CONFIG += kcl_gui
 contains(QT, network): CONFIG += kcl_network
@@ -198,7 +210,7 @@ kcl_declarative {
     kclConditionalAddModule(base64imageprovider)
     kclConditionalAddModule(engineutils)
 
-    contains(QT_VERSION, ^4\\.8\\..*) | kcl_qt5 {
+    contains(QT_VERSION, ^4\\.8\\..*) | kcl_qt5 | kcl_qt6 {
         kclConditionalAddModule(propertychangeobserver)
         kclConditionalAddModule(templaterenderer)
     }

@@ -37,6 +37,8 @@
 #include <QImage>
 #include <QImageReader>
 
+#include <functional>
+
 #ifndef KCL_DEBUG
 #undef DEBUG
 #endif
@@ -214,7 +216,10 @@ bool ImageUtils::hasAlphaValues(const QImage &srcImage, const QRect &srcRect)
     return result;
 }
 
-bool ImageUtils::convertToGrayscale(const QImage &srcImage, QImage &dstImage)
+
+typedef int (*ColorFunction)(QRgb);
+
+template<ColorFunction colorFunction> bool isolateChannelAsGrayscale(const QImage &srcImage, QImage &dstImage)
 {
     if (srcImage.isNull())
         return false;
@@ -235,8 +240,8 @@ bool ImageUtils::convertToGrayscale(const QImage &srcImage, QImage &dstImage)
     int height = image.height();
     int x;
     int width = image.width();
-    register const QRgb *input;
-    register uchar *output;
+    const QRgb *input;
+    uchar *output;
 
     for (y = 0; y < height; ++y)
     {
@@ -245,7 +250,7 @@ bool ImageUtils::convertToGrayscale(const QImage &srcImage, QImage &dstImage)
 
         for (x = 0; x < width; ++x)
         {
-            *output = qGray(*input);
+            *output = colorFunction(*input);
 
             ++output;
             ++input;
@@ -253,6 +258,16 @@ bool ImageUtils::convertToGrayscale(const QImage &srcImage, QImage &dstImage)
     }
 
     return true;
+}
+
+bool ImageUtils::convertToGrayscale(const QImage &srcImage, QImage &dstImage)
+{
+    return isolateChannelAsGrayscale<qGray>(srcImage, dstImage);
+}
+
+bool ImageUtils::alphaChannelToGrayscale(const QImage &srcImage, QImage &dstImage)
+{
+    return isolateChannelAsGrayscale<qAlpha>(srcImage, dstImage);
 }
 
 bool ImageUtils::imageFromVariant(const QVariant &image, QImage *result)

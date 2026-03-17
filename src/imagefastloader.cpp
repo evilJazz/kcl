@@ -46,6 +46,7 @@
 #include <QCryptographicHash>
 
 #include "KCL/filesystemutils.h"
+#include "KCL/imageutils.h"
 
 #ifndef KCL_DEBUG
 #undef DEBUG
@@ -79,7 +80,7 @@ void DiskImageCache::clearCacheDirectory()
 QString DiskImageCache::getFilenameForKey(const QString &key) const
 {
     if (cacheDirectory_.isEmpty())
-        return QString::null;
+        return KCL_QSTRING_NULL;
     else
         return cacheDirectory_ + '/' + key + ".cbci";
 }
@@ -167,7 +168,7 @@ bool DiskImageCache::saveCacheImages(QImage *srcImage, const QList<QSize> &sizes
         cacheImageSizes.append(imageSize);
     }
 
-    qSort(cacheImageSizes.begin(), cacheImageSizes.end(), megaPixelLessThan);
+    kaSort(cacheImageSizes.begin(), cacheImageSizes.end(), megaPixelLessThan);
 
     qint32 lastPos = 0;
 
@@ -184,7 +185,8 @@ bool DiskImageCache::saveCacheImages(QImage *srcImage, const QList<QSize> &sizes
 
         if (newImage.hasAlphaChannel())
         {
-            QImage alphaImage = newImage.alphaChannel();
+            QImage alphaImage;
+            ImageUtils::alphaChannelToGrayscale(newImage, alphaImage);
             alphaImage.save(dstStream, "JPEG", 88);
             imageSize.maskCount = dstStream->pos() - lastPos;
             lastPos = dstStream->pos();
@@ -439,7 +441,12 @@ DiskImageCache::ImageCacheResult ImageFastLoader::getImage(const QString &filena
     // Cache file non-existent or too old?
     if (!cachedFileInfo.exists() ||
         srcFileInfo.lastModified() > cachedFileInfo.lastModified() ||
-        srcFileInfo.created() > cachedFileInfo.created())
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+        srcFileInfo.birthTime() > cachedFileInfo.birthTime()
+#else
+        srcFileInfo.created() > cachedFileInfo.created()
+#endif
+        )
     {
         result = createImage(filename);
         if (result != NoError)

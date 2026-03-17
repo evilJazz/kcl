@@ -269,7 +269,7 @@ QSettings::Format SettingsGroup::globalCustomSettingsFormat()
 #ifdef KCL_QTQUICK2
 QQmlListProperty<SettingsGroup> SettingsGroup::groups()
 {
-    return QQmlListProperty<SettingsGroup>(this, groups_);
+    return QQmlListProperty<SettingsGroup>(this, &groups_);
 }
 #else
 QDeclarativeListProperty<SettingsGroup> SettingsGroup::groups()
