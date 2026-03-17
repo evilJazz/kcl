@@ -48,6 +48,11 @@
     #include <QDeclarativeProperty>
 #endif
 
+#ifndef KCL_DEBUG
+#undef DEBUG
+#endif
+#include "KCL/debug.h"
+
 static QString *globalIniFilename = NULL;
 static QSettings *globalSettings_ = NULL;
 static QSettings::Format globalCustomSettingsFormat_ = QSettings::IniFormat;
@@ -82,6 +87,8 @@ SettingsGroup::SettingsGroup(QObject *parent) :
 
 SettingsGroup::~SettingsGroup()
 {
+    DGUARDMETHODTIMED;
+
     if (autoSave_)
         save();
 }
@@ -92,6 +99,8 @@ void SettingsGroup::classBegin()
 
 void SettingsGroup::componentComplete()
 {
+    DGUARDMETHODTIMED;
+
     SettingsGroup *sg = qobject_cast<SettingsGroup *>(parent());
     if (sg)
         connect(sg, SIGNAL(groupNameChanged()), this, SLOT(updateFullGroupName()));
@@ -153,6 +162,8 @@ void SettingsGroup::setCurrentValuesAsDefaultValues()
 
 void SettingsGroup::resetToDefaultValues()
 {
+    DGUARDMETHODTIMED;
+
     for (int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount(); ++i)
     {
         QMetaProperty prop = metaObject()->property(i);
@@ -280,10 +291,11 @@ QDeclarativeListProperty<SettingsGroup> SettingsGroup::groups()
 
 void SettingsGroup::save()
 {
+    DGUARDMETHODTIMED;
+
     emit aboutToSave();
 
     QSettings *settings = settingsInstance();
-    settings->beginGroup(fullGroupName_);
 
     for (int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount(); ++i)
     {
@@ -294,13 +306,19 @@ void SettingsGroup::save()
 
         QVariant value = prop.read(this);
 
-        if (!saveDefaults_ && defaults_.value(name) == value)
-            settings->remove(name);
-        else
-            settings->setValue(name, value);
-    }
+        QString fullName = fullGroupName_ + "/" + name;
 
-    settings->endGroup();
+        if (!saveDefaults_ && defaults_.value(name) == value)
+        {
+            DPRINTF("Remove default value %s = %s", fullName.toUtf8().constData(), value.toString().toUtf8().constData());
+            settings->remove(fullName);
+        }
+        else
+        {
+            DPRINTF("Write %s = %s", fullName.toUtf8().constData(), value.toString().toUtf8().constData());
+            settings->setValue(fullName, value);
+        }
+    }
 
     foreach (SettingsGroup *group, groups_)
         group->save();
@@ -310,10 +328,11 @@ void SettingsGroup::save()
 
 void SettingsGroup::load()
 {
+    DGUARDMETHODTIMED;
+
     emit aboutToLoad();
 
     QSettings *settings = settingsInstance();
-    settings->beginGroup(fullGroupName_);
 
     for (int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount(); ++i)
     {
@@ -323,10 +342,18 @@ void SettingsGroup::load()
         if (shallSkipProperty(name)) continue;
 
         QVariant value;
-        if (settings->contains(name))
-            value = settings->value(name);
+        QString fullName = fullGroupName_ + "/" + name;
+
+        if (settings->contains(fullName))
+        {
+            value = settings->value(fullName);
+            DPRINTF("Read %s = %s", fullName.toUtf8().constData(), value.toString().toUtf8().constData());
+        }
         else
+        {
             value = defaults_.value(name);
+            DPRINTF("Set default for %s = %s", fullName.toUtf8().constData(), value.toString().toUtf8().constData());
+        }
 
         bool result = prop.write(this, value);
         
@@ -334,10 +361,10 @@ void SettingsGroup::load()
             prop.notifySignal().invoke(this);
 
         if (!result)
-            qWarning("Could not set property %s = %s.", (const char *)name.toUtf8(), (const char *)value.toString().toUtf8());
+        {
+            qWarning("Could not set property %s = %s.", fullName.toUtf8().constData(), value.toString().toUtf8().constData());
+        }
     }
-
-    settings->endGroup();
 
     foreach (SettingsGroup *group, groups_)
         group->load();
